@@ -1,8 +1,6 @@
 # kifor-stylelint-config
 
-[![Test Status][test-image]][test-url]
-[![NPM version][npm-image]][npm-url]
-[![Vulnerabilities count][vulnerabilities-image]][vulnerabilities-url]
+Created by [Kifor Kostiantyn][author-url]
 
 > This is the standard configuration file for stylelint from [Kifor Kostiantyn](https://www.linkedin.com/in/kiforks/).
 
@@ -96,11 +94,5 @@ _.stylelintrc_
 
 ![Inconsistencies with the config rules are underlined with a red wavy line, hovering over it will bring up a popup with the error description.](vscode-error.png)
 
-[test-url]: https://github.com/htmlacademy/kifor-stylelint-config/actions
-[test-image]: https://github.com/htmlacademy/kifor-stylelint-config/actions/workflows/test.yml/badge.svg?branch=main
+[author-url]: https://www.linkedin.com/in/kiforks/
 
-[npm-url]: https://npmjs.org/package/kifor-stylelint-config
-[npm-image]: https://badge.fury.io/js/kifor-stylelint-config.svg
-
-[vulnerabilities-url]: https://snyk.io/test/github/htmlacademy/kifor-stylelint-config
-[vulnerabilities-image]: https://img.shields.io/snyk/vulnerabilities/npm/kifor-stylelint-config

@@ -89,7 +89,7 @@ _.stylelintrc_
 
 1. Install stylelint and config
 2. Open VSCode
-3. Install the [stylelint] plugin(https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint)
+3. Install the [stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) plugin
 4. Use it
 
 ![Inconsistencies with the config rules are underlined with a red wavy line, hovering over it will bring up a popup with the error description.](vscode-error.png)

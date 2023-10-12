@@ -1,7 +1,7 @@
 {
   "name": "kifor-stylelint-config",
   "description": "Stylelint shareable config",
-  "version": "2.0.4",
+  "version": "1.0.0",
   "type": "module",
   "exports": "./.stylelintrc",
   "files": [
@@ -32,17 +32,14 @@
     "url": "git+https://github.com/kiforks/kifor-stylelint-config.git"
   },
   "scripts": {
-    "prepare": "husky install",
-    "lint": "ec",
-    "test": "stylelint \"test/**/*.{css,less,scss}\"",
+    "test": "stylelint \"test/**/*.{scss}\"",
     "pretest": "npm run lint",
     "preversion": "npm test",
     "postversion": "npm publish",
     "postpublish": "git push origin --all && git push origin --tags"
   },
   "devDependencies": {
-    "husky": "8.0.3",
-    "stylelint": "15.10.2"
+    "stylelint": "^15.10.3"
   },
   "keywords": [
     "Kifor Kostiantyn",

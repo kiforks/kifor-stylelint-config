@@ -1,0 +1,64 @@
+{
+  "name": "kifor-stylelint-config",
+  "description": "Stylelint shareable config",
+  "version": "2.0.4",
+  "type": "module",
+  "exports": "./.stylelintrc",
+  "files": [
+    "./.stylelintrc"
+  ],
+  "engines": {
+    "node": "^16.20.0 || ^18.16.0"
+  },
+  "dependencies": {
+    "postcss-less": "6.0.0",
+    "postcss-scss": "4.0.6",
+    "stylelint-codeguide": "0.1.5"
+  },
+  "peerDependencies": {
+    "stylelint": "~15.10"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Kifor Kostiantyn",
+    "email": "kifor.ko@gmail.com"
+  },
+  "homepage": "https://github.com/kiforks/kifor-stylelint-config#readme",
+  "bugs": {
+    "url": "https://github.com/kiforks/kifor-stylelint-config/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiforks/kifor-stylelint-config.git"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "ec",
+    "test": "stylelint \"test/**/*.{css,less,scss}\"",
+    "pretest": "npm run lint",
+    "preversion": "npm test",
+    "postversion": "npm publish",
+    "postpublish": "git push origin --all && git push origin --tags"
+  },
+  "devDependencies": {
+    "husky": "8.0.3",
+    "stylelint": "15.10.2"
+  },
+  "keywords": [
+    "Kifor Kostiantyn",
+    "code",
+    "quality",
+    "style",
+    "lint",
+    "linter",
+    "stylelint",
+    "validate",
+    "code style",
+    "strict",
+    "check",
+    "checker",
+    "verify",
+    "enforce",
+    "hint"
+  ]
+}

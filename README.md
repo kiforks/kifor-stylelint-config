@@ -85,6 +85,29 @@ _.stylelintrc_
 }
 ```
 
+**ATTENTION!** This config is for media [mixins](https://gist.github.com/kifork/0c449aace117fb4db7695aea34b63925) instead of **media queries**:
+```scss
+// BAD
+@media (min-width: 1200px) {
+  width: 300px;
+}
+
+// GOOD
+$breakpoints: (
+  xs: 0, /* <576px */
+  sm: 576px, /* ≥576px */
+  md: 768px, /* ≥768px */
+  lg: 992px, /* ≥992px */
+  xl: 1200px, /* ≥1200px */
+  xxl: 1400px /* ≥1400px */
+) !default;
+
+@include media-min(xs);
+@include media-max(xxl);
+@include media-only(lg);
+@include media-between(sm, md);
+```
+
 ## Usage in VSCode
 
 1. Install stylelint and config

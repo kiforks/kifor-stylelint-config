@@ -23,12 +23,6 @@
 		"type": "git",
 		"url": "git+https://github.com/kiforks/kifor-stylelint-config.git"
 	},
-	"scripts": {
-		"preversion": "npm test",
-		"postversion": "npm publish",
-		"fix": "npx stylelint test/**/*.scss --config .stylelintrc.js --fix",
-		"update": "ncu -u"
-	},
 	"keywords": [
 		"Kifor Kostiantyn",
 		"code",
@@ -62,6 +56,8 @@
 		"eslint-plugin-prettier": "^5.0.1",
 		"gulp": "^4.0.2",
 		"gulp-prettier": "^6.0.0",
+		"husky": "^8.0.3",
+		"lint-staged": "^15.0.2",
 		"prettier": "^3.0.3",
 		"stylelint": "^15.11.0",
 		"stylelint-config-standard": "^34.0.0",
@@ -74,5 +70,24 @@
 	},
 	"peerDependencies": {
 		"stylelint": "~15.11"
+	},
+	"scripts": {
+		"preversion": "npm test",
+		"postversion": "npm publish",
+		"fix": "npx stylelint test/**/*.scss --config .stylelintrc.js --fix",
+		"update": "ncu -u",
+		"build": "gulp build",
+		"watch": "gulp start"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"*.{js,ts,tsx}": [
+			"prettier --check",
+			"eslint"
+		]
 	}
 }

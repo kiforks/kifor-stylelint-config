@@ -72,12 +72,12 @@
 		"stylelint": "~15.11"
 	},
 	"scripts": {
-		"preversion": "npm test",
-		"postversion": "npm publish",
-		"fix": "npx stylelint test/**/*.scss --config .stylelintrc.js --fix",
 		"update": "ncu -u",
 		"build": "gulp build",
-		"watch": "gulp start"
+		"watch": "gulp start",
+		"fix": "npx stylelint test/**/*.scss --config .stylelintrc.js --fix",
+		"lint": "npx eslint 'src/**/*.{ts,html}' --quiet --fix",
+		"format": "npx prettier 'src/**/*.{ts,html}' --write"
 	},
 	"husky": {
 		"hooks": {

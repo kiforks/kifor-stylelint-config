@@ -7,12 +7,11 @@
  */
 module.exports = {
 	trailingComma: 'es5',
-	tabWidth: 4,
+	tabWidth: 2,
 	singleQuote: true,
 	useTabs: true,
 	printWidth: 120,
 	htmlWhitespaceSensitivity: 'ignore',
 	arrowParens: 'avoid',
 	quoteProps: 'preserve',
-	attributeSort: 'ASC',
 };

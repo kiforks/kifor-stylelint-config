@@ -78,9 +78,7 @@ export abstract class MediaRuleHelper {
 		breakpointFrom: FROM,
 		breakpointTo: TO
 	): Readonly<MediaRuleAtOrderBreakpointBetween<FROM, TO>> {
-		return RuleHelper.createInclude(
-			MediaRuleHelper.getBreakpointBetweenPrefixParameter(breakpointFrom, breakpointTo)
-		);
+		return RuleHelper.createInclude(MediaRuleHelper.getBreakpointBetweenPrefixParameter(breakpointFrom, breakpointTo));
 	}
 
 	/**

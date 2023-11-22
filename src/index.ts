@@ -12,5 +12,6 @@ export const CONFIG = {
 				properties: ORDER_PROPERTIES,
 			},
 		],
+		'declaration-block-no-duplicate-properties': true,
 	},
 };

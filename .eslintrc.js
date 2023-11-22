@@ -135,7 +135,7 @@ module.exports = {
 			},
 		},
 		{
-			files: ['*.spec.ts', '*.host.ts', '*.po.ts'],
+			files: ['*.spec.ts', '*.host.ts', '*.po.ts', '*.spec.js'],
 			rules: {
 				/* General */
 				'max-nested-callbacks': 'off', // Avoid this rule in tests because "describe" and "it" are also counted as callbacks

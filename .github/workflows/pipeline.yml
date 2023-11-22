@@ -1,8 +1,13 @@
 name: Continuous Integration
 
-# This workflow is triggered on pushes to the repository.
-on: [push]
-
+# This workflow is triggered on pushes to the repository and pull requests to any branch.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
 jobs:
   build:
     # The type of runner that the job will run on
@@ -13,11 +18,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Use Node.js setup with a specific version, e.g., 16.x
+      # Use Node.js setup with a specific version, e.g., 18.x
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
 
       # Install dependencies
       - name: Install dependencies

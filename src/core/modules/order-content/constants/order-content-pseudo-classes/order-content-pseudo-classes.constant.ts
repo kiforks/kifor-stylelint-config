@@ -1,4 +1,4 @@
-import { OrderContentHelper } from '../helpers/order-content.helper';
+import { OrderContentHelper } from '../../helpers/order-content.helper';
 
 export const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
 	'first',

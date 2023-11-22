@@ -4,6 +4,7 @@
 /public
 /tmp
 /temp
+/coverage
 /out-tsc
 # Only exists if Bazel was run
 /bazel-out

@@ -1,5 +1,5 @@
 // import { MEDIA_ORDER } from '../../../media/constants/media-order.constant';
-import { RuleHelper } from '../../../rule/helpers/rule-order/rule.helper';
+import { RuleHelper } from '../../../../../rule/helpers/rule-order/rule.helper';
 // import { ORDER_CONTENT_MEDIA_QUERY } from './constants/order-content-media-query.constant';
 // import { ORDER_CONTENT_SELECTORS } from './constants/order-content-selectors.constant';
 // import { ORDER_CONTENT_PSEUDO_ELEMENTS } from './constants/order-content-pseudo-elements.constant';

@@ -1,4 +1,4 @@
-import { ORDER_PROPERTIES_CONFIG } from './constants/order-property-config.constant';
+import { ORDER_PROPERTIES_CONFIG } from '../order-property-config/order-property-config.constant';
 
 const { position, blockModel, typography, decoration, animation, miscellanea } = ORDER_PROPERTIES_CONFIG;
 

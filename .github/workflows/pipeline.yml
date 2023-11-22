@@ -1,0 +1,36 @@
+name: Continuous Integration
+
+# This workflow is triggered on pushes to the repository.
+on: [push]
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Use Node.js setup with a specific version, e.g., 16.x
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Check the formatting of code with Prettier
+      - name: Check formatting with Prettier
+        run: npx prettier --check .
+
+      # Run ESLint to check for linting errors
+      - name: Run ESLint
+        run: npx eslint . --ext .js,.jsx,.ts,.tsx
+
+      # Run tests with Jest and collect coverage
+      - name: Run Jest
+        run: npm test -- --coverage

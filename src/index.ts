@@ -1,5 +1,5 @@
-import { ORDER_CONTENT } from './core/modules/order-content/order-content';
-import { ORDER_PROPERTIES } from './core/modules/order-property/order-properties';
+import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
+import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
 
 export const CONFIG = {
 	customSyntax: 'postcss-scss',

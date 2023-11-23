@@ -2,9 +2,7 @@ const { lint } = require('stylelint');
 const config = require('../.stylelintrc.js');
 
 describe('stylelint', () => {
-	/**
-	 * @see https://stylelint.io/user-guide/rules/
-	 */
+	/** @see https://stylelint.io/user-guide/rules/ */
 	describe('stylelint-config-standart', () => {
 		describe('duplicate', () => {
 			/** @see https://stylelint.io/user-guide/rules/list/no-descending-specificity */
@@ -1411,6 +1409,160 @@ describe('stylelint', () => {
 						);
 					});
 				});
+			});
+		});
+	});
+
+	describe('built-in rules', () => {
+		/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
+		describe('at-rule-property-required-list', () => {
+			it('should report an error for custom @font-face that do not match the pattern', async () => {
+				const result = await lint({
+					code: `
+						@font-face {
+						    font-family: 'foo';
+						    src: url('./fonts/foo.woff2') format('woff2');
+						}
+					`,
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const customMediaPatternWarning = warnings.find(warning => warning.rule === 'at-rule-property-required-list');
+
+				expect(customMediaPatternWarning.text).toContain(
+					'Expected property "font-display" for at-rule "font-face" (at-rule-property-required-list'
+				);
+			});
+		});
+
+		/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
+		describe('color-no-hex', () => {
+			it('should report an error when color has hex format', async () => {
+				const result = await lint({
+					code: `
+						a { color: #fff1aa; }
+					`,
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const customMediaPatternWarning = warnings.find(warning => warning.rule === 'color-no-hex');
+
+				expect(customMediaPatternWarning.text).toContain('Unexpected hex color "#fff1aa" (color-no-hex)');
+			});
+		});
+
+		/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
+		describe('declaration-property-unit-allowed-list', () => {
+			it('should allow specific units for font-size', async () => {
+				const result = await lint({
+					code: 'p { font-size: 16px; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const fontSizeWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+
+				expect(fontSizeWarning.text).toContain('Unexpected unit');
+			});
+
+			it('should disallow units not in the allowed list for font-size', async () => {
+				const result = await lint({
+					code: 'p { font-size: 16pt; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const fontSizeWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+
+				expect(fontSizeWarning.text).toContain('Unexpected unit');
+			});
+
+			it('should allow specific units for line-height', async () => {
+				const result = await lint({
+					code: 'p { line-height: 1.5; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const lineHeightWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+
+				expect(lineHeightWarning).toBeUndefined();
+			});
+
+			it('should disallow units not in the allowed list for line-height', async () => {
+				const result = await lint({
+					code: 'p { line-height: 24px; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const lineHeightWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+
+				expect(lineHeightWarning.text).toContain('Unexpected unit');
+			});
+
+			it('should allow specific units for animation-duration', async () => {
+				const result = await lint({
+					code: 'p { animation: myanimation 2s ease; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const animationDurationWarning = warnings.find(
+					warning => warning.rule === 'declaration-property-unit-allowed-list'
+				);
+
+				expect(animationDurationWarning.text).toContain('Unexpected unit');
+			});
+
+			it('should disallow units not in the allowed list for animation-duration', async () => {
+				const result = await lint({
+					code: 'p { animation: myanimation 2ms ease; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const animationDurationWarning = warnings.find(
+					warning => warning.rule === 'declaration-property-unit-allowed-list'
+				);
+
+				expect(animationDurationWarning).toBeFalsy();
+			});
+
+			it('should allow specific units for transition', async () => {
+				const result = await lint({
+					code: 'p { transition: opacity 0.3s; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const transitionWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+
+				expect(transitionWarning.text).toContain('Unexpected unit');
+			});
+
+			it('should disallow units not in the allowed list for transition', async () => {
+				const result = await lint({
+					code: 'p { transition: opacity 300ms; }',
+					config,
+				});
+
+				const { warnings } = result.results[0];
+
+				const transitionWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+
+				expect(transitionWarning).toBeFalsy();
 			});
 		});
 	});

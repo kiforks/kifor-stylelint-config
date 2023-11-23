@@ -13,5 +13,8 @@ export const CONFIG = {
 			},
 		],
 		'declaration-block-no-duplicate-properties': true,
+		'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['ng-deep'] }],
+		'selector-not-notation': 'simple',
+		'declaration-block-no-redundant-longhand-properties': false,
 	},
 };

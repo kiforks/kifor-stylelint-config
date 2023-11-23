@@ -389,5 +389,1029 @@ describe('stylelint', () => {
 				});
 			});
 		});
+
+		describe('missing', () => {
+			describe('font-family-no-missing-generic-family-keyword', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/font-family-no-missing-generic-family-keyword */
+				it('should report an error for font-family without a generic family keyword', async () => {
+					const result = await lint({
+						code: `
+							.example {
+							font-family: 'Helvetica';
+							}
+				        `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const missingGenericFamilyKeywordWarning = warnings.find(
+						warning => warning.rule === 'font-family-no-missing-generic-family-keyword'
+					);
+
+					expect(missingGenericFamilyKeywordWarning.text).toContain(
+						'Unexpected missing generic font family (font-family-no-missing-generic-family-keyword)'
+					);
+				});
+			});
+		});
+
+		describe('non-standard', () => {
+			/** @see https://stylelint.io/user-guide/rules/list/function-linear-gradient-no-nonstandard-direction */
+			describe('function-linear-gradient-no-nonstandard-direction', () => {
+				it('should report an error for linear-gradient with non-standard direction syntax', async () => {
+					const result = await lint({
+						code: `
+							.example {
+								background-image: linear-gradient(45, blue, red);
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const nonStandardDirectionWarning = warnings.find(
+						warning => warning.rule === 'function-linear-gradient-no-nonstandard-direction'
+					);
+
+					expect(nonStandardDirectionWarning.text).toContain(
+						'Unexpected nonstandard direction (function-linear-gradient-no-nonstandard-direction)'
+					);
+				});
+			});
+		});
+
+		describe('overrides', () => {
+			/** @see https://stylelint.io/user-guide/rules/list/declaration-block-no-shorthand-property-overrides */
+			describe('declaration-block-no-shorthand-property-overrides', () => {
+				it('should report an error for shorthand properties that override related longhand properties', async () => {
+					const result = await lint({
+						code: `
+							.example {
+								padding-left: 10px;
+								padding: 20px;
+							}
+				        `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const shorthandPropertyOverrideWarning = warnings.find(
+						warning => warning.rule === 'declaration-block-no-shorthand-property-overrides'
+					);
+
+					expect(shorthandPropertyOverrideWarning.text).toContain(
+						'Unexpected shorthand "padding" after "padding-left" (declaration-block-no-shorthand-property-overrides)'
+					);
+				});
+			});
+		});
+
+		describe('unmatchable', () => {
+			/** @see https://stylelint.io/user-guide/rules/list/selector-anb-no-unmatchable */
+			describe('selector-anb-no-unmatchable', () => {
+				it('should report an error for :nth-child or :nth-last-child selectors with an+b values that are unmatchable', async () => {
+					const result = await lint({
+						code: `
+							a:nth-of-type(0n+0) {}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unmatchableSelectorWarning = warnings.find(warning => warning.rule === 'selector-anb-no-unmatchable');
+
+					expect(unmatchableSelectorWarning.text).toContain(
+						'Unexpected unmatchable An+B selector ":nth-of-type" (selector-anb-no-unmatchable'
+					);
+				});
+			});
+		});
+
+		describe('unknown', () => {
+			/** @see https://stylelint.io/user-guide/rules/list/at-rule-no-unknown */
+			describe('at-rule-no-unknown', () => {
+				it('should report an error for unknown at-rules', async () => {
+					const result = await lint({
+						code: `
+							@unknown {
+							.example { display: block; }
+							}
+				        `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownAtRuleWarning = warnings.find(warning => warning.rule === 'at-rule-no-unknown');
+
+					expect(unknownAtRuleWarning.text).toContain('Unexpected unknown at-rule "@unknown" (at-rule-no-unknown)');
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/annotation-no-unknown */
+			describe('annotation-no-unknown', () => {
+				it('should report an error for unknown annotations', async () => {
+					const result = await lint({
+						code: `
+							a {
+								color: green !imprtant;
+							}
+				        `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownAnnotationWarning = warnings.find(warning => warning.rule === 'annotation-no-unknown');
+
+					expect(unknownAnnotationWarning.text).toContain(
+						'Unexpected unknown annotation "!imprtant" (annotation-no-unknown)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/function-no-unknown */
+			describe('function-no-unknown', () => {
+				it('should report an error for unknown functions', async () => {
+					const result = await lint({
+						code: `
+							.example {
+							color: unknownFunction(blue);
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownFunctionWarning = warnings.find(warning => warning.rule === 'function-no-unknown');
+
+					expect(unknownFunctionWarning.text).toContain(
+						'Unexpected unknown function "unknownFunction" (function-no-unknown)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-unknown */
+			describe('media-feature-name-no-unknown', () => {
+				it('should report an error for unknown media feature names', async () => {
+					const result = await lint({
+						code: `
+							@media screen and (unknown-feature: 1024px) {
+								.example { display: block; }
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownMediaFeatureNameWarning = warnings.find(
+						warning => warning.rule === 'media-feature-name-no-unknown'
+					);
+
+					expect(unknownMediaFeatureNameWarning.text).toContain(
+						'Unexpected unknown media feature name "unknown-feature" (media-feature-name-no-unknown)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/property-no-unknown */
+			describe('property-no-unknown', () => {
+				it('should report an error for unknown properties', async () => {
+					const result = await lint({
+						code: `
+							.example {
+								unknown-property: 1px;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownPropertyWarning = warnings.find(warning => warning.rule === 'property-no-unknown');
+
+					expect(unknownPropertyWarning.text).toContain(
+						'Unexpected unknown property "unknown-property" (property-no-unknown)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/selector-pseudo-class-no-unknown */
+			describe('selector-pseudo-class-no-unknown', () => {
+				it('should report an error for unknown pseudo-class selectors', async () => {
+					const result = await lint({
+						code: `
+							.example:unknown-pseudo-class {
+								display: block;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownPseudoClassSelectorWarning = warnings.find(
+						warning => warning.rule === 'selector-pseudo-class-no-unknown'
+					);
+
+					expect(unknownPseudoClassSelectorWarning.text).toContain(
+						'Unexpected unknown pseudo-class selector ":unknown-pseudo-class" (selector-pseudo-class-no-unknown)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/selector-pseudo-element-no-unknown */
+			describe('selector-pseudo-element-no-unknown', () => {
+				it('should report an error for unknown pseudo-element selectors', async () => {
+					const result = await lint({
+						code: `
+							.example::unknown-pseudo-element {
+								display: block;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownPseudoElementSelectorWarning = warnings.find(
+						warning => warning.rule === 'selector-pseudo-element-no-unknown'
+					);
+
+					expect(unknownPseudoElementSelectorWarning.text).toContain(
+						'Unexpected unknown pseudo-element selector "::unknown-pseudo-element" (selector-pseudo-element-no-unknown)'
+					);
+				});
+
+				it('should not report an error for "ng-deep" pseudo-element', async () => {
+					const result = await lint({
+						code: `
+							.example::ng-deep {
+								display: block;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownPseudoElementSelectorWarning = warnings.find(
+						warning => warning.rule === 'selector-pseudo-element-no-unknown'
+					);
+
+					expect(unknownPseudoElementSelectorWarning).toBeFalsy();
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/selector-type-no-unknown */
+			describe('selector-type-no-unknown', () => {
+				it('should report an error for unknown type selectors', async () => {
+					const result = await lint({
+						code: `
+							unknownelement {
+								display: block;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownTypeSelectorWarning = warnings.find(warning => warning.rule === 'selector-type-no-unknown');
+
+					expect(unknownTypeSelectorWarning.text).toContain(
+						'Unexpected unknown type selector "unknownelement" (selector-type-no-unknown)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/list/unit-no-unknown */
+			describe('unit-no-unknown', () => {
+				it('should report an error for unknown units', async () => {
+					const result = await lint({
+						code: `
+							.example {
+								width: 100unknowns;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const unknownUnitWarning = warnings.find(warning => warning.rule === 'unit-no-unknown');
+
+					expect(unknownUnitWarning.text).toContain('Unexpected unknown unit "unknowns" (unit-no-unknown)');
+				});
+			});
+		});
+
+		describe('allowed, disallowed & required', () => {
+			describe('at-rule', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/at-rule-no-vendor-prefix */
+				describe('at-rule-no-vendor-prefix', () => {
+					it('should report an error for vendor prefixes in at-rules', async () => {
+						const result = await lint({
+							code: `
+								@-webkit-keyframes slidein {
+									from { top: 0; }
+									to { top: 100px; }
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const atRuleNoVendorPrefixWarning = warnings.find(warning => warning.rule === 'at-rule-no-vendor-prefix');
+
+						expect(atRuleNoVendorPrefixWarning.text).toContain(
+							'Unexpected vendor-prefixed at-rule "@-webkit-keyframes" (at-rule-no-vendor-prefix)'
+						);
+					});
+				});
+			});
+
+			describe('length', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/length-zero-no-unit */
+				describe('length-zero-no-unit', () => {
+					it('should report an error for zero lengths with units', async () => {
+						const result = await lint({
+							code: `
+								.example {
+									margin: 0px;
+									padding: 0em;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const lengthZeroNoUnitWarning = warnings.find(warning => warning.rule === 'length-zero-no-unit');
+
+						expect(lengthZeroNoUnitWarning.text).toContain('Unexpected unit (length-zero-no-unit)');
+					});
+				});
+			});
+
+			describe('media feature', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-vendor-prefix */
+				describe('media-feature-name-no-vendor-prefix', () => {
+					it('should report an error for vendor prefixes in media feature names', async () => {
+						const result = await lint({
+							code: `
+							@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+								.example { color: black; }
+							}
+						`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const mediaFeatureNameNoVendorPrefixWarning = warnings.find(
+							warning => warning.rule === 'media-feature-name-no-vendor-prefix'
+						);
+
+						expect(mediaFeatureNameNoVendorPrefixWarning.text).toContain(
+							'Unexpected vendor-prefix (media-feature-name-no-vendor-prefix)'
+						);
+					});
+				});
+			});
+
+			describe('property', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/property-no-vendor-prefix */
+				describe('property-no-vendor-prefix', () => {
+					it('should report an error for vendor prefixes in property names', async () => {
+						const result = await lint({
+							code: `
+								.example {
+									-webkit-transition: all 4s ease;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const propertyNoVendorPrefixWarning = warnings.find(
+							warning => warning.rule === 'property-no-vendor-prefix'
+						);
+
+						expect(propertyNoVendorPrefixWarning.text).toContain(
+							'Unexpected vendor-prefix "-webkit-transition" (property-no-vendor-prefix)'
+						);
+					});
+				});
+			});
+
+			describe('selector', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/selector-no-vendor-prefix */
+				describe('selector-no-vendor-prefix', () => {
+					it('should report an error for vendor prefixes in selector names', async () => {
+						const result = await lint({
+							code: `
+								::-webkit-input-placeholder {
+									color: grey;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const selectorNoVendorPrefixWarning = warnings.find(
+							warning => warning.rule === 'selector-no-vendor-prefix'
+						);
+
+						expect(selectorNoVendorPrefixWarning.text).toContain(
+							'Unexpected vendor-prefix "::-webkit-input-placeholder" (selector-no-vendor-prefix)'
+						);
+					});
+				});
+			});
+
+			describe('value', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/value-no-vendor-prefix */
+				describe('value-no-vendor-prefix', () => {
+					it('should report an error for vendor prefixes in values', async () => {
+						const result = await lint({
+							code: `
+								a { max-width: -moz-max-content; }
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const valueNoVendorPrefixWarning = warnings.find(warning => warning.rule === 'value-no-vendor-prefix');
+
+						expect(valueNoVendorPrefixWarning.text).toContain(
+							'Unexpected vendor-prefix "-moz-max-content" (value-no-vendor-prefix)'
+						);
+					});
+				});
+			});
+
+			describe('case', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/function-name-case */
+				describe('function-name-case', () => {
+					it('should report an error for function names that are not in lowercase', async () => {
+						const result = await lint({
+							code: `
+								.example {
+									color: RGB(255, 255, 255);
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const functionNameCaseWarning = warnings.find(warning => warning.rule === 'function-name-case');
+
+						expect(functionNameCaseWarning.text).toContain('Expected "RGB" to be "rgb" (function-name-case)');
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/selector-type-case */
+				describe('selector-type-case', () => {
+					it('should report an error for type selectors that are not in lowercase', async () => {
+						const result = await lint({
+							code: `
+								LI {
+									display: block;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const selectorTypeCaseWarning = warnings.find(warning => warning.rule === 'selector-type-case');
+
+						expect(selectorTypeCaseWarning.text).toContain('Expected "LI" to be "li" (selector-type-case)');
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/value-keyword-case */
+				describe('value-keyword-case', () => {
+					it('should report an error for keyword values that are not in lowercase', async () => {
+						const result = await lint({
+							code: `
+								.example {
+									display: BLOCK;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const valueKeywordCaseWarning = warnings.find(warning => warning.rule === 'value-keyword-case');
+
+						expect(valueKeywordCaseWarning.text).toContain('Expected "BLOCK" to be "block" (value-keyword-case)');
+					});
+				});
+			});
+
+			describe('empty lines', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/at-rule-empty-line-before */
+				describe('at-rule-empty-line-before', () => {
+					it('should report an error if there is no empty line before at-rules', async () => {
+						const result = await lint({
+							code: `
+								.example { color: pink; }
+									@media (max-width: 600px) { .example { color: red; } 
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const atRuleEmptyLineBeforeWarning = warnings.find(warning => warning.rule === 'at-rule-empty-line-before');
+
+						expect(atRuleEmptyLineBeforeWarning.text).toContain(
+							'Expected empty line before at-rule (at-rule-empty-line-before)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/comment-empty-line-before */
+				describe('comment-empty-line-before', () => {
+					it('should report an error if there is no empty line before comments', async () => {
+						const result = await lint({
+							code: `
+								.example { color: pink; }
+								/* This is a comment without an empty line before */
+								.another-example { color: red; }
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const commentEmptyLineBeforeWarning = warnings.find(
+							warning => warning.rule === 'comment-empty-line-before'
+						);
+
+						expect(commentEmptyLineBeforeWarning.text).toContain(
+							'Expected empty line before comment (comment-empty-line-before)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/custom-property-empty-line-before */
+				describe('custom-property-empty-line-before', () => {
+					it('should report an error if there is no empty line before custom properties', async () => {
+						const result = await lint({
+							code: `
+								.example {
+									color: pink;
+									--custom-property: value;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const customPropertyEmptyLineBeforeWarning = warnings.find(
+							warning => warning.rule === 'custom-property-empty-line-before'
+						);
+
+						expect(customPropertyEmptyLineBeforeWarning.text).toContain(
+							'Expected empty line before custom property (custom-property-empty-line-before)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/rule-empty-line-before */
+				describe('rule-empty-line-before', () => {
+					it('should report an error if there is no empty line before rules', async () => {
+						const result = await lint({
+							code: `
+								a {
+									p {
+										margin: 0;
+									}
+								}
+								b {
+									p {
+										margin: 0;
+									}
+								}`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const ruleEmptyLineBeforeWarning = warnings.find(warning => warning.rule === 'rule-empty-line-before');
+
+						expect(ruleEmptyLineBeforeWarning.text).toContain(
+							'Expected empty line before rule (rule-empty-line-before)'
+						);
+					});
+				});
+			});
+
+			describe('max & min', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/declaration-block-single-line-max-declarations */
+				describe('declaration-block-single-line-max-declarations', () => {
+					it('should report an error if there are too many declarations in a single line', async () => {
+						const result = await lint({
+							code: `
+								.example { color: pink; background: white; border: 1px solid black; }
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const singleLineMaxDeclarationsWarning = warnings.find(
+							warning => warning.rule === 'declaration-block-single-line-max-declarations'
+						);
+
+						expect(singleLineMaxDeclarationsWarning.text).toContain(
+							'Expected no more than 1 declaration (declaration-block-single-line-max-declarations)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/number-max-precision */
+				describe('number-max-precision', () => {
+					it('should report an error for numbers with too many decimal places', async () => {
+						const result = await lint({
+							code: `
+								a {
+									top: 3.245634px;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const numberMaxPrecisionWarning = warnings.find(warning => warning.rule === 'number-max-precision');
+
+						expect(numberMaxPrecisionWarning.text).toContain(
+							'Expected "3.245634" to be "3.2456" (number-max-precision)'
+						);
+					});
+				});
+			});
+
+			describe('notation', () => {
+				/** @see https://stylelint.io/user-guide/rules/list/alpha-value-notation */
+				describe('alpha-value-notation', () => {
+					it('should report an error for incorrect alpha values', async () => {
+						const result = await lint({
+							code: `
+								.example {
+									background: rgba(255, 0, 0, .5);
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const alphaValueNotationWarning = warnings.find(warning => warning.rule === 'alpha-value-notation');
+
+						expect(alphaValueNotationWarning.text).toContain('Expected ".5" to be "50%" (alpha-value-notation)');
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/color-function-notation */
+				describe('color-function-notation', () => {
+					it('should report an error for incorrect color function notation', async () => {
+						const result = await lint({
+							code: `
+								a { color: rgba(12, 122, 231, 0.2) }
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const colorFunctionNotationWarning = warnings.find(warning => warning.rule === 'color-function-notation');
+
+						expect(colorFunctionNotationWarning.text).toContain(
+							'Expected modern color-function notation (color-function-notation)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/color-hex-length */
+				describe('color-hex-length', () => {
+					it('should report an error for short hexadecimal color codes', async () => {
+						const result = await lint({
+							code: `
+								.example {
+									color: #ffffff;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const colorHexLengthWarning = warnings.find(warning => warning.rule === 'color-hex-length');
+
+						expect(colorHexLengthWarning.text).toContain('Expected "#ffffff" to be "#fff" (color-hex-length)');
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/hue-degree-notation */
+				describe('hue-degree-notation', () => {
+					it('should report an error for incorrect hue degree notation', async () => {
+						const result = await lint({
+							code: `
+								a { color: hsl(198 28% 50%) }
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const hueDegreeNotationWarning = warnings.find(warning => warning.rule === 'hue-degree-notation');
+
+						expect(hueDegreeNotationWarning.text).toContain('Expected "198" to be "198deg" (hue-degree-notation)');
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/keyframe-selector-notation */
+				describe('keyframe-selector-notation', () => {
+					it('should report an error for incorrect keyframe selector notation', async () => {
+						const result = await lint({
+							code: `
+							@keyframes slidein {
+								from {}
+								0% {}
+							}
+						`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const keyframeSelectorNotationWarning = warnings.find(
+							warning => warning.rule === 'keyframe-selector-notation'
+						);
+
+						expect(keyframeSelectorNotationWarning.text).toContain(
+							'Expected "from" to be "0%" (keyframe-selector-notation)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/media-feature-range-notation */
+				describe('media-feature-range-notation', () => {
+					it('should report an error for incorrect media feature range notation', async () => {
+						const result = await lint({
+							code: '@media (min-width: 1px) and (max-width: 2px) {}',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const mediaFeatureRangeNotationWarning = warnings.find(
+							warning => warning.rule === 'media-feature-range-notation'
+						);
+
+						expect(mediaFeatureRangeNotationWarning.text).toContain(
+							'Expected "context" media feature range notation (media-feature-range-notation)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/list/selector-not-notation */
+				describe('selector-not-notation', () => {
+					it('should report an error for selectors with incorrect notation', async () => {
+						const result = await lint({
+							code: `
+								:not(a, div) {}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+						const selectorNotationWarning = warnings.find(warning => warning.rule === 'selector-not-notation');
+
+						expect(selectorNotationWarning.text).toContain(
+							'Expected simple :not() pseudo-class notation (selector-not-notation)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/selector-pseudo-element-colon-notation */
+				describe('selector-pseudo-element-colon-notation', () => {
+					it('should report an error for pseudo-elements with double colons', async () => {
+						const result = await lint({
+							code: 'a:before { color: pink; }',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const pseudoElementColonWarning = warnings.find(
+							warning => warning.rule === 'selector-pseudo-element-colon-notation'
+						);
+
+						expect(pseudoElementColonWarning.text).toContain(
+							'Expected double colon pseudo-element notation (selector-pseudo-element-colon-notation)'
+						);
+					});
+				});
+			});
+
+			describe('pattern', () => {
+				/** @see https://stylelint.io/user-guide/rules/custom-media-pattern */
+				describe('custom-media-pattern', () => {
+					it('should report an error for custom media query names that do not match the pattern', async () => {
+						const result = await lint({
+							code: `
+								@custom-media --small-viewport (max-width: 30em);
+								@custom-media --LargeViewport (min-width: 60em);
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const customMediaPatternWarning = warnings.find(warning => warning.rule === 'custom-media-pattern');
+
+						expect(customMediaPatternWarning.text).toContain(
+							'Expected custom media query name "--LargeViewport" to be kebab-case'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/custom-property-pattern */
+				describe('custom-property-pattern', () => {
+					it('should report an error for custom properties with invalid names', async () => {
+						const result = await lint({
+							code: ':root { --booBar: 0; }',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const customPropertyPatternWarning = warnings.find(warning => warning.rule === 'custom-property-pattern');
+
+						expect(customPropertyPatternWarning.text).toContain(
+							'Expected custom property name "--booBar" to be kebab-cas'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/keyframes-name-pattern */
+				describe('keyframes-name-pattern', () => {
+					it('should report an error for keyframes with invalid names', async () => {
+						const result = await lint({
+							code: '@keyframes FOO-bar {}',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const keyframesNamePatternWarning = warnings.find(warning => warning.rule === 'keyframes-name-pattern');
+
+						expect(keyframesNamePatternWarning.text).toContain('Expected keyframe name "FOO-bar" to be kebab-case');
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/selector-class-pattern */
+				describe('selector-class-pattern', () => {
+					it('should report an error for selectors with invalid class names', async () => {
+						const result = await lint({
+							code: '.foo-BAR {}',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const selectorClassPatternWarning = warnings.find(warning => warning.rule === 'selector-class-pattern');
+
+						expect(selectorClassPatternWarning.text).toContain('Expected class selector ".foo-BAR" to be kebab-case');
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/selector-id-pattern */
+				describe('selector-id-pattern', () => {
+					it('should report an error for selectors with invalid ID names', async () => {
+						const result = await lint({
+							code: '#foo-BAR {}',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const selectorIdPatternWarning = warnings.find(warning => warning.rule === 'selector-id-pattern');
+
+						expect(selectorIdPatternWarning.text).toContain('Expected id selector "#foo-BAR" to be kebab-case');
+					});
+				});
+			});
+
+			describe('quotes', () => {
+				/** @see https://stylelint.io/user-guide/rules/font-family-name-quotes */
+				describe('font-family-name-quotes', () => {
+					it('should report an error for font family names without quotes', async () => {
+						const result = await lint({
+							code: 'a { font-family: Times New Roman, Times, serif; }',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const fontFamilyNameQuotesWarning = warnings.find(warning => warning.rule === 'font-family-name-quotes');
+
+						expect(fontFamilyNameQuotesWarning.text).toContain(
+							'Expected quotes around "Times New Roman" (font-family-name-quotes)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/function-url-quotes */
+				describe('function-url-quotes', () => {
+					it('should report an error for unquoted URL in a function', async () => {
+						const result = await lint({
+							code: "@font-face { font-family: 'foo'; src: url(foo.ttf); }",
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const functionUrlQuotesWarning = warnings.find(warning => warning.rule === 'function-url-quotes');
+
+						expect(functionUrlQuotesWarning.text).toContain(
+							'Expected quotes around "url" function argument (function-url-quotes)'
+						);
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/selector-attribute-quotes */
+				describe('selector-attribute-quotes', () => {
+					it('should report an error for unquoted attribute value in a selector', async () => {
+						const result = await lint({
+							code: '[title=flower] {}',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const attributeQuotesWarning = warnings.find(warning => warning.rule === 'selector-attribute-quotes');
+
+						expect(attributeQuotesWarning.text).toContain(
+							'Expected quotes around "flower" (selector-attribute-quotes)'
+						);
+					});
+				});
+			});
+
+			describe('redundant', () => {
+				/** @see https://stylelint.io/user-guide/rules/declaration-block-no-redundant-longhand-properties */
+				describe('declaration-block-no-redundant-longhand-properties', () => {
+					it('should report an error for redundant longhand properties', async () => {
+						const result = await lint({
+							code: `
+								a {
+									margin-top: 1px;
+									margin-right: 2px;
+									margin-bottom: 3px;
+									margin-left: 4px;
+								}
+							`,
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const redundantLonghandPropertiesWarning = warnings.find(
+							warning => warning.rule === 'declaration-block-no-redundant-longhand-properties'
+						);
+
+						expect(redundantLonghandPropertiesWarning).toBeFalsy();
+					});
+				});
+
+				/** @see https://stylelint.io/user-guide/rules/shorthand-property-no-redundant-values */
+				describe('shorthand-property-no-redundant-values', () => {
+					it('should report an error for shorthand properties with redundant values', async () => {
+						const result = await lint({
+							code: 'a { margin: 1px 1px; }',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const redundantShorthandValuesWarning = warnings.find(
+							warning => warning.rule === 'shorthand-property-no-redundant-values'
+						);
+
+						expect(redundantShorthandValuesWarning.text).toContain(
+							'Expected "1px 1px" to be "1px" (shorthand-property-no-redundant-values)'
+						);
+					});
+				});
+			});
+
+			describe('whitespace inside', () => {
+				/** @see https://stylelint.io/user-guide/rules/comment-whitespace-inside */
+				describe('comment-whitespace-inside', () => {
+					it('should report an error for comments with extra whitespace inside', async () => {
+						const result = await lint({
+							code: '/*comment*/',
+							config,
+						});
+
+						const { warnings } = result.results[0];
+
+						const commentWhitespaceInsideWarning = warnings.find(
+							warning => warning.rule === 'comment-whitespace-inside'
+						);
+
+						expect(commentWhitespaceInsideWarning.text).toContain(
+							'Expected whitespace after "/*" (comment-whitespace-inside)'
+						);
+					});
+				});
+			});
+		});
 	});
 });

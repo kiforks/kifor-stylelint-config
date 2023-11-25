@@ -1064,7 +1064,7 @@ describe('stylelint', () => {
 					it('should report an error for incorrect color function notation', async () => {
 						const result = await lint({
 							code: `
-								a { color: rgba(12, 122, 231, 0.2) }
+								a { color: rgba(12 122 231 / 0.2) }
 							`,
 							config,
 						});
@@ -1073,7 +1073,7 @@ describe('stylelint', () => {
 						const colorFunctionNotationWarning = warnings.find(warning => warning.rule === 'color-function-notation');
 
 						expect(colorFunctionNotationWarning.text).toContain(
-							'Expected modern color-function notation (color-function-notation)'
+							'Expected legacy color-function notation (color-function-notation)'
 						);
 					});
 				});
@@ -1414,155 +1414,279 @@ describe('stylelint', () => {
 	});
 
 	describe('built-in rules', () => {
-		/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
-		describe('at-rule-property-required-list', () => {
-			it('should report an error for custom @font-face that do not match the pattern', async () => {
-				const result = await lint({
-					code: `
-						@font-face {
-						    font-family: 'foo';
-						    src: url('./fonts/foo.woff2') format('woff2');
-						}
-					`,
-					config,
+		describe('at-rule', () => {
+			/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
+			describe('at-rule-property-required-list', () => {
+				it('should report an error for @font-face without font-display', async () => {
+					const result = await lint({
+						code: `
+							@font-face {
+							    font-family: 'foo';
+							    src: url('./fonts/foo.woff2') format('woff2');
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+
+					const customMediaPatternWarning = warnings.find(warning => warning.rule === 'at-rule-property-required-list');
+
+					expect(customMediaPatternWarning.text).toContain(
+						'Expected property "font-display" for at-rule "font-face" (at-rule-property-required-list'
+					);
 				});
-
-				const { warnings } = result.results[0];
-
-				const customMediaPatternWarning = warnings.find(warning => warning.rule === 'at-rule-property-required-list');
-
-				expect(customMediaPatternWarning.text).toContain(
-					'Expected property "font-display" for at-rule "font-face" (at-rule-property-required-list'
-				);
 			});
 		});
 
-		/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
-		describe('color-no-hex', () => {
-			it('should report an error when color has hex format', async () => {
-				const result = await lint({
-					code: `
-						a { color: #fff1aa; }
-					`,
-					config,
+		describe('color', () => {
+			/** @see https://stylelint.io/user-guide/rules/color-no-hex/ */
+			describe('color-no-hex', () => {
+				it('should report an error for hex color usage', async () => {
+					const result = await lint({
+						code: `
+							a { color: #fff1aa; }
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+
+					const customMediaPatternWarning = warnings.find(warning => warning.rule === 'color-no-hex');
+
+					expect(customMediaPatternWarning.text).toContain('Unexpected hex color "#fff1aa" (color-no-hex)');
 				});
-
-				const { warnings } = result.results[0];
-
-				const customMediaPatternWarning = warnings.find(warning => warning.rule === 'color-no-hex');
-
-				expect(customMediaPatternWarning.text).toContain('Unexpected hex color "#fff1aa" (color-no-hex)');
 			});
 		});
 
-		/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
-		describe('declaration-property-unit-allowed-list', () => {
-			it('should allow specific units for font-size', async () => {
-				const result = await lint({
-					code: 'p { font-size: 16px; }',
-					config,
+		describe('function', () => {
+			/** @see https://stylelint.io/user-guide/rules/function-disallowed-list/ */
+			describe('function-disallowed-list', () => {
+				it('should report an error for using the rgb function', async () => {
+					const result = await lint({
+						code: `
+							.element {
+							    color: rgb(0, 0, 0);
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+
+					const customMediaPatternWarning = warnings.find(warning => warning.rule === 'function-disallowed-list');
+
+					expect(customMediaPatternWarning.text).toContain('Unexpected function "rgb" (function-disallowed-list)');
 				});
-
-				const { warnings } = result.results[0];
-
-				const fontSizeWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
-
-				expect(fontSizeWarning.text).toContain('Unexpected unit');
 			});
 
-			it('should disallow units not in the allowed list for font-size', async () => {
-				const result = await lint({
-					code: 'p { font-size: 16pt; }',
-					config,
+			/** @see https://stylelint.io/user-guide/rules/function-url-no-scheme-relative/ */
+			describe('function-url-no-scheme-relative', () => {
+				it('should report an error for using scheme-relative URLs', async () => {
+					const result = await lint({
+						code: `
+							a {
+							  background: url("//www.google.com/file.jpg");
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+
+					const customMediaPatternWarning = warnings.find(
+						warning => warning.rule === 'function-url-no-scheme-relative'
+					);
+
+					expect(customMediaPatternWarning.text).toContain(
+						'Unexpected scheme-relative url (function-url-no-scheme-relative)'
+					);
 				});
-
-				const { warnings } = result.results[0];
-
-				const fontSizeWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
-
-				expect(fontSizeWarning.text).toContain('Unexpected unit');
 			});
 
-			it('should allow specific units for line-height', async () => {
-				const result = await lint({
-					code: 'p { line-height: 1.5; }',
-					config,
+			/** @see https://stylelint.io/user-guide/rules/function-url-scheme-disallowed-list/ */
+			describe('function-url-scheme-disallowed-list', () => {
+				it('should report an error for URLs with the "ftp" scheme', async () => {
+					const result = await lint({
+						code: `
+							a { background-image: url("ftp://www.example.com/file.jpg"); }
+						`,
+						config,
+					});
+
+					const ftpWarning = result.results[0].warnings.find(
+						warning => warning.rule === 'function-url-scheme-disallowed-list'
+					);
+					expect(ftpWarning.text).toContain('Unexpected URL scheme "ftp:" (function-url-scheme-disallowed-list)');
 				});
 
-				const { warnings } = result.results[0];
+				it('should report an error for URLs with the "http" scheme', async () => {
+					const result = await lint({
+						code: 'a { background-image: url("http://www.example.com/file.jpg"); }',
+						config,
+					});
 
-				const lineHeightWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+					const httpWarning = result.results[0].warnings.find(
+						warning => warning.rule === 'function-url-scheme-disallowed-list'
+					);
+					expect(httpWarning.text).toContain('Unexpected URL scheme "http:" (function-url-scheme-disallowed-list)');
+				});
 
-				expect(lineHeightWarning).toBeUndefined();
+				it('should report an error for URLs with the "https" scheme', async () => {
+					const result = await lint({
+						code: 'a { background-image: url("https://www.example.com/file.jpg"); }',
+						config,
+					});
+
+					const httpsWarning = result.results[0].warnings.find(
+						warning => warning.rule === 'function-url-scheme-disallowed-list'
+					);
+					expect(httpsWarning.text).toContain('Unexpected URL scheme "https:" (function-url-scheme-disallowed-list)');
+				});
 			});
+		});
 
-			it('should disallow units not in the allowed list for line-height', async () => {
-				const result = await lint({
-					code: 'p { line-height: 24px; }',
-					config,
+		describe('rule', () => {
+			/** @see https://stylelint.io/user-guide/rules/rule-selector-property-disallowed-list */
+			describe('rule-selector-property-disallowed-list', () => {
+				it('should report an error for using the font size for the ".ri-" class', async () => {
+					const result = await lint({
+						code: `
+							.ri-icon {
+							    font-size: 12px;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'rule-selector-property-disallowed-list');
+
+					expect(warning.text).toContain(
+						'Unexpected property "font-size" for selector ".ri-icon" (rule-selector-property-disallowed-list)'
+					);
 				});
 
-				const { warnings } = result.results[0];
+				it('should report an error for using the font size for the "[class*=\'ri-\']" selector', async () => {
+					const result = await lint({
+						code: `
+							[class*='ri-'] {
+							    font-size: 12px;
+							}
+						`,
+						config,
+					});
 
-				const lineHeightWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'rule-selector-property-disallowed-list');
 
-				expect(lineHeightWarning.text).toContain('Unexpected unit');
+					expect(warning.text).toContain(
+						'Unexpected property "font-size" for selector "[class*=\'ri-\']" (rule-selector-property-disallowed-list)'
+					);
+				});
+
+				it('should report an error for using the font size for the "i" tag', async () => {
+					const result = await lint({
+						code: `
+							i {
+							    font-size: 12px;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'rule-selector-property-disallowed-list');
+
+					expect(warning.text).toContain(
+						'Unexpected property "font-size" for selector "i" (rule-selector-property-disallowed-list)'
+					);
+				});
 			});
+		});
 
-			it('should allow specific units for animation-duration', async () => {
-				const result = await lint({
-					code: 'p { animation: myanimation 2s ease; }',
-					config,
+		describe('selector', () => {
+			/** @see https://stylelint.io/user-guide/rules/selector-disallowed-list */
+			describe('selector-disallowed-list', () => {
+				it('should report an error for using the ".container" class', async () => {
+					const result = await lint({
+						code: `
+							.container {
+							    color: red;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-disallowed-list');
+
+					expect(warning.text).toContain('Unexpected selector ".container" (selector-disallowed-list)');
 				});
 
-				const { warnings } = result.results[0];
+				it('should report an error for using the "i" tag', async () => {
+					const result = await lint({
+						code: `
+							i {
+							    color: red;
+							}
+						`,
+						config,
+					});
 
-				const animationDurationWarning = warnings.find(
-					warning => warning.rule === 'declaration-property-unit-allowed-list'
-				);
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-disallowed-list');
 
-				expect(animationDurationWarning.text).toContain('Unexpected unit');
-			});
-
-			it('should disallow units not in the allowed list for animation-duration', async () => {
-				const result = await lint({
-					code: 'p { animation: myanimation 2ms ease; }',
-					config,
+					expect(warning.text).toContain('Unexpected selector "i" (selector-disallowed-list)');
 				});
 
-				const { warnings } = result.results[0];
+				it('should report an error for using the ".g-col" class', async () => {
+					const result = await lint({
+						code: `
+							.g-col-24 {
+							    color: red;
+							}
+						`,
+						config,
+					});
 
-				const animationDurationWarning = warnings.find(
-					warning => warning.rule === 'declaration-property-unit-allowed-list'
-				);
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-disallowed-list');
 
-				expect(animationDurationWarning).toBeFalsy();
-			});
-
-			it('should allow specific units for transition', async () => {
-				const result = await lint({
-					code: 'p { transition: opacity 0.3s; }',
-					config,
+					expect(warning.text).toContain('Unexpected selector ".g-col-24" (selector-disallowed-list)');
 				});
 
-				const { warnings } = result.results[0];
+				it('should report an error for using the ".col" class', async () => {
+					const result = await lint({
+						code: `
+							.col-24 {
+							    color: red;
+							}
+						`,
+						config,
+					});
 
-				const transitionWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-disallowed-list');
 
-				expect(transitionWarning.text).toContain('Unexpected unit');
-			});
-
-			it('should disallow units not in the allowed list for transition', async () => {
-				const result = await lint({
-					code: 'p { transition: opacity 300ms; }',
-					config,
+					expect(warning.text).toContain('Unexpected selector ".col-24" (selector-disallowed-list)');
 				});
 
-				const { warnings } = result.results[0];
+				it('should report an error for using the ".grid" class', async () => {
+					const result = await lint({
+						code: `
+							.grid {
+							    color: red;
+							}
+						`,
+						config,
+					});
 
-				const transitionWarning = warnings.find(warning => warning.rule === 'declaration-property-unit-allowed-list');
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-disallowed-list');
 
-				expect(transitionWarning).toBeFalsy();
+					expect(warning.text).toContain('Unexpected selector ".grid" (selector-disallowed-list)');
+				});
 			});
 		});
 	});

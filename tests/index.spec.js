@@ -1687,6 +1687,353 @@ describe('stylelint', () => {
 
 					expect(warning.text).toContain('Unexpected selector ".grid" (selector-disallowed-list)');
 				});
+
+				it('should report an error for using the "[data-test]" attribute', async () => {
+					const result = await lint({
+						code: `
+							[data-test="test"]{
+							    color: red;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-disallowed-list');
+
+					expect(warning.text).toContain('Unexpected selector "[data-test="test"]" (selector-disallowed-list)');
+				});
+
+				it('should report an error for using the "[data-po]" attribute', async () => {
+					const result = await lint({
+						code: `
+							[data-po="test"]{
+							    color: red;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-disallowed-list');
+
+					expect(warning.text).toContain('Unexpected selector "[data-po="test"]" (selector-disallowed-list)');
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/selector-no-qualifying-type */
+			describe('selector-no-qualifying-type', () => {
+				it('should report an error for using the "input.button" type and class combination', async () => {
+					const result = await lint({
+						code: `
+							input.button {
+								color: blue;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-no-qualifying-type');
+
+					expect(warning.text).toContain(
+						'Unexpected qualifying type selector "input.button" (selector-no-qualifying-type)'
+					);
+				});
+
+				it('should report an error for using the "ul.list" type and class combination', async () => {
+					const result = await lint({
+						code: `
+							input[type='button'] {
+								margin: 0
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-no-qualifying-type');
+
+					expect(warning.text).toContain(
+						'Unexpected qualifying type selector "input[type=\'button\']" (selector-no-qualifying-type)'
+					);
+				});
+			});
+		});
+
+		describe('unknown', () => {
+			/** @see https://stylelint.io/user-guide/rules/at-rule-no-unknown */
+			describe('at-rule-no-unknown', () => {
+				it('should report an error for unknown at-rule', async () => {
+					const result = await lint({
+						code: `
+							@some-mixin {
+							    color: red;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'at-rule-no-unknown');
+
+					expect(warning.text).toContain('Unexpected unknown at-rule "@some-mixin" (at-rule-no-unknown)');
+				});
+			});
+		});
+
+		describe('max & min', () => {
+			/** @see https://stylelint.io/user-guide/rules/max-nesting-depth*/
+			describe('max-nesting-depth', () => {
+				it('should report an error for nesting depth more than 3', async () => {
+					const result = await lint({
+						code: `
+							.a-parent {
+								.a-1 {
+									.a-2 {
+										.a-3 { 
+											.a-4 { 
+												color: red;
+											}
+										}
+									}
+								}
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
+
+					expect(warning.text).toContain('Expected nesting depth to be no more than 3');
+				});
+
+				it('should not report an error for nesting depth 3', async () => {
+					const result = await lint({
+						code: `
+							.a-parent {
+								.a-1 {
+									.a-2 {
+										.a-3 { 
+												color: red;
+										}
+									}
+								}
+							}
+						`,
+						config, // Assuming config is already defined in the scope
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
+
+					expect(warning).toBeFalsy();
+				});
+
+				it('should not report an error for nesting depth more than 3 with "@include"', async () => {
+					const result = await lint({
+						code: `
+							.a-parent {
+								.a-1 {
+									.a-2 {
+										.a-3 { 
+											@include mixin { 
+												color: red;
+											}
+										}
+									}
+								}
+							}
+						`,
+						config, // Assuming config is already defined in the scope
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
+
+					expect(warning).toBeFalsy();
+				});
+
+				it('should not report an error for nesting depth more than 3 with "@media"', async () => {
+					const result = await lint({
+						code: `
+							.a-parent {
+								.a-1 {
+									.a-2 {
+										.a-3 { 
+											@media (min-width: 768px) { 
+												color: red;
+											}
+										}
+									}
+								}
+							}
+						`,
+						config, // Assuming config is already defined in the scope
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
+
+					expect(warning).toBeFalsy();
+				});
+
+				it('should not report an error for nesting depth more than 3 with pseudoclass', async () => {
+					const result = await lint({
+						code: `
+							.a-parent {
+								.a-1 {
+									.a-2 {
+										.a-3 { 
+											&:hover { 
+												color: red;
+											}
+										}
+									}
+								}
+							}
+						`,
+						config, // Assuming config is already defined in the scope
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
+
+					expect(warning).toBeFalsy();
+				});
+
+				it('should not report an error for nesting depth more than 3 with pseudoelement', async () => {
+					const result = await lint({
+						code: `
+							.a-parent {
+								.a-1 {
+									.a-2 {
+										.a-3 { 
+											::before { 
+												color: red;
+											}
+										}
+									}
+								}
+							}
+						`,
+						config, // Assuming config is already defined in the scope
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
+
+					expect(warning).toBeFalsy();
+				});
+
+				it('should not report an error for nesting depth more than 3 with "&" pseudoelement', async () => {
+					const result = await lint({
+						code: `
+							.a-parent {
+								.a-1 {
+									.a-2 {
+										.a-3 { 
+											&::before { 
+												color: red;
+											}
+										}
+									}
+								}
+							}
+						`,
+						config, // Assuming config is already defined in the scope
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
+
+					expect(warning).toBeFalsy();
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/max-nesting-depth*/
+			describe('selector-max-attribute', () => {
+				it('should report an error when more than 1 attribute selectors are used', async () => {
+					const result = await lint({
+						code: `
+							[type="text"][name="message"] {
+								color: red;
+							}
+						`,
+						config, // Assuming config is already defined in the scope
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-max-attribute');
+
+					expect(warning.text).toContain(
+						'Expected "[type="text"][name="message"]" to have no more than 1 attribute selector (selector-max-attribute)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/max-nesting-id*/
+			describe('selector-max-id', () => {
+				it('should report an error when more than 1 attribute selectors are used', async () => {
+					const result = await lint({
+						code: `
+							#selector {
+								#selector-2 {
+									color: red;
+								}
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'selector-max-id');
+
+					expect(warning.text).toContain(
+						'Expected "#selector #selector-2" to have no more than 1 ID selector (selector-max-id)'
+					);
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/time-min-milliseconds*/
+			describe('time-min-milliseconds', () => {
+				it('should report an error when more than 1 attribute selectors are used', async () => {
+					const result = await lint({
+						code: `
+							#selector {
+								animation: 49ms;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'time-min-milliseconds');
+
+					expect(warning.text).toContain('Expected a minimum of 50 milliseconds (time-min-milliseconds)');
+				});
+			});
+		});
+
+		describe('notation', () => {
+			/** @see https://stylelint.io/user-guide/rules/font-weight-notation*/
+			describe('font-weight-notation', () => {
+				it('should report an error when more than 1 attribute selectors are used', async () => {
+					const result = await lint({
+						code: `
+							#selector {
+								font-weight: bold;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'font-weight-notation');
+
+					expect(warning.text).toContain('Expected "bold" to be "700" (font-weight-notation)');
+				});
 			});
 		});
 	});

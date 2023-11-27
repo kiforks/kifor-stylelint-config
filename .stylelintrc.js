@@ -512,6 +512,34 @@ module.exports = {
 			'/^\\.ri-/': ['font-size'],
 			'i': ['font-size'],
 		},
-		'selector-disallowed-list': ['i', '/^\\.container/', '/^\\.g-col/', '/^\\.col/', '/^\\.grid/'],
+		'selector-disallowed-list': [
+			'i',
+			'/^\\.container/',
+			'/^\\.g-col/',
+			'/^\\.col/',
+			'/^\\.grid/',
+			'/\\[data-test.+]/',
+			'/\\[data-po.+]/',
+		],
+		'selector-no-qualifying-type': true,
+		'unit-allowed-list': ['px', 'rem', 'deg', 'fr', '%', 'ms', 'vw', 'vh', 'vmin', 'vmax'],
+		'max-nesting-depth': [
+			3,
+			{
+				'ignore': ['blockless-at-rules', 'pseudo-classes'],
+				'ignoreRules': ['/^&::/', '/^::/'],
+				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+			},
+		],
+		'at-rule-no-unknown': [
+			true,
+			{
+				'ignoreAtRules': ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'],
+			},
+		],
+		'selector-max-attribute': 1,
+		'selector-max-id': 1,
+		'time-min-milliseconds': 50,
+		'font-weight-notation': 'numeric',
 	},
 };

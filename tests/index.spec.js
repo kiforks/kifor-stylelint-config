@@ -1780,6 +1780,25 @@ describe('stylelint', () => {
 					expect(warning.text).toContain('Unexpected unknown at-rule "@some-mixin" (at-rule-no-unknown)');
 				});
 			});
+
+			/** @see https://stylelint.io/user-guide/rules/declaration-property-value-no-unknown */
+			describe('declaration-property-value-no-unknown', () => {
+				it('should report an error for unknown at-rule', async () => {
+					const result = await lint({
+						code: `
+							a { top: red; }
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'declaration-property-value-no-unknown');
+
+					expect(warning.text).toContain(
+						'Unexpected unknown value "red" for property "top" (declaration-property-value-no-unknown)'
+					);
+				});
+			});
 		});
 
 		describe('max & min', () => {

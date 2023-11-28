@@ -541,5 +541,6 @@ module.exports = {
 		'selector-max-id': 1,
 		'time-min-milliseconds': 50,
 		'font-weight-notation': 'numeric',
+		'declaration-property-value-no-unknown': true,
 	},
 };

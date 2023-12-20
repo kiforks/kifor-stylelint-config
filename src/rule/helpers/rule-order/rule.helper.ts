@@ -2,6 +2,16 @@ import { Rule, RuleAt, RuleString } from '../../interfaces/rule.interface';
 
 export abstract class RuleHelper {
 	/**
+	 * Checks if the given object conforms to the RuleAt interface.
+	 * @param obj - The object to be checked.
+	 * @returns true if obj is a RuleAt type, false otherwise.
+	 * @example For isRuleAt({ type: 'at-rule', parameter: 'example' }), returns true.
+	 */
+	public static isRuleAt(obj: unknown): obj is RuleAt {
+		return typeof obj === 'object' && obj !== null && 'type' in obj && 'parameter' in obj;
+	}
+
+	/**
 	 * Creates an at-rule with a given name and parameter.
 	 * @param name - The name of the at-rule (e.g., 'media', 'include', etc.).
 	 * @param parameter - The parameter for the at-rule (e.g., 'screen and (max-width: 768px)', 'mixinName', etc.).

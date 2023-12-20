@@ -1,6 +1,18 @@
 import { RuleHelper } from './rule.helper';
 
 describe('RuleHelper', () => {
+	describe('isRuleAt', () => {
+		it('should return true for valid RuleAt object', () => {
+			const obj = { type: 'at-rule', parameter: 'example' };
+			expect(RuleHelper.isRuleAt(obj)).toBeTruthy();
+		});
+
+		it('should return false for invalid object', () => {
+			const obj = { type: 'rule', value: 'example' };
+			expect(RuleHelper.isRuleAt(obj)).toBeFalsy();
+		});
+	});
+
 	describe('createAtRule', () => {
 		it('should create an at-rule object with the correct name and parameter', () => {
 			const result = RuleHelper.createAtRule('media', 'screen and (max-width: 768px)');

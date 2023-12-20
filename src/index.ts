@@ -6,9 +6,13 @@ import { RULE_NO_UNKNOWN } from './rule/configs/rule-no-unknown/rule-no-unknown.
 import { Config } from 'stylelint';
 
 export const CONFIG: Config = {
+	/**
+	 * Docs:
+	 * @see https://stylelint.io/user-guide/rules
+	 */
+	extends: ['stylelint-config-standard'],
 	customSyntax: 'postcss-scss',
 	ignoreFiles: ['**/*.css'],
-	extends: ['stylelint-config-standard'],
 	plugins: ['stylelint-order'],
 	rules: {
 		/* At-rule */

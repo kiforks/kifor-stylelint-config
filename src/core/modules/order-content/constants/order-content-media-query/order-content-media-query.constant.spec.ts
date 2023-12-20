@@ -29,6 +29,11 @@ describe('ORDER_CONTENT_MEDIA_QUERY', () => {
 			},
 			{
 				'name': 'media',
+				'parameter': '(width)',
+				'type': 'at-rule',
+			},
+			{
+				'name': 'media',
 				'parameter': '(min-width)',
 				'type': 'at-rule',
 			},

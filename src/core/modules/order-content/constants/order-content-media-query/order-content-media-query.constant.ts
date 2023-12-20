@@ -11,6 +11,7 @@ export const ORDER_CONTENT_MEDIA_QUERY = [
 	 * Features related to the device display
 	 */
 	...OrderContentHelper.createMediaFeatures([
+		'width',
 		'min-width',
 		'max-width',
 		'min-width and max-width',

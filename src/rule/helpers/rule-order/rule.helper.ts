@@ -24,11 +24,11 @@ export abstract class RuleHelper {
 					type: 'at-rule',
 					name,
 					parameter,
-			  }
+				}
 			: {
 					type: 'at-rule',
 					name,
-			  };
+				};
 	}
 
 	/**

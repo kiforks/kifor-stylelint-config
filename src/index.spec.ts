@@ -1,8 +1,8 @@
-import { CONFIG } from './index';
+import config from './index';
 
 describe('stylelint main config', () => {
 	it('should have the following value', () => {
-		expect(CONFIG).toEqual({
+		expect(config).toEqual({
 			'customSyntax': 'postcss-scss',
 			'extends': ['stylelint-config-standard'],
 			'ignoreFiles': ['**/*.css'],

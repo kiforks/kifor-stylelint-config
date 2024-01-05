@@ -1,5 +1,7 @@
-const { lint } = require('stylelint');
-const config = require('../.stylelintrc.js');
+import stylelint from 'stylelint';
+import config from '../.stylelintrc.js';
+
+const lint = stylelint.lint;
 
 describe('stylelint', () => {
 	/** @see https://stylelint.io/user-guide/rules/ */
@@ -905,7 +907,7 @@ describe('stylelint', () => {
 						const result = await lint({
 							code: `
 								.example { color: pink; }
-									@media (max-width: 600px) { .example { color: red; } 
+									@media (max-width: 600px) { .example { color: red; }
 								}
 							`,
 							config,
@@ -1810,8 +1812,8 @@ describe('stylelint', () => {
 							.a-parent {
 								.a-1 {
 									.a-2 {
-										.a-3 { 
-											.a-4 { 
+										.a-3 {
+											.a-4 {
 												color: red;
 											}
 										}
@@ -1834,7 +1836,7 @@ describe('stylelint', () => {
 							.a-parent {
 								.a-1 {
 									.a-2 {
-										.a-3 { 
+										.a-3 {
 												color: red;
 										}
 									}
@@ -1856,8 +1858,8 @@ describe('stylelint', () => {
 							.a-parent {
 								.a-1 {
 									.a-2 {
-										.a-3 { 
-											@include mixin { 
+										.a-3 {
+											@include mixin {
 												color: red;
 											}
 										}
@@ -1880,8 +1882,8 @@ describe('stylelint', () => {
 							.a-parent {
 								.a-1 {
 									.a-2 {
-										.a-3 { 
-											@media (min-width: 768px) { 
+										.a-3 {
+											@media (min-width: 768px) {
 												color: red;
 											}
 										}
@@ -1904,8 +1906,8 @@ describe('stylelint', () => {
 							.a-parent {
 								.a-1 {
 									.a-2 {
-										.a-3 { 
-											&:hover { 
+										.a-3 {
+											&:hover {
 												color: red;
 											}
 										}
@@ -1928,8 +1930,8 @@ describe('stylelint', () => {
 							.a-parent {
 								.a-1 {
 									.a-2 {
-										.a-3 { 
-											::before { 
+										.a-3 {
+											::before {
 												color: red;
 											}
 										}
@@ -1952,8 +1954,8 @@ describe('stylelint', () => {
 							.a-parent {
 								.a-1 {
 									.a-2 {
-										.a-3 { 
-											&::before { 
+										.a-3 {
+											&::before {
 												color: red;
 											}
 										}

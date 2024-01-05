@@ -5,7 +5,7 @@ import { RULE_UNIT_ALLOWED_LIST } from './rule/configs/rule-unit-allowed-list/ru
 import { RULE_NO_UNKNOWN } from './rule/configs/rule-no-unknown/rule-no-unknown.config';
 import { Config } from 'stylelint';
 
-export const CONFIG: Config = {
+export default {
 	/**
 	 * Docs:
 	 * @see https://stylelint.io/user-guide/rules
@@ -96,4 +96,4 @@ export const CONFIG: Config = {
 			},
 		],
 	},
-};
+} as Config;

@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	build: {
-		outDir: './',
+		outDir: 'dist', // temporary folder
 		minify: false,
 		lib: {
 			entry: './src/index.ts',

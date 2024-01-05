@@ -58,6 +58,7 @@
 		"@types/stylelint": "^14.0.0",
 		"@typescript-eslint/eslint-plugin": "^6.15.0",
 		"@typescript-eslint/parser": "^6.15.0",
+		"chokidar-cli": "^3.0.0",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-jasmine": "^4.1.3",
@@ -77,18 +78,16 @@
 		"ts-jest": "^29.1.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.3.3",
-		"vite": "^5.0.11"
-	},
-	"dependencies": {
+		"vite": "^5.0.11",
 		"postcss-scss": "^4.0.9"
 	},
 	"peerDependencies": {
-		"stylelint": "~15.11"
+		"stylelint": "~16.0.0"
 	},
 	"scripts": {
 		"update": "ncu -u && npm install",
-		"build": "vite build && prettier --write .stylelintrc.js",
-		"watch": "gulp start",
+		"build": "vite build && mv dist/.stylelintrc.js . && prettier --write .stylelintrc.js && rm -rf dist",
+		"watch": "chokidar 'src/**/*.ts' --ignore '**/*.spec.ts' -c 'npm run build'",
 		"fix": "npx stylelint test/**/*.scss --config .stylelintrc.js --fix",
 		"lint": "npx eslint 'src/**/*.{ts,html,js}' --quiet --fix",
 		"format": "npx prettier 'src/**/*.{ts,html,js}' --write",

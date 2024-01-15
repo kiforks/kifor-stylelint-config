@@ -96,7 +96,7 @@
 		"format": "npx prettier '**/*.{ts,html,js,json}' --write",
 		"format:check": "npx prettier '**/*.{ts,html,js,json}' --check",
 		"prepare": "husky install",
-		"release": "np",
+		"release": "npx semantic-release",
 		"prerelease": "npm run lint:check && npm run format:check && npm run test",
 		"test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules --no-warnings\" npx jest"
 	},

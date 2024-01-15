@@ -1,0 +1,27 @@
+{
+	"compileOnSave": false,
+	"compilerOptions": {
+		"baseUrl": "./src",
+		"outDir": "./temp",
+		"strict": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"sourceMap": true,
+		"declaration": false,
+		"downlevelIteration": true,
+		"experimentalDecorators": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"module": "ESNext",
+		"useDefineForClassFields": false,
+		"moduleResolution": "node",
+		"importHelpers": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"target": "ESNext",
+		"lib": ["ESNext", "dom"],
+		"skipLibCheck": true
+	}
+}

@@ -30,8 +30,30 @@ jobs:
       - name: Run tests with coverage
         run: npm test -- --coverage
 
-  release:
+  check-version:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Check if version has been incremented
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          VERSION_IN_PACKAGE_JSON=$(node -p "require('./package.json').version")
+          LATEST_PUBLISHED_VERSION=$(npm view $PACKAGE_NAME version || echo "0.0.0")
+          
+          if [ "$VERSION_IN_PACKAGE_JSON" = "$LATEST_PUBLISHED_VERSION" ]; then
+            echo "Version in package.json ($VERSION_IN_PACKAGE_JSON) has not been incremented."
+            exit 1
+          else
+            echo "Version in package.json is incremented to $VERSION_IN_PACKAGE_JSON."
+          fi
+
+  publish:
+    needs: check-version
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
     steps:
@@ -41,13 +63,9 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org/'
       - run: npm ci
-      - name: Semantic Release
+      - name: Publish to npm
+        run: npm publish
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run:
-          echo "${{ env.NPM_TOKEN }}"
-          echo "${{ env.GH_TOKEN }}"
-          echo "${{ secrets.GH_TOKEN }}"
-          echo "${{ secrets.GH_TOKEN }}"
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

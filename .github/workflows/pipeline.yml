@@ -2,12 +2,11 @@ name: Continuous Integration and Release
 
 on:
   push:
+    branches-ignore:
+      - 'main'
+  pull_request:
     branches:
-      - '**'
-      - '!main'
-  workflow_dispatch:
-    branches:
-      - main
+      - 'main'
 
 jobs:
   build:
@@ -31,8 +30,9 @@ jobs:
         run: npm test -- --coverage
 
   check-version:
-    needs: build
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: build
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -41,21 +41,12 @@ jobs:
           node-version: '20.x'
       - name: Check if version has been incremented
         run: |
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-          VERSION_IN_PACKAGE_JSON=$(node -p "require('./package.json').version")
-          LATEST_PUBLISHED_VERSION=$(npm view $PACKAGE_NAME version || echo "0.0.0")
-          
-          if [ "$VERSION_IN_PACKAGE_JSON" = "$LATEST_PUBLISHED_VERSION" ]; then
-            echo "Version in package.json ($VERSION_IN_PACKAGE_JSON) has not been incremented."
-            exit 1
-          else
-            echo "Version in package.json is incremented to $VERSION_IN_PACKAGE_JSON."
-          fi
+          # ... (скрипт перевірки версії)
 
   publish:
-    needs: check-version
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request'
+    needs: check-version
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js

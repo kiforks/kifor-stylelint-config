@@ -46,4 +46,8 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npx semantic-release
+        run:
+          echo "${{ env.NPM_TOKEN }}"
+          echo "${{ env.GH_TOKEN }}"
+          echo "${{ secrets.GH_TOKEN }}"
+          echo "${{ secrets.GH_TOKEN }}"

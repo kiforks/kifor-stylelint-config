@@ -464,8 +464,8 @@ class RegExpHelper {
 		const closingIndex = parameter.indexOf(')', lastOpeningIndex);
 		const hasValidParenthesis = lastOpeningIndex !== -1 && closingIndex !== -1;
 		const modifiedParameter = hasValidParenthesis
-			? parameter.substring(0, closingIndex) + '[\\s\\S]*' + parameter.substring(closingIndex)
-			: parameter + '[\\s\\S]*';
+			? `${parameter.substring(0, closingIndex)}[\\s\\S]*${parameter.substring(closingIndex)}`
+			: `${parameter}[\\s\\S]*`;
 		const escapedParameter = modifiedParameter.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
 		return new RegExp(escapedParameter);
 	}

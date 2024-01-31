@@ -28,7 +28,6 @@ jobs:
             exit 1
           else
             echo "Version in package.json is incremented to $VERSION_IN_PACKAGE_JSON."
-          fi
 
   publish:
     runs-on: ubuntu-latest

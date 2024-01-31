@@ -66,6 +66,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check if CHANGELOG.md has been updated
         run: |
+          VERSION_IN_PACKAGE_JSON=$(node -p "require('./package.json').version")
+
           if ! grep -qE "## \[?$VERSION_IN_PACKAGE_JSON\]?" CHANGELOG.md; then
           echo "Error: CHANGELOG.md has not been updated for version $VERSION_IN_PACKAGE_JSON."
           exit 1

@@ -1,12 +1,9 @@
 name: Continuous Integration and Release
 
 on:
-  push:
-    branches-ignore:
-      - 'main'
   pull_request:
     branches:
-      - 'main'
+      - main
 
 jobs:
   build:
@@ -31,7 +28,7 @@ jobs:
 
   check-version:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     needs: build
     steps:
       - uses: actions/checkout@v4
@@ -45,8 +42,8 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: check-version
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    needs: [build, check-version]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js

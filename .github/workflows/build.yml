@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
+  validation:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
       - run: npm ci
       - name: Check formatting
         run: npm run format:check
@@ -26,3 +27,45 @@ jobs:
         run: npm run lint:check
       - name: Run tests with coverage
         run: npm test -- --coverage
+
+  check-version:
+    runs-on: ubuntu-latest
+    needs: validation
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Check if version has been incremented compared to main branch
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          git fetch origin main
+          MAIN_VERSION=$(git show origin/main:package.json | node -p "require('/dev/stdin').version")
+          
+          if [ "$CURRENT_VERSION" = "$MAIN_VERSION" ]; then
+            echo "Error: Version in package.json ($CURRENT_VERSION) has not been incremented compared to main branch."
+            exit 1
+          else
+            echo "Version in package.json is incremented to $CURRENT_VERSION compared to main branch."
+          fi
+
+  check-changelog:
+    runs-on: ubuntu-latest
+    needs: check-version
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check if CHANGELOG.md has been updated
+        run: |
+          git fetch origin main:main
+          MAIN_COMMIT=$(git rev-parse main)
+          CHANGELOG_COMMIT=$(git log -1 --format=format:%H --full-diff CHANGELOG.md)
+          VERSION_IN_PACKAGE_JSON=$(node -p "require('./package.json').version")
+
+          if [[ "$MAIN_COMMIT" == "$CHANGELOG_COMMIT" ]] && grep -q "$VERSION_IN_PACKAGE_JSON" CHANGELOG.md; then
+            echo "CHANGELOG.md has been updated for version $VERSION_IN_PACKAGE_JSON."
+          else
+            echo "Error: CHANGELOG.md has not been updated for version $VERSION_IN_PACKAGE_JSON."
+            exit 1
+          fi

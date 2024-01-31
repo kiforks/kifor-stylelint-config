@@ -48,6 +48,9 @@ jobs:
           git checkout -- package.json
 
           HIGHEST_VERSION=$(echo -e "$CURRENT_VERSION\n$MAIN_VERSION" | sort -V | tail -n1)
+          
+          echo "$CURRENT_VERSION) current"
+          echo "$HIGHEST_VERSION) current"
 
           if [ "$HIGHEST_VERSION" != "$CURRENT_VERSION" ]; then
             echo "Error: Version in package.json ($CURRENT_VERSION) has not been incremented compared to main branch ($MAIN_VERSION)."

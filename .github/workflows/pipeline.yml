@@ -29,6 +29,7 @@ jobs:
 
   check-version:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true
     needs: build
     steps:
       - uses: actions/checkout@v4

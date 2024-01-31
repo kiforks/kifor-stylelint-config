@@ -40,16 +40,19 @@ jobs:
       - name: Check if version has been incremented compared to main branch
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          
+
           git fetch origin main
-          MAIN_VERSION=$(git show origin/main:package.json | node -p "require('/dev/stdin').version")
-          
+          git checkout origin/main -- package.json
+          MAIN_VERSION=$(node -p "require('./package.json').version")
+
           if [ "$CURRENT_VERSION" = "$MAIN_VERSION" ]; then
             echo "Error: Version in package.json ($CURRENT_VERSION) has not been incremented compared to main branch."
             exit 1
           else
             echo "Version in package.json is incremented to $CURRENT_VERSION compared to main branch."
           fi
+
+          git checkout -- package.json
 
   check-changelog:
     runs-on: ubuntu-latest

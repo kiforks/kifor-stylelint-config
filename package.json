@@ -88,8 +88,8 @@
 		"stylelint": "npx stylelint test/**/*.scss --config .stylelintrc.js --fix",
 		"lint": "npx eslint '**/*.{ts,html,js}' --quiet --fix",
 		"lint:check": "npx eslint '**/*.{ts,html,js}' --quiet",
-		"format": "npx prettier '**/*.{ts,html,js,json}' --write",
-		"format:check": "npx prettier '**/*.{ts,html,js,json}' --check",
+		"format": "npx prettier '**/*.{ts,html,js,json,yml}' --write",
+		"format:check": "npx prettier '**/*.{ts,html,js,json,yml}' --check",
 		"prepare": "husky install",
 		"prerelease": "npm run lint:check && npm run format:check && npm run test",
 		"test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules --no-warnings\" npx jest"

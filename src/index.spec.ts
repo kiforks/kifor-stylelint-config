@@ -11,7 +11,7 @@ describe('stylelint main config', () => {
 				'at-rule-no-unknown': [
 					true,
 					{
-						'ignoreAtRules': ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'],
+						'ignoreAtRules': ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if'],
 					},
 				],
 				'at-rule-property-required-list': {

@@ -10,7 +10,7 @@
 		"node": ">=20.8.1"
 	},
 	"type": "module",
-	"license": "MITs",
+	"license": "MIT",
 	"author": {
 		"name": "Kifor Kostiantyn",
 		"email": "kifor.ko@gmail.com"

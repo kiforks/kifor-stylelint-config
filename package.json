@@ -33,6 +33,7 @@
 		"stylelint",
 		"validate",
 		"code style",
+		"code lint",
 		"strict",
 		"check",
 		"checker",

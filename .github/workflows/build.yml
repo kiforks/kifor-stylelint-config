@@ -65,7 +65,6 @@ jobs:
         run: |
           VERSION_IN_PACKAGE_JSON=$(node -p "require('./package.json').version")
           
-          # Перевіряємо, чи файл CHANGELOG.md містить запис про нову версію
           if grep -q "## \[$VERSION_IN_PACKAGE_JSON\]" CHANGELOG.md; then
             echo "CHANGELOG.md has been updated for version $VERSION_IN_PACKAGE_JSON."
           else

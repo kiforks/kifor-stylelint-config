@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.15
+## 0.0.16
 
 - Added: new GitHub actions flow
 

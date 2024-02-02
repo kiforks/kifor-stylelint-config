@@ -1,5 +1,6 @@
-import { Rule, RuleAt } from '../../../../rule/interfaces/rule.interface';
 import { RuleHelper } from '../../../../rule/helpers/rule-order/rule.helper';
+
+import { Rule, RuleAt } from '../../../../rule/interfaces/rule.interface';
 
 export abstract class OrderContentHelper {
 	/**

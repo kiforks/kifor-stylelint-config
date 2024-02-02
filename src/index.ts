@@ -1,9 +1,11 @@
-import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
-import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
+import { Config } from 'stylelint';
+
+import { RULE_NO_UNKNOWN } from './rule/configs/rule-no-unknown/rule-no-unknown.config';
 import { RULE_PROPERTY_UNIT_ALLOWED_LIST } from './rule/configs/rule-property-unit-allowed-list/rule-property-unit-allowed-list.config';
 import { RULE_UNIT_ALLOWED_LIST } from './rule/configs/rule-unit-allowed-list/rule-unit-allowed-list.config';
-import { RULE_NO_UNKNOWN } from './rule/configs/rule-no-unknown/rule-no-unknown.config';
-import { Config } from 'stylelint';
+
+import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
+import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
 
 export default {
 	/**

@@ -1,14 +1,16 @@
 import { MediaConfig } from '../../configs/media.config';
+
 import { RuleHelper } from '../../../rule/helpers/rule-order/rule.helper';
+
 import {
+	MediaRuleAtOrderBreakpoint,
+	MediaRuleAtOrderBreakpointBetween,
+	MediaRuleAtOrderDevice,
+	MediaRuleBreakpointBetweenParameter,
 	MediaRuleBreakpointParameter,
 	MediaRuleBreakpointPrefix,
-	MediaRuleFullDevicePrefix,
-	MediaRuleAtOrderBreakpoint,
-	MediaRuleAtOrderDevice,
 	MediaRuleDevice,
-	MediaRuleBreakpointBetweenParameter,
-	MediaRuleAtOrderBreakpointBetween,
+	MediaRuleFullDevicePrefix,
 } from '../../interfaces/media-rule.interface';
 import { MediaBreakpoint } from '../../interfaces/media.interface';
 

@@ -1,13 +1,15 @@
-import { RuleHelper } from '../../../../../rule/helpers/rule-order/rule.helper';
-import { ORDER_CONTENT_PSEUDO_CLASSES } from '../order-content-pseudo-classes/order-content-pseudo-classes.constant';
-import { ORDER_CONTENT_PSEUDO_ELEMENTS } from '../order-content-pseudo-elements/order-content-pseudo-elements.constant';
-import { ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES } from '../order-content-pseudo-elements-includes/order-content-pseudo-elements-includes.constant';
-import { ORDER_CONTENT_PSEUDO_CLASS_INCLUDES } from '../order-content-pseudo-class-includes/order-content-pseudo-class-includes.constant';
-import { ORDER_CONTENT_SELECTORS } from '../order-content-selectors/order-content-selectors.constant';
-import { MediaRuleHelper } from '../../../../../media/helpers/media-rule-helper/media-rule.helper';
 import { MediaConfig } from '../../../../../media/configs/media.config';
-import { ORDER_CONTENT_MEDIA_QUERY } from '../order-content-media-query/order-content-media-query.constant';
+
+import { MediaRuleHelper } from '../../../../../media/helpers/media-rule-helper/media-rule.helper';
+import { RuleHelper } from '../../../../../rule/helpers/rule-order/rule.helper';
 import { RegExpHelper } from '../../../../helpers/reg-exp/reg-exp.helper';
+
+import { ORDER_CONTENT_MEDIA_QUERY } from '../order-content-media-query/order-content-media-query.constant';
+import { ORDER_CONTENT_PSEUDO_CLASS_INCLUDES } from '../order-content-pseudo-class-includes/order-content-pseudo-class-includes.constant';
+import { ORDER_CONTENT_PSEUDO_CLASSES } from '../order-content-pseudo-classes/order-content-pseudo-classes.constant';
+import { ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES } from '../order-content-pseudo-elements-includes/order-content-pseudo-elements-includes.constant';
+import { ORDER_CONTENT_PSEUDO_ELEMENTS } from '../order-content-pseudo-elements/order-content-pseudo-elements.constant';
+import { ORDER_CONTENT_SELECTORS } from '../order-content-selectors/order-content-selectors.constant';
 
 /**
  * The ORDER_CONTENT array defines the order of various SCSS elements in a structured manner.

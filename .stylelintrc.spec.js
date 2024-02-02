@@ -1,4 +1,5 @@
 import stylelint from 'stylelint';
+
 import config from './.stylelintrc.js';
 
 const lint = stylelint.lint;

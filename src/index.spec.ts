@@ -6,7 +6,7 @@ describe('stylelint main config', () => {
 			'customSyntax': 'postcss-scss',
 			'extends': ['stylelint-config-standard'],
 			'ignoreFiles': ['**/*.css'],
-			'plugins': ['stylelint-order'],
+			'plugins': ['stylelint-order', 'kifor-stylelint/max-nesting-depth'],
 			'rules': {
 				'at-rule-no-unknown': [
 					true,
@@ -25,7 +25,7 @@ describe('stylelint main config', () => {
 				],
 				'color-no-hex': true,
 				'declaration-block-no-duplicate-properties': true,
-				'declaration-block-no-redundant-longhand-properties': false,
+				'declaration-block-no-redundant-longhand-properties': null,
 				'declaration-property-unit-allowed-list': {
 					'/^border-(top|bottom)-(left|right)-radius/': ['px', '%'],
 					'/^border-(top|right|bottom|left)-width/': ['px'],
@@ -73,14 +73,7 @@ describe('stylelint main config', () => {
 				'function-disallowed-list': ['rgb'],
 				'function-url-no-scheme-relative': true,
 				'function-url-scheme-disallowed-list': ['ftp', '/^http/'],
-				'max-nesting-depth': [
-					3,
-					{
-						'ignore': ['blockless-at-rules', 'pseudo-classes'],
-						'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-						'ignoreRules': ['/^&::/', '/^::/'],
-					},
-				],
+				'kifor-stylelint/max-nesting-depth': true,
 				'media-feature-name-no-vendor-prefix': true,
 				'media-feature-name-unit-allowed-list': {
 					'/^border-(top|bottom)-(left|right)-radius/': ['px', '%'],

@@ -6,6 +6,7 @@ import { RULE_UNIT_ALLOWED_LIST } from './rule/configs/rule-unit-allowed-list/ru
 
 import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
 import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
+import { MAX_NESTING_DEPTH } from './core/plugins';
 
 export default {
 	/**
@@ -15,7 +16,20 @@ export default {
 	extends: ['stylelint-config-standard'],
 	customSyntax: 'postcss-scss',
 	ignoreFiles: ['**/*.css'],
-	plugins: ['stylelint-order'],
+	plugins: [
+		/**
+		 * @name order/order
+		 * @name order/properties-order
+		 * @see https://www.npmjs.com/package/stylelint-order
+		 */
+		'stylelint-order',
+
+		/**
+		 * @name kifor-stylelint/max-nesting-depth
+		 * @see src/core/plugins/max-nesting-depth/max-nesting-depth.plugin.ts
+		 */
+		MAX_NESTING_DEPTH,
+	],
 	rules: {
 		/* At-rule */
 		'at-rule-no-unknown': [
@@ -34,7 +48,7 @@ export default {
 
 		/* Declaration block */
 		'declaration-block-no-duplicate-properties': true,
-		'declaration-block-no-redundant-longhand-properties': false,
+		'declaration-block-no-redundant-longhand-properties': null,
 
 		/* Declaration property */
 		'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
@@ -87,15 +101,16 @@ export default {
 
 		/* Notation */
 		'font-weight-notation': 'numeric',
+		'kifor-stylelint/max-nesting-depth': true,
 
-		/* Other */
-		'max-nesting-depth': [
-			3,
-			{
-				'ignore': ['blockless-at-rules', 'pseudo-classes'],
-				'ignoreRules': ['/^&::/', '/^::/'],
-				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-			},
-		],
+		// /* Other */
+		// 'max-nesting-depth': [
+		// 	3,
+		// 	{
+		// 		'ignore': ['blockless-at-rules', 'pseudo-classes'],
+		// 		'ignoreRules': ['/^&::/', '/^::/'],
+		// 		'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+		// 	},
+		// ],
 	},
 } as Config;

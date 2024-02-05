@@ -1,3 +1,64 @@
+import stylelint from 'stylelint';
+
+const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'];
+
+const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
+	'width': ['px', '%'],
+	'min-width': ['px', '%'],
+	'max-width': ['px', '%'],
+	'height': ['px', '%'],
+	'min-height': ['px', '%'],
+	'max-height': ['px', '%'],
+	'/^padding/': ['px', '%'],
+	'/^margin/': ['px', '%'],
+	'top': ['px', '%'],
+	'right': ['px', '%'],
+	'bottom': ['px', '%'],
+	'left': ['px', '%'],
+	'grid-auto-columns': ['px', '%', 'fr'],
+	'grid-auto-rows': ['px', '%', 'fr'],
+	'grid-template-columns': ['px', '%', 'fr'],
+	'grid-template-rows': ['px', '%'],
+	'gap': ['px', '%'],
+	'grid-gap': ['px', '%'],
+	'grid-column-gap': ['px', '%'],
+	'grid-row-gap': ['px', '%'],
+	'column-gap': ['px', '%'],
+	'flex-basis': ['px', '%'],
+	'border': ['px'],
+	'border-width': ['px'],
+	'/^border-(top|right|bottom|left)/': ['px'],
+	'/^border-(top|right|bottom|left)-width/': ['px'],
+	'outline-width': ['px'],
+	'box-shadow': ['px'],
+	'text-shadow': ['px'],
+	'background-position': ['px', '%'],
+	'background-size': ['px', '%'],
+	'object-position': ['px', '%'],
+	'border-radius': ['px', '%'],
+	'/^border-(top|bottom)-(left|right)-radius/': ['px', '%'],
+	'font-size': [],
+	'line-height': [],
+	'animation': ['ms'],
+	'animation-duration': ['ms'],
+	'transition-duration': ['ms'],
+	'transition': ['ms'],
+};
+
+const RULE_UNIT_ALLOWED_LIST = ['px', 'rem', 'deg', 'fr', '%', 'ms', 'vw', 'vh', 'vmin', 'vmax'];
+
+class MediaConfig {
+	static {
+		this.BREAKPOINTS = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
+	}
+	static {
+		this.DEVICES = ['desktop', 'mobile'];
+	}
+	static {
+		this.PREFIX = '^media-';
+	}
+}
+
 class RuleHelper {
 	/**
 	 * Checks if the given object conforms to the RuleAt interface.
@@ -90,217 +151,7 @@ class RuleHelper {
 		return parameters.map(parameter => RuleHelper.createAtRule(name, parameter));
 	}
 }
-class OrderContentHelper {
-	/**
-	 * Creates an array of media feature at-rules based on the provided features.
-	 * Each feature is wrapped in parentheses before being passed to the RuleHelper's createAtRules method.
-	 *
-	 * @param features - An array of string representing the media features (e.g., 'max-width: 768px', 'min-resolution: 2dppx').
-	 * @returns An array of RuleAt objects representing the created media feature at-rules.
-	 *
-	 * @example
-	 * For createMediaFeatures(['max-width: 768px', 'min-resolution: 2dppx']), the output is:
-	 * [
-	 *    { type: 'at-rule', name: 'media', parameter: '(max-width: 768px)' },
-	 *    { type: 'at-rule', name: 'media', parameter: '(min-resolution: 2dppx)' }
-	 * ].
-	 */
-	static createMediaFeatures(features) {
-		return RuleHelper.createAtRules(
-			'media',
-			features.map(feature => `(${feature})`)
-		);
-	}
-	/**
-	 * Creates an array of pseudo class rules based on the provided pseudo class strings.
-	 * Each pseudo class is prefixed with "^&:" before being passed to the RuleHelper's createSelectors method.
-	 *
-	 * @param pseudoClasses - An array of strings representing the pseudo classes (e.g., 'hover', 'active').
-	 * @returns An array of Rule objects representing the created pseudo class rules.
-	 *
-	 * @example
-	 * For createPseudoClasses(['hover', 'active']), the output is:
-	 * [
-	 *    { type: 'rule', selector: '^&:hover' },
-	 *    { type: 'rule', selector: '^&:active' }
-	 * ].
-	 */
-	static createPseudoClasses(pseudoClasses) {
-		return RuleHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
-	}
-	/**
-	 * Creates an array of pseudo-element rules based on the provided pseudo-element strings.
-	 * Each pseudo-element is prefixed with "^&::" before being passed to the RuleHelper's createSelectors method.
-	 *
-	 * @param pseudoElements - An array of strings representing the pseudo-elements (e.g., 'before', 'after').
-	 * @returns An array of Rule objects representing the created pseudo-element rules.
-	 *
-	 * @example
-	 * For createPseudoElements(['before', 'after']), the output is:
-	 * [
-	 *    { type: 'rule', selector: '^&::before' },
-	 *    { type: 'rule', selector: '^&::after' }
-	 * ].
-	 */
-	static createPseudoElements(pseudoElements) {
-		return RuleHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
-	}
-}
-const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
-	'first',
-	'first-child',
-	'first-of-type',
-	'lang',
-	'last-child',
-	'last-of-type',
-	'nth-last-child',
-	'nth-last-of-type',
-	'nth-child',
-	'nth-of-type',
-	'only-child',
-	'only-of-type',
-	'hover',
-	'focus',
-	'active',
-	'visited',
-	'invalid',
-	'valid',
-	'root',
-	'empty',
-	'target',
-	'enabled',
-	'disabled',
-	'checked',
-	'is',
-	'where',
-	'has',
-	'dir',
-	'default',
-	'optional',
-	'required',
-	'read-only',
-	'read-write',
-	'scope',
-	'placeholder-shown',
-	'autofill',
-	'indeterminate',
-	'[a-z]',
-]);
-const ORDER_CONTENT_PSEUDO_ELEMENTS = OrderContentHelper.createPseudoElements([
-	'first-letter',
-	'before',
-	'after',
-	'placeholder',
-	'first-line',
-	'selection',
-	'backdrop',
-	'marker',
-	'spelling-error',
-	'grammar-error',
-	'cue',
-	'file-selector-button',
-	'highlight',
-	'slotted',
-	'target-text',
-	'-webkit-input-placeholder',
-	'-moz-placeholder',
-	'-ms-input-placeholder',
-	'-ms-clear',
-	'-ms-reveal',
-	'-webkit-search-cancel-button',
-	'-webkit-search-decoration',
-	'-webkit-search-results-button',
-	'-webkit-search-results-decoration',
-	'-webkit-slider-runnable-track',
-	'-webkit-slider-thumb',
-	'-webkit-media-controls-panel',
-	'-webkit-media-controls-play-button',
-	'-webkit-media-controls-volume-slider',
-	'[a-z]',
-]);
-const ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES = RuleHelper.createIncludes([
-	// before
-	'before-clean',
-	'before',
-	'before-hover',
-	'before-active',
-	// after
-	'after-clean',
-	'after',
-	'after-hover',
-	'after-active',
-	// before-after
-	'before-after-clean',
-	'before-after',
-	'before-after-hover',
-	'before-after-active',
-]);
-const ORDER_CONTENT_PSEUDO_CLASS_INCLUDES = RuleHelper.createIncludes(['hover', 'active', 'focus']);
-const ORDER_CONTENT_SELECTORS = RuleHelper.createSelectors([
-	'^[a-z]',
-	// example: 'div'
-	'^\\*',
-	// example: '*'
-	'^\\.\\w+',
-	// example: '.class'
-	'^\\w+\\[\\w+',
-	// example: 'input[type]'
-	'^\\w+\\[\\w+\\$=',
-	// example: 'input[type$="text"]'
-	'^\\w+\\[\\w+\\^=',
-	// example: 'input[type^="text"]'
-	'^\\w+\\[\\w+\\*=',
-	// example: 'input[type*="text"]'
-	'^\\w+\\[\\w+\\~=',
-	// example: 'input[type~="text"]'
-	'^\\w+\\[\\w+\\|=',
-	// example: 'input[type|="text"]'
-	'^\\w+\\[\\w+="\\w+"]',
-	// example: 'input[type="text"]'
-	'^\\[\\w+',
-	// example: '[attr]'
-	'^\\[\\w+\\$=',
-	// example: '[attr$=value]'
-	'^\\[\\w+\\^=',
-	// example: '[attr^=value]'
-	'^\\[\\w+\\*=',
-	// example: '[attr*=value]'
-	'^\\[\\w+\\~=',
-	// example: '[attr~=value]'
-	'^\\[\\w+\\|=',
-	// example: '[attr|=value]'
-	'^\\>',
-	// example: '> child'
-	'^\\+',
-	// example: '+ sibling'
-	'^\\~',
-	// example: '~ sibling'
-	'^#',
-	// example: '#id'
-	'^&\\.\\w+',
-	// example: '&.class'
-	'^&\\[\\w+',
-	// example: '&[attr]'
-	'^&\\[\\w+\\$=',
-	// example: '[attr$=value]'
-	'^&\\[\\w+\\^=',
-	// example: '[attr^=value]'
-	'^&\\[\\w+\\*=',
-	// example: '[attr*=value]'
-	'^&\\[\\w+\\~=',
-	// example: '[attr~=value]'
-	'^&\\[\\w+\\|=',
-	// example: '[attr|=value]'
-	'^&',
-	// example: '&'
-	'^&:not',
-	// example: '&:not(.class)'
-]);
-const _MediaConfig = class _MediaConfig {};
-_MediaConfig.BREAKPOINTS = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
-_MediaConfig.DEVICES = ['desktop', 'mobile'];
-_MediaConfig.PREFIX = '^media-';
-let MediaConfig = _MediaConfig;
+
 class MediaRuleHelper {
 	/**
 	 * Generates a device-specific media rule prefix.
@@ -390,6 +241,113 @@ class MediaRuleHelper {
 		);
 	}
 }
+
+class RegExpHelper {
+	/**
+	 * Creates a RegExp based on the provided string, inserting a wildcard pattern for flexible matching.
+	 * @param parameter - The string to be converted into a RegExp.
+	 * @returns A RegExp object based on the input string, enhanced with wildcard patterns.
+	 * @example For makeRegex('color: (blue)'), returns a RegExp matching /color: \(blue[\s\S]*\)/.
+	 */
+	static makeRegex(parameter) {
+		// Search for the last opening parenthesis
+		const lastOpeningIndex = parameter.lastIndexOf('(');
+		// Find the corresponding closing parenthesis
+		const closingIndex = parameter.indexOf(')', lastOpeningIndex);
+		// Validate existence of both parenthesis
+		const hasValidParenthesis = lastOpeningIndex !== -1 && closingIndex !== -1;
+		// Insert [\s\S]* before the closing parenthesis
+		const modifiedParameter = hasValidParenthesis
+			? `${parameter.substring(0, closingIndex)}[\\s\\S]*${parameter.substring(closingIndex)}`
+			: `${parameter}[\\s\\S]*`;
+		// Escape special characters
+		const escapedParameter = modifiedParameter.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+		return new RegExp(escapedParameter);
+	}
+	/**
+	 * Transforms the 'parameter' field of each rule in the array into a RegExp source string for flexible matching.
+	 * @param rules - An array of objects, potentially containing 'parameter' fields.
+	 * @returns The same array of objects with 'parameter' fields converted to RegExp source strings.
+	 * @example For paramToRegex([
+	 *   { type: 'at-rule', name: 'include', parameter: '^media-min(xs)' },
+	 *   { type: 'at-rule', name: 'media', parameter: '(width)' }
+	 * ]),
+	 * output is [
+	 *   { type: 'at-rule', name: 'include', parameter: ^media-min\(xs[\s\S]*\) },
+	 *   { type: 'at-rule', name: 'media', parameter: \(width[\s\S]*\) }
+	 * ].
+	 */
+	static paramToRegex(rules) {
+		return rules.map(rule => {
+			const isAtRule = RuleHelper.isRuleAt(rule) && rule.type === 'at-rule';
+			if (isAtRule && typeof rule.parameter === 'string') {
+				return {
+					...rule,
+					parameter: RegExpHelper.makeRegex(rule.parameter).source,
+				};
+			}
+			return rule;
+		});
+	}
+}
+
+class OrderContentHelper {
+	/**
+	 * Creates an array of media feature at-rules based on the provided features.
+	 * Each feature is wrapped in parentheses before being passed to the RuleHelper's createAtRules method.
+	 *
+	 * @param features - An array of string representing the media features (e.g., 'max-width: 768px', 'min-resolution: 2dppx').
+	 * @returns An array of RuleAt objects representing the created media feature at-rules.
+	 *
+	 * @example
+	 * For createMediaFeatures(['max-width: 768px', 'min-resolution: 2dppx']), the output is:
+	 * [
+	 *    { type: 'at-rule', name: 'media', parameter: '(max-width: 768px)' },
+	 *    { type: 'at-rule', name: 'media', parameter: '(min-resolution: 2dppx)' }
+	 * ].
+	 */
+	static createMediaFeatures(features) {
+		return RuleHelper.createAtRules(
+			'media',
+			features.map(feature => `(${feature})`)
+		);
+	}
+	/**
+	 * Creates an array of pseudo class rules based on the provided pseudo class strings.
+	 * Each pseudo class is prefixed with "^&:" before being passed to the RuleHelper's createSelectors method.
+	 *
+	 * @param pseudoClasses - An array of strings representing the pseudo classes (e.g., 'hover', 'active').
+	 * @returns An array of Rule objects representing the created pseudo class rules.
+	 *
+	 * @example
+	 * For createPseudoClasses(['hover', 'active']), the output is:
+	 * [
+	 *    { type: 'rule', selector: '^&:hover' },
+	 *    { type: 'rule', selector: '^&:active' }
+	 * ].
+	 */
+	static createPseudoClasses(pseudoClasses) {
+		return RuleHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
+	}
+	/**
+	 * Creates an array of pseudo-element rules based on the provided pseudo-element strings.
+	 * Each pseudo-element is prefixed with "^&::" before being passed to the RuleHelper's createSelectors method.
+	 *
+	 * @param pseudoElements - An array of strings representing the pseudo-elements (e.g., 'before', 'after').
+	 * @returns An array of Rule objects representing the created pseudo-element rules.
+	 *
+	 * @example
+	 * For createPseudoElements(['before', 'after']), the output is:
+	 * [
+	 *    { type: 'rule', selector: '^&::before' },
+	 *    { type: 'rule', selector: '^&::after' }
+	 * ].
+	 */
+	static createPseudoElements(pseudoElements) {
+		return RuleHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
+	}
+}
+
 const ORDER_CONTENT_MEDIA_QUERY = [
 	RuleHelper.createAtRule('media'),
 	/*
@@ -452,49 +410,143 @@ const ORDER_CONTENT_MEDIA_QUERY = [
 	 * */
 	...OrderContentHelper.createMediaFeatures(['device-width', 'device-height', 'device-aspect-ratio']),
 ];
-class RegExpHelper {
-	/**
-	 * Creates a RegExp based on the provided string, inserting a wildcard pattern for flexible matching.
-	 * @param parameter - The string to be converted into a RegExp.
-	 * @returns A RegExp object based on the input string, enhanced with wildcard patterns.
-	 * @example For makeRegex('color: (blue)'), returns a RegExp matching /color: \(blue[\s\S]*\)/.
-	 */
-	static makeRegex(parameter) {
-		const lastOpeningIndex = parameter.lastIndexOf('(');
-		const closingIndex = parameter.indexOf(')', lastOpeningIndex);
-		const hasValidParenthesis = lastOpeningIndex !== -1 && closingIndex !== -1;
-		const modifiedParameter = hasValidParenthesis
-			? `${parameter.substring(0, closingIndex)}[\\s\\S]*${parameter.substring(closingIndex)}`
-			: `${parameter}[\\s\\S]*`;
-		const escapedParameter = modifiedParameter.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
-		return new RegExp(escapedParameter);
-	}
-	/**
-	 * Transforms the 'parameter' field of each rule in the array into a RegExp source string for flexible matching.
-	 * @param rules - An array of objects, potentially containing 'parameter' fields.
-	 * @returns The same array of objects with 'parameter' fields converted to RegExp source strings.
-	 * @example For paramToRegex([
-	 *   { type: 'at-rule', name: 'include', parameter: '^media-min(xs)' },
-	 *   { type: 'at-rule', name: 'media', parameter: '(width)' }
-	 * ]),
-	 * output is [
-	 *   { type: 'at-rule', name: 'include', parameter: ^media-min\(xs[\s\S]*\) },
-	 *   { type: 'at-rule', name: 'media', parameter: \(width[\s\S]*\) }
-	 * ].
-	 */
-	static paramToRegex(rules) {
-		return rules.map(rule => {
-			const isAtRule = RuleHelper.isRuleAt(rule) && rule.type === 'at-rule';
-			if (isAtRule && typeof rule.parameter === 'string') {
-				return {
-					...rule,
-					parameter: RegExpHelper.makeRegex(rule.parameter).source,
-				};
-			}
-			return rule;
-		});
-	}
-}
+
+const ORDER_CONTENT_PSEUDO_CLASS_INCLUDES = RuleHelper.createIncludes(['hover', 'active', 'focus']);
+
+const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
+	'first',
+	'first-child',
+	'first-of-type',
+	'lang',
+	'last-child',
+	'last-of-type',
+	'nth-last-child',
+	'nth-last-of-type',
+	'nth-child',
+	'nth-of-type',
+	'only-child',
+	'only-of-type',
+	'hover',
+	'focus',
+	'active',
+	'visited',
+	'invalid',
+	'valid',
+	'root',
+	'empty',
+	'target',
+	'enabled',
+	'disabled',
+	'checked',
+	'is',
+	'where',
+	'has',
+	'dir',
+	'default',
+	'optional',
+	'required',
+	'read-only',
+	'read-write',
+	'scope',
+	'placeholder-shown',
+	'autofill',
+	'indeterminate',
+	'[a-z]',
+]);
+
+const ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES = RuleHelper.createIncludes([
+	// before
+	'before-clean',
+	'before',
+	'before-hover',
+	'before-active',
+	// after
+	'after-clean',
+	'after',
+	'after-hover',
+	'after-active',
+	// before-after
+	'before-after-clean',
+	'before-after',
+	'before-after-hover',
+	'before-after-active',
+]);
+
+const ORDER_CONTENT_PSEUDO_ELEMENTS = OrderContentHelper.createPseudoElements([
+	'first-letter',
+	'before',
+	'after',
+	'placeholder',
+	'first-line',
+	'selection',
+	'backdrop',
+	'marker',
+	'spelling-error',
+	'grammar-error',
+	'cue',
+	'file-selector-button',
+	'highlight',
+	'slotted',
+	'target-text',
+	'-webkit-input-placeholder',
+	'-moz-placeholder',
+	'-ms-input-placeholder',
+	'-ms-clear',
+	'-ms-reveal',
+	'-webkit-search-cancel-button',
+	'-webkit-search-decoration',
+	'-webkit-search-results-button',
+	'-webkit-search-results-decoration',
+	'-webkit-slider-runnable-track',
+	'-webkit-slider-thumb',
+	'-webkit-media-controls-panel',
+	'-webkit-media-controls-play-button',
+	'-webkit-media-controls-volume-slider',
+	'[a-z]',
+]);
+
+const ORDER_CONTENT_SELECTORS = RuleHelper.createSelectors([
+	'^[a-z]', // example: 'div'
+	'^\\*', // example: '*'
+	'^\\.\\w+', // example: '.class'
+	'^\\w+\\[\\w+', // example: 'input[type]'
+	'^\\w+\\[\\w+\\$=', // example: 'input[type$="text"]'
+	'^\\w+\\[\\w+\\^=', // example: 'input[type^="text"]'
+	'^\\w+\\[\\w+\\*=', // example: 'input[type*="text"]'
+	'^\\w+\\[\\w+\\~=', // example: 'input[type~="text"]'
+	'^\\w+\\[\\w+\\|=', // example: 'input[type|="text"]'
+	'^\\w+\\[\\w+="\\w+"]', // example: 'input[type="text"]'
+	'^\\[\\w+', // example: '[attr]'
+	'^\\[\\w+\\$=', // example: '[attr$=value]'
+	'^\\[\\w+\\^=', // example: '[attr^=value]'
+	'^\\[\\w+\\*=', // example: '[attr*=value]'
+	'^\\[\\w+\\~=', // example: '[attr~=value]'
+	'^\\[\\w+\\|=', // example: '[attr|=value]'
+	'^\\>', // example: '> child'
+	'^\\+', // example: '+ sibling'
+	'^\\~', // example: '~ sibling'
+	'^#', // example: '#id'
+	'^&\\.\\w+', // example: '&.class'
+	'^&\\[\\w+', // example: '&[attr]'
+	'^&\\[\\w+\\$=', // example: '[attr$=value]'
+	'^&\\[\\w+\\^=', // example: '[attr^=value]'
+	'^&\\[\\w+\\*=', // example: '[attr*=value]'
+	'^&\\[\\w+\\~=', // example: '[attr~=value]'
+	'^&\\[\\w+\\|=', // example: '[attr|=value]'
+	'^&', // example: '&'
+	'^&:not', // example: '&:not(.class)'
+]);
+
+/**
+ * The ORDER_CONTENT array defines the order of various SCSS elements in a structured manner.
+ * This is crucial for maintaining a consistent and readable codebase.
+ * Each section is clearly demarcated and utilizes helper functions from the 'Rule' module
+ * to create rules or selectors as needed. This structure aids in keeping the stylesheet organized
+ * and easy to navigate, ensuring that similar rule types are grouped together.
+ *
+ * Documentation:
+ * @see https://github.com/hudochenkov/stylelint-order/blob/master/rules/order/README.md
+ */
 const ORDER_CONFIG = [
 	/**
 	 * CSS charset rule:
@@ -648,6 +700,7 @@ const ORDER_CONFIG = [
 	RuleHelper.createAtRule('supports'),
 ];
 const ORDER_CONTENT = RegExpHelper.paramToRegex(ORDER_CONFIG);
+
 const ORDER_PROPERTIES_CONFIG = {
 	position: ['content', 'position', 'top', 'right', 'bottom', 'left', 'z-index'],
 	blockModel: [
@@ -1039,53 +1092,68 @@ const ORDER_PROPERTIES_CONFIG = {
 		'accent-color',
 	],
 };
+
 const { position, blockModel, typography, decoration, animation, miscellanea } = ORDER_PROPERTIES_CONFIG;
+/**
+ * Declarations of logically related properties are grouped in the following order:
+ *
+ * Positioning
+ * Block Model
+ * Typography
+ * Decoration
+ * Animation
+ * Miscellaneous
+ *
+ * Positioning comes first because it affects the positioning of blocks in the document flow.
+ * The Block Model comes next as it defines the dimensions and placement of blocks.
+ *
+ * All other declarations that change the appearance of the inner parts of blocks and do not affect other blocks come last.
+ */
 const ORDER_PROPERTIES = [...position, ...blockModel, ...typography, ...decoration, ...animation, ...miscellanea];
-const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
-	'width': ['px', '%'],
-	'min-width': ['px', '%'],
-	'max-width': ['px', '%'],
-	'height': ['px', '%'],
-	'min-height': ['px', '%'],
-	'max-height': ['px', '%'],
-	'/^padding/': ['px', '%'],
-	'/^margin/': ['px', '%'],
-	'top': ['px', '%'],
-	'right': ['px', '%'],
-	'bottom': ['px', '%'],
-	'left': ['px', '%'],
-	'grid-auto-columns': ['px', '%', 'fr'],
-	'grid-auto-rows': ['px', '%', 'fr'],
-	'grid-template-columns': ['px', '%', 'fr'],
-	'grid-template-rows': ['px', '%'],
-	'gap': ['px', '%'],
-	'grid-gap': ['px', '%'],
-	'grid-column-gap': ['px', '%'],
-	'grid-row-gap': ['px', '%'],
-	'column-gap': ['px', '%'],
-	'flex-basis': ['px', '%'],
-	'border': ['px'],
-	'border-width': ['px'],
-	'/^border-(top|right|bottom|left)/': ['px'],
-	'/^border-(top|right|bottom|left)-width/': ['px'],
-	'outline-width': ['px'],
-	'box-shadow': ['px'],
-	'text-shadow': ['px'],
-	'background-position': ['px', '%'],
-	'background-size': ['px', '%'],
-	'object-position': ['px', '%'],
-	'border-radius': ['px', '%'],
-	'/^border-(top|bottom)-(left|right)-radius/': ['px', '%'],
-	'font-size': [],
-	'line-height': [],
-	'animation': ['ms'],
-	'animation-duration': ['ms'],
-	'transition-duration': ['ms'],
-	'transition': ['ms'],
-};
-const RULE_UNIT_ALLOWED_LIST = ['px', 'rem', 'deg', 'fr', '%', 'ms', 'vw', 'vh', 'vmin', 'vmax'];
-const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'];
-const index = {
+
+const MAX_NESTING_DEPTH = (() => {
+	if (!stylelint) {
+		return 'kifor-stylelint/max-nesting-depth';
+	}
+	const {
+		createPlugin,
+		utils: { report, ruleMessages, validateOptions },
+	} = stylelint;
+	const ruleName = 'kifor-stylelint/max-nesting-depth';
+	const messages = ruleMessages(ruleName, {
+		rejected: selector => `Unexpected "foo" within selector "${selector}"`,
+	});
+	const meta = {
+		url: 'https://github.com/foo-org/stylelint-selector-no-foo/blob/main/README.md',
+	};
+	/** @type {import('stylelint').Rule} */
+	const ruleFunction = (primary, _secondaryOptions, _context) => {
+		return (root, result) => {
+			const validOptions = validateOptions(result, ruleName, {
+				actual: primary,
+				possible: [true],
+			});
+			if (!validOptions) return;
+			root.walkRules(ruleNode => {
+				const { selector } = ruleNode;
+				if (!selector.includes('foo')) return;
+				report({
+					result,
+					ruleName,
+					message: messages.rejected(selector),
+					node: ruleNode,
+					word: selector,
+				});
+			});
+		};
+	};
+	ruleFunction.ruleName = ruleName;
+	ruleFunction.messages = messages;
+	ruleFunction.meta = meta;
+	return createPlugin(ruleName, ruleFunction);
+})();
+
+var index = {
 	/**
 	 * Docs:
 	 * @see https://stylelint.io/user-guide/rules
@@ -1093,7 +1161,19 @@ const index = {
 	extends: ['stylelint-config-standard'],
 	customSyntax: 'postcss-scss',
 	ignoreFiles: ['**/*.css'],
-	plugins: ['stylelint-order'],
+	plugins: [
+		/**
+		 * @name order/order
+		 * @name order/properties-order
+		 * @see https://www.npmjs.com/package/stylelint-order
+		 */
+		'stylelint-order',
+		/**
+		 * @name kifor-stylelint/max-nesting-depth
+		 * @see src/core/plugins/max-nesting-depth/max-nesting-depth.plugin.ts
+		 */
+		MAX_NESTING_DEPTH,
+	],
 	rules: {
 		/* At-rule */
 		'at-rule-no-unknown': [
@@ -1110,7 +1190,7 @@ const index = {
 		'color-no-hex': true,
 		/* Declaration block */
 		'declaration-block-no-duplicate-properties': true,
-		'declaration-block-no-redundant-longhand-properties': false,
+		'declaration-block-no-redundant-longhand-properties': null,
 		/* Declaration property */
 		'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
 		'declaration-property-value-no-unknown': true,
@@ -1155,15 +1235,17 @@ const index = {
 		],
 		/* Notation */
 		'font-weight-notation': 'numeric',
-		/* Other */
-		'max-nesting-depth': [
-			3,
-			{
-				'ignore': ['blockless-at-rules', 'pseudo-classes'],
-				'ignoreRules': ['/^&::/', '/^::/'],
-				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-			},
-		],
+		'kifor-stylelint/max-nesting-depth': true,
+		// /* Other */
+		// 'max-nesting-depth': [
+		// 	3,
+		// 	{
+		// 		'ignore': ['blockless-at-rules', 'pseudo-classes'],
+		// 		'ignoreRules': ['/^&::/', '/^::/'],
+		// 		'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+		// 	},
+		// ],
 	},
 };
+
 export { index as default };

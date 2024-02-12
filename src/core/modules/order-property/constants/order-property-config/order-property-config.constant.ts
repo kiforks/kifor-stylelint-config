@@ -360,6 +360,7 @@ export const ORDER_PROPERTIES_CONFIG = {
 		'animation-fill-mode',
 	],
 	miscellanea: [
+		'contain',
 		'appearance',
 		'clip',
 		'clip-path',

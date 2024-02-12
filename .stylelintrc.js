@@ -1063,6 +1063,7 @@ const ORDER_PROPERTIES_CONFIG = {
 		'animation-fill-mode',
 	],
 	miscellanea: [
+		'contain',
 		'appearance',
 		'clip',
 		'clip-path',
@@ -1112,9 +1113,9 @@ const { position, blockModel, typography, decoration, animation, miscellanea } =
 const ORDER_PROPERTIES = [...position, ...blockModel, ...typography, ...decoration, ...animation, ...miscellanea];
 
 const MAX_NESTING_DEPTH = (() => {
-	if (!stylelint) {
-		return 'kifor-stylelint/max-nesting-depth';
-	}
+	// if (!stylelint) {
+	// 	return 'kifor-stylelint/max-nesting-depth';
+	// }
 	const {
 		createPlugin,
 		utils: { report, ruleMessages, validateOptions },

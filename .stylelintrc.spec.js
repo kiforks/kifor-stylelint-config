@@ -1807,6 +1807,7 @@ describe('stylelint', () => {
 		describe('max & min', () => {
 			/** @see https://stylelint.io/user-guide/rules/max-nesting-depth*/
 			describe('max-nesting-depth', () => {
+				// TODO should be refactored for src/core/plugins/max-nesting-depth/max-nesting-depth.plugin.ts
 				xit('should report an error for nesting depth more than 3', async () => {
 					const result = await lint({
 						code: `

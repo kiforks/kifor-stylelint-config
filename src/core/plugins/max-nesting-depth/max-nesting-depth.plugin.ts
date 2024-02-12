@@ -1,9 +1,9 @@
 import stylelint, { PostcssResult, Rule } from 'stylelint';
 
 export const MAX_NESTING_DEPTH = (() => {
-	if (!stylelint) {
-		return 'kifor-stylelint/max-nesting-depth';
-	}
+	// if (!stylelint) {
+	// 	return 'kifor-stylelint/max-nesting-depth';
+	// }
 
 	const {
 		createPlugin,

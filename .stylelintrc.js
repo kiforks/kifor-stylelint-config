@@ -1112,47 +1112,76 @@ const { position, blockModel, typography, decoration, animation, miscellanea } =
  */
 const ORDER_PROPERTIES = [...position, ...blockModel, ...typography, ...decoration, ...animation, ...miscellanea];
 
-const MAX_NESTING_DEPTH = (() => {
-	// if (!stylelint) {
-	// 	return 'kifor-stylelint/max-nesting-depth';
-	// }
-	const {
-		createPlugin,
-		utils: { report, ruleMessages, validateOptions },
-	} = stylelint;
-	const ruleName = 'kifor-stylelint/max-nesting-depth';
-	const messages = ruleMessages(ruleName, {
-		rejected: selector => `Unexpected "foo" within selector "${selector}"`,
-	});
-	const meta = {
-		url: 'https://github.com/foo-org/stylelint-selector-no-foo/blob/main/README.md',
-	};
-	/** @type {import('stylelint').Rule} */
-	const ruleFunction = (primary, _secondaryOptions, _context) => {
-		return (root, result) => {
-			const validOptions = validateOptions(result, ruleName, {
-				actual: primary,
-				possible: [true],
-			});
-			if (!validOptions) return;
-			root.walkRules(ruleNode => {
-				const { selector } = ruleNode;
-				if (!selector.includes('foo')) return;
-				report({
-					result,
-					ruleName,
-					message: messages.rejected(selector),
-					node: ruleNode,
-					word: selector,
-				});
-			});
+class PluginConfig {
+	static {
+		this.NAMESPACE = 'kifor-stylelint';
+	}
+	static {
+		this.REPOSITORY_URL = 'https://github.com/kiforks/kifor-stylelint-config';
+	}
+}
+
+class PluginHelper {
+	static createRule(ruleName, ruleBase, config) {
+		const rule = Object.assign(ruleBase, config);
+		return stylelint.createPlugin(ruleName, rule);
+	}
+}
+
+class PluginBase {
+	createRule() {
+		return PluginHelper.createRule(this.ruleName, this.ruleBase, {
+			ruleName: this.ruleName,
+			messages: this.messages,
+			meta: this.meta,
+		});
+	}
+}
+
+const {
+	utils: { report, ruleMessages, validateOptions },
+} = stylelint;
+class MaxNestingDepthPlugin extends PluginBase {
+	constructor() {
+		super(...arguments);
+		this.ruleName = MaxNestingDepthPlugin.RULE_NAME;
+		this.meta = {
+			url: PluginConfig.REPOSITORY_URL,
 		};
-	};
-	ruleFunction.ruleName = ruleName;
-	ruleFunction.messages = messages;
-	ruleFunction.meta = meta;
-	return createPlugin(ruleName, ruleFunction);
-})();
+		this.messages = ruleMessages(this.ruleName, {
+			rejected: selector => `Unexpected "foo" within selector "${selector}"`,
+		});
+		this.ruleBase = (primaryOption, _secondaryOptions, _context) => (root, result) => {
+			if (!this.isValidOptions(primaryOption, result)) return;
+			this.walkRules(root, result);
+		};
+	}
+	static {
+		this.RULE_NAME = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
+	}
+	isValidOptions(primaryOption, result) {
+		const options = {
+			actual: primaryOption,
+			possible: [true],
+		};
+		return validateOptions(result, this.ruleName, options);
+	}
+	walkRules(root, result) {
+		root.walkRules(ruleNode => {
+			const { selector } = ruleNode;
+			if (!selector.includes('foo')) return;
+			report({
+				result,
+				ruleName: this.ruleName,
+				message: this.messages.rejected(selector),
+				node: ruleNode,
+				word: selector,
+			});
+		});
+	}
+}
+
+const providePlugins = plugins => plugins.map(PluginClass => new PluginClass().createRule());
 
 var index = {
 	/**
@@ -1169,11 +1198,7 @@ var index = {
 		 * @see https://www.npmjs.com/package/stylelint-order
 		 */
 		'stylelint-order',
-		/**
-		 * @name kifor-stylelint/max-nesting-depth
-		 * @see src/core/plugins/max-nesting-depth/max-nesting-depth.plugin.ts
-		 */
-		MAX_NESTING_DEPTH,
+		...providePlugins([MaxNestingDepthPlugin]),
 	],
 	rules: {
 		/* At-rule */
@@ -1236,7 +1261,8 @@ var index = {
 		],
 		/* Notation */
 		'font-weight-notation': 'numeric',
-		'kifor-stylelint/max-nesting-depth': true,
+		/* Custom plugins */
+		[MaxNestingDepthPlugin.RULE_NAME]: true,
 		// /* Other */
 		// 'max-nesting-depth': [
 		// 	3,

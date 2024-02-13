@@ -1,6 +1,6 @@
 import config from './index';
 
-jest.mock('./core/plugins/index', () => ({
+jest.mock('./core/plugin/index', () => ({
 	MAX_NESTING_DEPTH: 'kifor-stylelint/max-nesting-depth-mocked',
 }));
 

@@ -85,7 +85,7 @@ _.stylelintrc_
 }
 ```
 
-**ATTENTION!** This config is for media [mixins](https://gist.github.com/kifork/0c449aace117fb4db7695aea34b63925) instead of **media queries**:
+**ATTENTION!** This config is for media [mixins](https://gist.github.com/kifork/0c449aace117fb4db7695aea34b63925):
 ```scss
 // BAD
 @media (min-width: 1200px) {

@@ -6,7 +6,8 @@ import { RULE_UNIT_ALLOWED_LIST } from './rule/configs/rule-unit-allowed-list/ru
 
 import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
 import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
-import { MAX_NESTING_DEPTH } from './core/plugins';
+import { MaxNestingDepthPlugin } from './core/plugin';
+import { providePlugins } from './core/plugin/providers/provide-plugins';
 
 export default {
 	/**
@@ -24,11 +25,7 @@ export default {
 		 */
 		'stylelint-order',
 
-		/**
-		 * @name kifor-stylelint/max-nesting-depth
-		 * @see src/core/plugins/max-nesting-depth/max-nesting-depth.plugin.ts
-		 */
-		MAX_NESTING_DEPTH,
+		...providePlugins([MaxNestingDepthPlugin]),
 	],
 	rules: {
 		/* At-rule */
@@ -101,7 +98,9 @@ export default {
 
 		/* Notation */
 		'font-weight-notation': 'numeric',
-		'kifor-stylelint/max-nesting-depth': true,
+
+		/* Custom plugins */
+		[MaxNestingDepthPlugin.RULE_NAME]: true,
 
 		// /* Other */
 		// 'max-nesting-depth': [

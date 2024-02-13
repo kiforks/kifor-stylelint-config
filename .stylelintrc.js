@@ -1262,15 +1262,22 @@ var index = {
 		/* Notation */
 		'font-weight-notation': 'numeric',
 		/* Custom plugins */
-		[MaxNestingDepthPlugin.RULE_NAME]: true,
+		[MaxNestingDepthPlugin.RULE_NAME]: [
+			3,
+			// {
+			// 	'ignore': ['blockless-at-rules', 'pseudo-classes'],
+			// 	'ignoreRules': ['/^&::/', '/^::/'],
+			// 	'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+			// },
+		],
 		// /* Other */
 		// 'max-nesting-depth': [
 		// 	3,
-		// 	{
-		// 		'ignore': ['blockless-at-rules', 'pseudo-classes'],
-		// 		'ignoreRules': ['/^&::/', '/^::/'],
-		// 		'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-		// 	},
+		// 	// {
+		// 	// 	'ignore': ['blockless-at-rules', 'pseudo-classes'],
+		// 	// 	'ignoreRules': ['/^&::/', '/^::/'],
+		// 	// 	'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+		// 	// },
 		// ],
 	},
 };

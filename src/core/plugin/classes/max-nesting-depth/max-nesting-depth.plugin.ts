@@ -1,6 +1,12 @@
 import type * as PostCSS from 'postcss';
 import stylelint, { PostcssResult, RuleBase, RuleContext, RuleOptions } from 'stylelint';
 
+// import hasBlock from 'stylelint/lib/utils/hasBlock.mjs';
+// import isStandardSyntaxRule from 'stylelint/lib/utils/isStandardSyntaxRule.mjs';
+// import optionsMatches from 'stylelint/lib/utils/optionsMatches.mjs';
+// import { isAtRule, isRoot, isRule } from 'stylelint/lib/utils/typeGuards.mjs';
+// import { isNumber, isRegExp, isString } from 'stylelint/lib/utils/validateTypes.mjs';
+
 import { PluginConfig } from '../../configs/plugin.config';
 
 import { PluginBase } from '../plugin-base/plugin-base';

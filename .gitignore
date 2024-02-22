@@ -39,6 +39,7 @@ Thumbs.db
 
 # Generated/temporary
 /storage
+/**/*.map
 
 # Styles
 /**/*.scss

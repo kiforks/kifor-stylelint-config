@@ -1,3 +1,5 @@
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 
 export default {
@@ -5,8 +7,15 @@ export default {
 	output: {
 		file: './.stylelintrc.js',
 		format: 'es',
-		sourcemap: false,
+		sourcemap: true,
 	},
-	plugins: [typescript()],
-	external: ['stylelint'],
+	plugins: [
+		resolve({
+			browser: true,
+			extensions: ['.mjs', '.js', '.json', '.node', '.ts'],
+		}),
+		commonjs(),
+		typescript(),
+	],
+	external: ['stylelint', 'postcss', 'postcss-selector-parser'],
 };

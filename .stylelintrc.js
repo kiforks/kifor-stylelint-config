@@ -1,10 +1,5 @@
 import parser from 'postcss-selector-parser';
 import stylelint from 'stylelint';
-import hasBlock from 'stylelint/lib/utils/hasBlock.mjs';
-import isStandardSyntaxRule from 'stylelint/lib/utils/isStandardSyntaxRule.mjs';
-import optionsMatches from 'stylelint/lib/utils/optionsMatches.mjs';
-import { isAtRule, isDeclaration, isRoot, isRule } from 'stylelint/lib/utils/typeGuards.mjs';
-import { isNumber, isRegExp, isString } from 'stylelint/lib/utils/validateTypes.mjs';
 
 const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'];
 
@@ -1118,6 +1113,325 @@ const { position, blockModel, typography, decoration, animation, miscellanea } =
  */
 const ORDER_PROPERTIES = [...position, ...blockModel, ...typography, ...decoration, ...animation, ...miscellanea];
 
+/**
+ * Check if a statement has an block (empty or otherwise).
+ *
+ * @param {import('postcss').Container} statement
+ * @return {boolean} True if `statement` has a block (empty or otherwise)
+ */
+function hasBlock(statement) {
+	return statement.nodes !== undefined;
+}
+
+const HAS_LESS_INTERPOLATION = /@\{.+?\}/;
+
+/**
+ * Check whether a string has less interpolation
+ *
+ * @param {string} string
+ * @return {boolean} If `true`, a string has less interpolation
+ */
+function hasLessInterpolation(string) {
+	return HAS_LESS_INTERPOLATION.test(string);
+}
+
+const HAS_PSV_INTERPOLATION = /\$\(.+?\)/;
+
+/**
+ * Check whether a string has postcss-simple-vars interpolation
+ *
+ * @param {string} string
+ * @returns {boolean}
+ */
+function hasPsvInterpolation(string) {
+	return HAS_PSV_INTERPOLATION.test(string);
+}
+
+const HAS_SCSS_INTERPOLATION = /#\{.+?\}/s;
+
+/**
+ * Check whether a string has scss interpolation
+ *
+ * @param {string} string
+ * @returns {boolean}
+ */
+function hasScssInterpolation(string) {
+	return HAS_SCSS_INTERPOLATION.test(string);
+}
+
+const HAS_TPL_INTERPOLATION = /\{.+?\}/s;
+
+/**
+ * Check whether a string has JS template literal interpolation or HTML-like template
+ *
+ * @param {string} string
+ * @return {boolean} If `true`, a string has template literal interpolation
+ */
+function hasTplInterpolation(string) {
+	return HAS_TPL_INTERPOLATION.test(string);
+}
+
+/**
+ * Check whether a string has interpolation
+ *
+ * @param {string} string
+ * @return {boolean} If `true`, a string has interpolation
+ */
+function hasInterpolation(string) {
+	// SCSS or Less interpolation
+	if (
+		hasLessInterpolation(string) ||
+		hasScssInterpolation(string) ||
+		hasTplInterpolation(string) ||
+		hasPsvInterpolation(string)
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Check whether a selector is standard
+ *
+ * @param {string} selector
+ * @returns {boolean}
+ */
+function isStandardSyntaxSelector(selector) {
+	// SCSS or Less interpolation
+	if (hasInterpolation(selector)) {
+		return false;
+	}
+
+	// SCSS placeholder selectors
+	if (selector.startsWith('%')) {
+		return false;
+	}
+
+	// SCSS nested properties
+	if (selector.endsWith(':')) {
+		return false;
+	}
+
+	// Less :extend()
+	if (/:extend(?:\(.*?\))?/.test(selector)) {
+		return false;
+	}
+
+	// Less mixin with resolved nested selectors (e.g. .foo().bar or .foo(@a, @b)[bar])
+	if (/\.[\w-]+\(.*\).+/.test(selector)) {
+		return false;
+	}
+
+	// Less non-outputting mixin definition (e.g. .mixin() {})
+	if (selector.endsWith(')') && !selector.includes(':')) {
+		return false;
+	}
+
+	// Less Parametric mixins (e.g. .mixin(@variable: x) {})
+	if (/\(@.*\)$/.test(selector)) {
+		return false;
+	}
+
+	// ERB template tags
+	if (selector.includes('<%') || selector.includes('%>')) {
+		return false;
+	}
+
+	//  SCSS and Less comments
+	if (selector.includes('//')) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Check whether a Node is a standard rule
+ *
+ * @param {import('postcss').Rule | import('postcss-less').Rule} rule
+ * @returns {boolean}
+ */
+function isStandardSyntaxRule(rule) {
+	if (rule.type !== 'rule') {
+		return false;
+	}
+
+	// Ignore Less &:extend rule
+	if ('extend' in rule && rule.extend) {
+		return false;
+	}
+
+	if (!isStandardSyntaxSelector(rule.selector)) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Compares a string to a second value that, if it fits a certain convention,
+ * is converted to a regular expression before the comparison.
+ * If it doesn't fit the convention, then two strings are compared.
+ *
+ * Any strings starting and ending with `/` are interpreted
+ * as regular expressions.
+ *
+ * @param {string | Array<string>} input
+ * @param {string | RegExp | Array<string | RegExp>} comparison
+ *
+ * @returns {false | {match: string, pattern: (string | RegExp), substring: string}}
+ */
+function matchesStringOrRegExp(input, comparison) {
+	if (!Array.isArray(input)) {
+		return testAgainstStringOrRegExpOrArray(input, comparison);
+	}
+
+	for (const inputItem of input) {
+		const testResult = testAgainstStringOrRegExpOrArray(inputItem, comparison);
+
+		if (testResult) {
+			return testResult;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * @param {string} value
+ * @param {string | RegExp | Array<string | RegExp>} comparison
+ */
+function testAgainstStringOrRegExpOrArray(value, comparison) {
+	if (!Array.isArray(comparison)) {
+		return testAgainstStringOrRegExp(value, comparison);
+	}
+
+	for (const comparisonItem of comparison) {
+		const testResult = testAgainstStringOrRegExp(value, comparisonItem);
+
+		if (testResult) {
+			return testResult;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * @param {string} value
+ * @param {string | RegExp} comparison
+ */
+function testAgainstStringOrRegExp(value, comparison) {
+	// If it's a RegExp, test directly
+	if (comparison instanceof RegExp) {
+		const match = value.match(comparison);
+
+		return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
+	}
+
+	// Check if it's RegExp in a string
+	const firstComparisonChar = comparison[0];
+	const lastComparisonChar = comparison[comparison.length - 1];
+	const secondToLastComparisonChar = comparison[comparison.length - 2];
+
+	const comparisonIsRegex =
+		firstComparisonChar === '/' &&
+		(lastComparisonChar === '/' || (secondToLastComparisonChar === '/' && lastComparisonChar === 'i'));
+
+	const hasCaseInsensitiveFlag = comparisonIsRegex && lastComparisonChar === 'i';
+
+	// If so, create a new RegExp from it
+	if (comparisonIsRegex) {
+		const valueMatch = hasCaseInsensitiveFlag
+			? value.match(new RegExp(comparison.slice(1, -2), 'i'))
+			: value.match(new RegExp(comparison.slice(1, -1)));
+
+		return valueMatch ? { match: value, pattern: comparison, substring: valueMatch[0] || '' } : false;
+	}
+
+	// Otherwise, it's a string. Do a strict comparison
+	return value === comparison ? { match: value, pattern: comparison, substring: value } : false;
+}
+
+/**
+ * Check if an options object's propertyName contains a user-defined string or
+ * regex that matches the passed in input.
+ *
+ * @param {{ [x: string]: any; }} options
+ * @param {string} propertyName
+ * @param {unknown} input
+ *
+ * @returns {boolean}
+ */
+function optionsMatches(options, propertyName, input) {
+	return Boolean(
+		options && options[propertyName] && typeof input === 'string' && matchesStringOrRegExp(input, options[propertyName])
+	);
+}
+
+/** @typedef {import('postcss').Node} Node */
+/** @typedef {import('postcss').Source} NodeSource */
+
+/**
+ * @param {Node} node
+ * @returns {node is import('postcss').Root}
+ */
+function isRoot(node) {
+	return node.type === 'root';
+}
+
+/**
+ * @param {Node} node
+ * @returns {node is import('postcss').Rule}
+ */
+function isRule(node) {
+	return node.type === 'rule';
+}
+
+/**
+ * @param {Node} node
+ * @returns {node is import('postcss').AtRule}
+ */
+function isAtRule(node) {
+	return node.type === 'atrule';
+}
+
+/**
+ * @param {Node} node
+ * @returns {node is import('postcss').Declaration}
+ */
+function isDeclaration(node) {
+	return node.type === 'decl';
+}
+
+/**
+ * Checks if the value is a number or a Number object.
+ * @param {unknown} value
+ * @returns {value is number}
+ */
+function isNumber(value) {
+	return typeof value === 'number' || value instanceof Number;
+}
+
+/**
+ * Checks if the value is a regular expression.
+ * @param {unknown} value
+ * @returns {value is RegExp}
+ */
+function isRegExp(value) {
+	return value instanceof RegExp;
+}
+
+/**
+ * Checks if the value is a string or a String object.
+ * @param {unknown} value
+ * @returns {value is string}
+ */
+function isString(value) {
+	return typeof value === 'string' || value instanceof String;
+}
+
 class PluginConfig {
 	static {
 		this.NAMESPACE = 'kifor-stylelint';
@@ -1371,3 +1685,4 @@ var index = {
 };
 
 export { index as default };
+//# sourceMappingURL=.stylelintrc.js.map

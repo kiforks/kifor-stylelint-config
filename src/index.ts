@@ -102,21 +102,11 @@ export default {
 		/* Custom plugins */
 		[MaxNestingDepthPlugin.RULE_NAME]: [
 			3,
-			// {
-			// 	'ignore': ['blockless-at-rules', 'pseudo-classes'],
-			// 	'ignoreRules': ['/^&::/', '/^::/'],
-			// 	'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-			// },
+			{
+				'ignore': ['blockless-at-rules', 'pseudo-classes'],
+				'ignoreRules': ['/^&::/', '/^::/'],
+				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+			},
 		],
-
-		// /* Other */
-		// 'max-nesting-depth': [
-		// 	3,
-		// 	// {
-		// 	// 	'ignore': ['blockless-at-rules', 'pseudo-classes'],
-		// 	// 	'ignoreRules': ['/^&::/', '/^::/'],
-		// 	// 	'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-		// 	// },
-		// ],
 	},
 } as Config;

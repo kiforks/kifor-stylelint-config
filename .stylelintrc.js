@@ -1,4 +1,10 @@
+import parser from 'postcss-selector-parser';
 import stylelint from 'stylelint';
+import hasBlock from 'stylelint/lib/utils/hasBlock.mjs';
+import isStandardSyntaxRule from 'stylelint/lib/utils/isStandardSyntaxRule.mjs';
+import optionsMatches from 'stylelint/lib/utils/optionsMatches.mjs';
+import { isAtRule, isDeclaration, isRoot, isRule } from 'stylelint/lib/utils/typeGuards.mjs';
+import { isNumber, isRegExp, isString } from 'stylelint/lib/utils/validateTypes.mjs';
 
 const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'];
 
@@ -1149,35 +1155,126 @@ class MaxNestingDepthPlugin extends PluginBase {
 			url: PluginConfig.REPOSITORY_URL,
 		};
 		this.messages = ruleMessages(this.ruleName, {
-			rejected: selector => `Unexpected "foo" within selector "${selector}"`,
+			expected: depth => `Expected nesting depth to be no more than ${depth}`,
 		});
-		this.ruleBase = (primaryOption, _secondaryOptions, _context) => (root, result) => {
-			if (!this.isValidOptions(primaryOption, result)) return;
-			this.walkRules(root, result);
+		this.maxDepth = 0;
+		this.ruleBase = (maxDepth, secondaryOptions, _context) => {
+			return (root, result) => {
+				this.maxDepth = maxDepth;
+				const validOptions = validateOptions(
+					result,
+					this.ruleName,
+					{
+						actual: maxDepth,
+						possible: [isNumber],
+					},
+					{
+						optional: true,
+						actual: secondaryOptions,
+						possible: {
+							ignore: ['blockless-at-rules', 'pseudo-classes'],
+							ignoreAtRules: [isString, isRegExp],
+							ignoreRules: [isString, isRegExp],
+							ignorePseudoClasses: [isString, isRegExp],
+						},
+					}
+				);
+				if (!validOptions) return;
+				root.walkRules(this.checkStatement(result, secondaryOptions));
+				root.walkAtRules(this.checkStatement(result, secondaryOptions));
+			};
 		};
 	}
 	static {
 		this.RULE_NAME = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
 	}
-	isValidOptions(primaryOption, result) {
-		const options = {
-			actual: primaryOption,
-			possible: [true],
+	checkStatement(result, secondaryOptions) {
+		return rule => {
+			if (this.isIgnoreAtRule(rule, secondaryOptions)) {
+				return;
+			}
+			if (this.isIgnoreRule(rule, secondaryOptions)) {
+				return;
+			}
+			if (!hasBlock(rule)) {
+				return;
+			}
+			if (isRule(rule) && !isStandardSyntaxRule(rule)) {
+				return;
+			}
+			const depth = this.nestingDepth(rule, 0, secondaryOptions);
+			if (depth > this.maxDepth) {
+				report({
+					ruleName: this.ruleName,
+					result,
+					node: rule,
+					message: this.messages.expected,
+					messageArgs: [this.maxDepth],
+				});
+			}
 		};
-		return validateOptions(result, this.ruleName, options);
 	}
-	walkRules(root, result) {
-		root.walkRules(ruleNode => {
-			const { selector } = ruleNode;
-			if (!selector.includes('foo')) return;
-			report({
-				result,
-				ruleName: this.ruleName,
-				message: this.messages.rejected(selector),
-				node: ruleNode,
-				word: selector,
-			});
+	nestingDepth(node, level, secondaryOptions) {
+		const parent = node.parent;
+		if (!parent) {
+			return 0;
+		}
+		if (this.isIgnoreAtRule(parent)) {
+			return 0;
+		}
+		// The nesting maxDepth level's computation has finished
+		// when this function, recursively called, receives
+		// a node that is not nested -- a direct child of the
+		// root node
+		if (isRoot(parent) || (isAtRule(parent) && parent.parent && isRoot(parent.parent))) {
+			return level;
+		}
+		/**
+		 * @param {string[]} selectors
+		 * @returns {boolean}
+		 */
+		if (
+			(optionsMatches(secondaryOptions, 'ignore', 'blockless-at-rules') &&
+				isAtRule(node) &&
+				node.every(child => !isDeclaration(child))) ||
+			(optionsMatches(secondaryOptions, 'ignore', 'pseudo-classes') &&
+				isRule(node) &&
+				this.containsPseudoClassesOnly(node.selector)) ||
+			(isRule(node) && this.containsIgnoredPseudoClassesOrRulesOnly(node.selectors, secondaryOptions))
+		) {
+			return this.nestingDepth(parent, level, secondaryOptions);
+		}
+		// Unless any of the conditions above apply, we want to
+		// add 1 to the nesting maxDepth level and then check the parent,
+		// continuing to add and move up the hierarchy
+		// until we hit the root node
+		return this.nestingDepth(parent, level + 1, secondaryOptions);
+	}
+	isIgnoreRule(node, secondaryOptions = {}) {
+		return isRule(node) && optionsMatches(secondaryOptions, 'ignoreRules', node.selector);
+	}
+	isIgnoreAtRule(node, secondaryOptions = {}) {
+		return isAtRule(node) && optionsMatches(secondaryOptions, 'ignoreAtRules', node.name);
+	}
+	containsPseudoClassesOnly(selector) {
+		const normalized = parser().processSync(selector, { lossless: false });
+		const selectors = normalized.split(',');
+		return selectors.every(item => this.extractPseudoRule(item));
+	}
+	containsIgnoredPseudoClassesOrRulesOnly(selectors, secondaryOptions) {
+		if (!(secondaryOptions && (secondaryOptions.ignorePseudoClasses || secondaryOptions.ignoreRules))) {
+			return false;
+		}
+		return selectors.every(selector => {
+			if (secondaryOptions.ignoreRules && optionsMatches(secondaryOptions, 'ignoreRules', selector)) return true;
+			if (!secondaryOptions.ignorePseudoClasses) return false;
+			const pseudoRule = this.extractPseudoRule(selector);
+			if (!pseudoRule) return false;
+			return optionsMatches(secondaryOptions, 'ignorePseudoClasses', pseudoRule);
 		});
+	}
+	extractPseudoRule(selector) {
+		return selector.startsWith('&:') && selector[2] !== ':' ? selector.slice(2) : undefined;
 	}
 }
 
@@ -1264,21 +1361,12 @@ var index = {
 		/* Custom plugins */
 		[MaxNestingDepthPlugin.RULE_NAME]: [
 			3,
-			// {
-			// 	'ignore': ['blockless-at-rules', 'pseudo-classes'],
-			// 	'ignoreRules': ['/^&::/', '/^::/'],
-			// 	'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-			// },
+			{
+				'ignore': ['blockless-at-rules', 'pseudo-classes'],
+				'ignoreRules': ['/^&::/', '/^::/'],
+				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+			},
 		],
-		// /* Other */
-		// 'max-nesting-depth': [
-		// 	3,
-		// 	// {
-		// 	// 	'ignore': ['blockless-at-rules', 'pseudo-classes'],
-		// 	// 	'ignoreRules': ['/^&::/', '/^::/'],
-		// 	// 	'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-		// 	// },
-		// ],
 	},
 };
 

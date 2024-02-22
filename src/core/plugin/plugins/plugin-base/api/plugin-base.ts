@@ -1,6 +1,6 @@
 import { Plugin, RuleBase, RuleMessages, RuleMeta } from 'stylelint';
 
-import { PluginHelper } from '../../helpers/plugin.helper';
+import { PluginHelper } from '../../../helpers/plugin.helper';
 
 export abstract class PluginBase {
 	protected abstract readonly messages: RuleMessages;

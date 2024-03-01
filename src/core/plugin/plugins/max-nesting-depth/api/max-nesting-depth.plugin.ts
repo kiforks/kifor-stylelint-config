@@ -10,28 +10,33 @@ import { isNumber, isRegExp, isString } from 'stylelint/lib/utils/validateTypes.
 
 import { PluginConfig } from '../../../configs/plugin.config';
 
-import { PluginBase } from '../../plugin-base/api/plugin-base';
-
 import { MaxNestingDepthCheckStatementFn, MaxNestingDepthOptions } from '../interfaces/max-nesting-depth.interface';
+
+import { PluginBase } from '../../plugin-base/api/plugin-base';
 
 const {
 	utils: { report, ruleMessages, validateOptions },
 } = stylelint;
 
+/**
+ * Source was taken from:
+ * @see https://github.com/stylelint/stylelint/blob/main/lib/rules/max-nesting-depth/README.md
+ *
+ * Tests:
+ * @see ./.stylelintrc.spec.js
+ */
 export class MaxNestingDepthPlugin extends PluginBase {
-	public static readonly RULE_NAME = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
-
-	protected readonly ruleName = MaxNestingDepthPlugin.RULE_NAME;
-	protected readonly meta = {
+	public readonly ruleName = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
+	public readonly meta = {
 		url: PluginConfig.REPOSITORY_URL,
 	};
-	protected readonly messages = ruleMessages(this.ruleName, {
+	public readonly messages = ruleMessages(this.ruleName, {
 		expected: depth => `Expected nesting depth to be no more than ${depth}`,
 	});
 
 	private maxDepth: number = 0;
 
-	protected readonly ruleBase: RuleBase = (maxDepth: number, secondaryOptions: MaxNestingDepthOptions) => {
+	public readonly ruleBase: RuleBase = (maxDepth: number, secondaryOptions: MaxNestingDepthOptions) => {
 		return (root: PostCSS.Root, result: PostcssResult): void => {
 			this.maxDepth = maxDepth;
 

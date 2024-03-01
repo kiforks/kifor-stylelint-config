@@ -43,14 +43,12 @@ export abstract class RegExpHelper {
 		return rules.map(rule => {
 			const isAtRule = RuleHelper.isRuleAt(rule) && rule.type === 'at-rule';
 
-			if (isAtRule && typeof rule.parameter === 'string') {
-				return {
-					...rule,
-					parameter: RegExpHelper.makeRegex(rule.parameter).source,
-				};
-			}
-
-			return rule;
+			return isAtRule && typeof rule.parameter === 'string'
+				? {
+						...rule,
+						parameter: RegExpHelper.makeRegex(rule.parameter).source,
+					}
+				: rule;
 		});
 	}
 }

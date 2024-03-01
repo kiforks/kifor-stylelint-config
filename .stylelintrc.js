@@ -1,6 +1,41 @@
 import parser from 'postcss-selector-parser';
 import stylelint from 'stylelint';
 
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global Reflect, Promise, SuppressedError, Symbol */
+
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length,
+		r = c < 3 ? target : desc === null ? (desc = Object.getOwnPropertyDescriptor(target, key)) : desc,
+		d;
+	if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
+		r = Reflect.decorate(decorators, target, key, desc);
+	else
+		for (var i = decorators.length - 1; i >= 0; i--)
+			if ((d = decorators[i])) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+typeof SuppressedError === 'function'
+	? SuppressedError
+	: function (error, suppressed, message) {
+			var e = new Error(message);
+			return (e.name = 'SuppressedError'), (e.error = error), (e.suppressed = suppressed), e;
+		};
+
 const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'];
 
 const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
@@ -281,13 +316,12 @@ class RegExpHelper {
 	static paramToRegex(rules) {
 		return rules.map(rule => {
 			const isAtRule = RuleHelper.isRuleAt(rule) && rule.type === 'at-rule';
-			if (isAtRule && typeof rule.parameter === 'string') {
-				return {
-					...rule,
-					parameter: RegExpHelper.makeRegex(rule.parameter).source,
-				};
-			}
-			return rule;
+			return isAtRule && typeof rule.parameter === 'string'
+				? {
+						...rule,
+						parameter: RegExpHelper.makeRegex(rule.parameter).source,
+					}
+				: rule;
 		});
 	}
 }
@@ -551,152 +585,152 @@ const ORDER_CONTENT_SELECTORS = RuleHelper.createSelectors([
 const ORDER_CONFIG = [
 	/**
 	 * CSS charset rule:
-	 * @example: @charset "UTF-8";
+	 * @example @charset "UTF-8";
 	 */
 	RuleHelper.createAtRule('charset'),
 	/**
 	 * CSS import rule:
-	 * @example: @import url("fineprint.css");
+	 * @example @import url("fineprint.css");
 	 */
 	RuleHelper.createAtRule('import'),
 	/**
 	 * CSS font-face rule:
-	 * @example: @font-face { font-family: 'Graublau Web'; src: url('GraublauWeb.woff') format('woff'); }
+	 * @example @font-face { font-family: 'Graublau Web'; src: url('GraublauWeb.woff') format('woff'); }
 	 */
 	RuleHelper.createAtRule('font-face'),
 	/**
 	 * CSS font-feature-values rule:
-	 * @example: @font-feature-values Font Family Name { @styleset { style1 value1, style2 value2, ... } }
+	 * @example @font-feature-values Font Family Name { @styleset { style1 value1, style2 value2, ... } }
 	 */
 	RuleHelper.createAtRule('font-feature-values'),
 	/**
 	 * CSS font-palette-values rule:
-	 * @example: @font-palette-values Font Family Name { base-palette: ...; override-palette: ...; }
+	 * @example @font-palette-values Font Family Name { base-palette: ...; override-palette: ...; }
 	 */
 	RuleHelper.createAtRule('font-palette-values'),
 	/**
 	 * CSS keyframes rule:
-	 * @example: @keyframes slide { from { transform: translateX(0%); } to { transform: translateX(100%); } }
+	 * @example @keyframes slide { from { transform: translateX(0%); } to { transform: translateX(100%); } }
 	 */
 	RuleHelper.createAtRule('keyframes'),
 	/**
 	 * CSS layer rule (specific to Firefox):
-	 * @example: @layer base, components { ... }
+	 * @example @layer base, components { ... }
 	 */
 	RuleHelper.createAtRule('layer'),
 	/**
 	 * CSS property rule:
-	 * @example: @property --main-bg-color { syntax: '<color>'; initial-value: #c0ffee; inherits: false; }
+	 * @example @property --main-bg-color { syntax: '<color>'; initial-value: #c0ffee; inherits: false; }
 	 */
 	RuleHelper.createAtRule('property'),
 	/**
 	 * CSS counter-style rule:
-	 * @example: @counter-style custom { system: cyclic; symbols: '*' '+' '-' }
+	 * @example @counter-style custom { system: cyclic; symbols: '*' '+' '-' }
 	 */
 	RuleHelper.createAtRule('counter-style'),
 	/**
 	 * CSS namespace rule:
-	 * @example: @namespace svg url(http://www.w3.org/2000/svg);
+	 * @example @namespace svg url(http://www.w3.org/2000/svg);
 	 */
 	RuleHelper.createAtRule('namespace'),
 	/**
 	 * Custom properties:
-	 * @example: --property: 10px;
+	 * @example --property: 10px;
 	 */
 	'custom-properties',
 	/**
 	 * Dollar variables:
-	 * @example: $variable: 12px !default;
+	 * @example $variable: 12px !default;
 	 */
 	'dollar-variables',
 	/**
 	 * SCSS includes that has prefix reset:
-	 * @example: @include reset-list;
+	 * @example @include reset-list;
 	 */
 	RuleHelper.createInclude('^reset'),
 	/**
 	 * CSS declarations:
-	 * @example: display: block;
+	 * @example display: block;
 	 */
 	'declarations',
 	/**
 	 * SCSS extend
-	 * @example: @extend .some-class
+	 * @example @extend .some-class
 	 */
 	RuleHelper.createAtRule('extend'),
 	/**
 	 * SCSS includes
-	 * @example: @include some-mixin;
+	 * @example @include some-mixin;
 	 */
 	RuleHelper.createInclude('include'),
 	/**
 	 * SCSS pseudo classes includes:
-	 * @example: @include hover;
+	 * @example @include hover;
 	 */
 	...ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES,
 	/**
 	 * SCSS pseudo elements includes:
-	 * @example: @include before-mixin;
+	 * @example @include before-mixin;
 	 */
 	...ORDER_CONTENT_PSEUDO_CLASS_INCLUDES,
 	/**
 	 * CSS pseudo classes:
-	 * @example: &:hover {}
+	 * @example &:hover {}
 	 */
 	...ORDER_CONTENT_PSEUDO_CLASSES,
 	/**
 	 * CSS pseudo elements:
-	 * @example: &::before {}
+	 * @example &::before {}
 	 */
 	...ORDER_CONTENT_PSEUDO_ELEMENTS,
 	/**
 	 * CSS selectors:
-	 * @example: div {}
+	 * @example div {}
 	 */
 	...ORDER_CONTENT_SELECTORS,
 	/**
 	 * SCSS Media includes for specific devices:
-	 * @example: @include media-desktop;
+	 * @example @include media-desktop;
 	 */
 	...MediaRuleHelper.createDeviceRulesOrder(MediaConfig.DEVICES),
 	/**
 	 * SCSS Media includes for minimum breakpoints:
-	 * @example: @include media-min(md);
+	 * @example @include media-min(md);
 	 */
 	...MediaRuleHelper.createBreakpointRulesOrder('min', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for maximum breakpoints:
-	 * @example: @include media-max(md);
+	 * @example @include media-max(md);
 	 */
 	...MediaRuleHelper.createBreakpointRulesOrder('max', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for specific breakpoints:
-	 * @example: @include media-only(md);
+	 * @example @include media-only(md);
 	 */
 	...MediaRuleHelper.createBreakpointRulesOrder('only', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for range between breakpoints:
-	 * @example: @include media-between(md, lg);
+	 * @example @include media-between(md, lg);
 	 */
 	...MediaRuleHelper.createBreakpointBetweenRulesOrder(MediaConfig.BREAKPOINTS),
 	/**
 	 * Media queries:
-	 * @example: @media (min-width: 768px) {}
+	 * @example @media (min-width: 768px) {}
 	 */
 	...ORDER_CONTENT_MEDIA_QUERY,
 	/**
 	 * CSS page rule:
-	 * @example: @page :first { margin: 2in }
+	 * @example @page :first { margin: 2in }
 	 */
 	RuleHelper.createAtRule('page'),
 	/**
 	 * CSS container rule:
-	 * @example: @container (min-width: 100%) { ... }
+	 * @example @container (min-width: 100%) { ... }
 	 */
 	RuleHelper.createAtRule('container'),
 	/**
 	 * CSS supports rule:
-	 * @example: @supports (display: grid) { ... }
+	 * @example @supports (display: grid) { ... }
 	 */
 	RuleHelper.createAtRule('supports'),
 ];
@@ -1461,10 +1495,17 @@ class PluginBase {
 const {
 	utils: { report, ruleMessages, validateOptions },
 } = stylelint;
+/**
+ * Source was taken from:
+ * @see https://github.com/stylelint/stylelint/blob/main/lib/rules/max-nesting-depth/README.md
+ *
+ * Tests:
+ * @see ./.stylelintrc.spec.js
+ */
 class MaxNestingDepthPlugin extends PluginBase {
 	constructor() {
 		super(...arguments);
-		this.ruleName = MaxNestingDepthPlugin.RULE_NAME;
+		this.ruleName = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
 		this.meta = {
 			url: PluginConfig.REPOSITORY_URL,
 		};
@@ -1496,9 +1537,6 @@ class MaxNestingDepthPlugin extends PluginBase {
 				root.walkAtRules(checkStatement);
 			};
 		};
-	}
-	static {
-		this.RULE_NAME = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
 	}
 	checkStatement(result, secondaryOptions) {
 		return rule => {
@@ -1585,88 +1623,30 @@ class MaxNestingDepthPlugin extends PluginBase {
 	}
 }
 
-const providePlugins = plugins => plugins.map(PluginClass => new PluginClass().createRule());
+const Plugin = config => {
+	return constructor => {
+		return class extends constructor {
+			constructor(...args) {
+				super(...args);
+				const currentPlugins = this.plugins || [];
+				const currentRules = this.rules;
+				this.plugins = [...currentPlugins, ...config.providers.map(({ provide }) => new provide().createRule())];
+				this.rules = Object.assign(
+					{},
+					currentRules,
+					...config.providers.map(({ options }, index) => ({
+						[new config.providers[index].provide().ruleName]: options,
+					}))
+				);
+			}
+		};
+	};
+};
 
-var index = {
-	/**
-	 * Docs:
-	 * @see https://stylelint.io/user-guide/rules
-	 */
-	extends: ['stylelint-config-standard'],
-	customSyntax: 'postcss-scss',
-	ignoreFiles: ['**/*.css'],
-	plugins: [
-		/**
-		 * @name order/order
-		 * @name order/properties-order
-		 * @see https://www.npmjs.com/package/stylelint-order
-		 */
-		'stylelint-order',
-		...providePlugins([MaxNestingDepthPlugin]),
-	],
-	rules: {
-		/* At-rule */
-		'at-rule-no-unknown': [
-			true,
-			{
-				'ignoreAtRules': RULE_NO_UNKNOWN,
-			},
-		],
-		'at-rule-property-required-list': {
-			'font-face': ['font-display', 'font-family', 'font-style'],
-		},
-		/* Color */
-		'color-function-notation': ['legacy', { 'ignore': ['with-var-inside'] }],
-		'color-no-hex': true,
-		/* Declaration block */
-		'declaration-block-no-duplicate-properties': true,
-		'declaration-block-no-redundant-longhand-properties': null,
-		/* Declaration property */
-		'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
-		'declaration-property-value-no-unknown': true,
-		/* Function */
-		'function-disallowed-list': ['rgb'],
-		'function-url-no-scheme-relative': true,
-		'function-url-scheme-disallowed-list': ['ftp', '/^http/'],
-		/* Media feature */
-		'media-feature-name-no-vendor-prefix': true,
-		'media-feature-name-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
-		/* Rule */
-		'rule-selector-property-disallowed-list': {
-			'/ri\\-/': ['font-size'],
-			'/^\\.ri-/': ['font-size'],
-			'i': ['font-size'],
-		},
-		/* Selector */
-		'selector-disallowed-list': [
-			'i',
-			'/^\\.container/',
-			'/^\\.g-col/',
-			'/^\\.col/',
-			'/^\\.grid/',
-			'/\\[data-test.+]/',
-			'/\\[data-po.+]/',
-		],
-		'selector-max-attribute': 1,
-		'selector-max-id': 1,
-		'selector-no-qualifying-type': true,
-		'selector-not-notation': 'simple',
-		'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['ng-deep'] }],
-		/* Time */
-		'time-min-milliseconds': 50,
-		/* Unit */
-		'unit-allowed-list': RULE_UNIT_ALLOWED_LIST,
-		/* Plugin */
-		'order/order': ORDER_CONTENT,
-		'order/properties-order': [
-			{
-				properties: ORDER_PROPERTIES,
-			},
-		],
-		/* Notation */
-		'font-weight-notation': 'numeric',
-		/* Custom plugins */
-		[MaxNestingDepthPlugin.RULE_NAME]: [
+const providers = [
+	{
+		provide: MaxNestingDepthPlugin,
+		options: [
 			3,
 			{
 				'ignore': ['blockless-at-rules', 'pseudo-classes'],
@@ -1675,7 +1655,90 @@ var index = {
 			},
 		],
 	},
+];
+/**
+ * Docs:
+ * @see https://stylelint.io/user-guide/rules
+ */
+let Configuration = class Configuration {
+	constructor() {
+		this.extends = ['stylelint-config-standard'];
+		this.customSyntax = 'postcss-scss';
+		this.ignoreFiles = ['**/*.css'];
+		this.plugins = [
+			/**
+			 * @name order/order
+			 * @name order/properties-order
+			 * @see https://www.npmjs.com/package/stylelint-order
+			 */
+			'stylelint-order',
+		];
+		this.rules = {
+			/* At-rule */
+			'at-rule-no-unknown': [
+				true,
+				{
+					'ignoreAtRules': RULE_NO_UNKNOWN,
+				},
+			],
+			'at-rule-property-required-list': {
+				'font-face': ['font-display', 'font-family', 'font-style'],
+			},
+			/* Color */
+			'color-function-notation': ['legacy', { 'ignore': ['with-var-inside'] }],
+			'color-no-hex': true,
+			/* Declaration block */
+			'declaration-block-no-duplicate-properties': true,
+			'declaration-block-no-redundant-longhand-properties': null,
+			/* Declaration property */
+			'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
+			'declaration-property-value-no-unknown': true,
+			/* Function */
+			'function-disallowed-list': ['rgb'],
+			'function-url-no-scheme-relative': true,
+			'function-url-scheme-disallowed-list': ['ftp', '/^http/'],
+			/* Media feature */
+			'media-feature-name-no-vendor-prefix': true,
+			'media-feature-name-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
+			/* Rule */
+			'rule-selector-property-disallowed-list': {
+				'/ri\\-/': ['font-size'],
+				'/^\\.ri-/': ['font-size'],
+				'i': ['font-size'],
+			},
+			/* Selector */
+			'selector-disallowed-list': [
+				'i',
+				'/^\\.container/',
+				'/^\\.g-col/',
+				'/^\\.col/',
+				'/^\\.grid/',
+				'/\\[data-test.+]/',
+				'/\\[data-po.+]/',
+			],
+			'selector-max-attribute': 1,
+			'selector-max-id': 1,
+			'selector-no-qualifying-type': true,
+			'selector-not-notation': 'simple',
+			'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['ng-deep'] }],
+			/* Time */
+			'time-min-milliseconds': 50,
+			/* Unit */
+			'unit-allowed-list': RULE_UNIT_ALLOWED_LIST,
+			/* Plugin */
+			'order/order': ORDER_CONTENT,
+			'order/properties-order': [
+				{
+					properties: ORDER_PROPERTIES,
+				},
+			],
+			/* Notation */
+			'font-weight-notation': 'numeric',
+		};
+	}
 };
+Configuration = __decorate([Plugin({ providers })], Configuration);
+var index = { ...new Configuration() };
 
 export { index as default };
 //# sourceMappingURL=.stylelintrc.js.map

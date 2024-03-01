@@ -22,22 +22,11 @@
 		"",
 		"^.*(\\.config)/?.*$",
 		"",
-		"",
-		"^.*(/services|\\.service|/api|\\.api)/?.*$",
-		"^.*(/guards|\\.guard)/?.*$",
-		"",
 		"^.*(/helpers|\\.helper)/?.*$",
-		"",
-		"^.*(/components|\\.component|/pages|/modals)/?.*$",
-		"",
-		"^.*(/directives|\\.directive)/?.*$",
-		"",
-		"^.*(/pipes|\\.pipe)/?.*$",
-		"",
 		"",
 		"^.*(/interfaces|\\.interface|/loaders|\\.loader|/enums|\\.enum|/routes|\\.route|/model|\\.model|/classes)/?.*$",
 		"",
-		"^.*(/i18n|\\.i18n|/constants)/?.*$",
+		"^.*(/constants)/?.*$",
 		"^[./]"
 	]
 }

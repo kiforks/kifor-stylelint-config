@@ -4,30 +4,45 @@ import { RULE_NO_UNKNOWN } from './rule/configs/rule-no-unknown/rule-no-unknown.
 import { RULE_PROPERTY_UNIT_ALLOWED_LIST } from './rule/configs/rule-property-unit-allowed-list/rule-property-unit-allowed-list.config';
 import { RULE_UNIT_ALLOWED_LIST } from './rule/configs/rule-unit-allowed-list/rule-unit-allowed-list.config';
 
+import { PluginProvider } from './core/plugin/interfaces/plugin.interface';
+
 import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
 import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
 import { MaxNestingDepthPlugin } from './core/plugin';
-import { providePlugins } from './core/plugin/providers/provide-plugins';
+import { Plugin } from './core/plugin/decorators/plugin.decorator';
 
-export default {
-	/**
-	 * Docs:
-	 * @see https://stylelint.io/user-guide/rules
-	 */
-	extends: ['stylelint-config-standard'],
-	customSyntax: 'postcss-scss',
-	ignoreFiles: ['**/*.css'],
-	plugins: [
+const providers: PluginProvider[] = [
+	{
+		provide: MaxNestingDepthPlugin,
+		options: [
+			3,
+			{
+				'ignore': ['blockless-at-rules', 'pseudo-classes'],
+				'ignoreRules': ['/^&::/', '/^::/'],
+				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
+			},
+		],
+	},
+];
+
+/**
+ * Docs:
+ * @see https://stylelint.io/user-guide/rules
+ */
+@Plugin({ providers })
+class Configuration implements Config {
+	public extends = ['stylelint-config-standard'];
+	public customSyntax = 'postcss-scss';
+	public ignoreFiles = ['**/*.css'];
+	public plugins = [
 		/**
 		 * @name order/order
 		 * @name order/properties-order
 		 * @see https://www.npmjs.com/package/stylelint-order
 		 */
 		'stylelint-order',
-
-		...providePlugins([MaxNestingDepthPlugin]),
-	],
-	rules: {
+	];
+	public rules = {
 		/* At-rule */
 		'at-rule-no-unknown': [
 			true,
@@ -98,15 +113,7 @@ export default {
 
 		/* Notation */
 		'font-weight-notation': 'numeric',
+	};
+}
 
-		/* Custom plugins */
-		[MaxNestingDepthPlugin.RULE_NAME]: [
-			3,
-			{
-				'ignore': ['blockless-at-rules', 'pseudo-classes'],
-				'ignoreRules': ['/^&::/', '/^::/'],
-				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-			},
-		],
-	},
-} as Config;
+export default { ...new Configuration() };

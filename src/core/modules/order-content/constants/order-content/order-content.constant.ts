@@ -24,152 +24,152 @@ import { ORDER_CONTENT_SELECTORS } from '../order-content-selectors/order-conten
 export const ORDER_CONFIG = [
 	/**
 	 * CSS charset rule:
-	 * @example: @charset "UTF-8";
+	 * @example @charset "UTF-8";
 	 */
 	RuleHelper.createAtRule('charset'),
 	/**
 	 * CSS import rule:
-	 * @example: @import url("fineprint.css");
+	 * @example @import url("fineprint.css");
 	 */
 	RuleHelper.createAtRule('import'),
 	/**
 	 * CSS font-face rule:
-	 * @example: @font-face { font-family: 'Graublau Web'; src: url('GraublauWeb.woff') format('woff'); }
+	 * @example @font-face { font-family: 'Graublau Web'; src: url('GraublauWeb.woff') format('woff'); }
 	 */
 	RuleHelper.createAtRule('font-face'),
 	/**
 	 * CSS font-feature-values rule:
-	 * @example: @font-feature-values Font Family Name { @styleset { style1 value1, style2 value2, ... } }
+	 * @example @font-feature-values Font Family Name { @styleset { style1 value1, style2 value2, ... } }
 	 */
 	RuleHelper.createAtRule('font-feature-values'),
 	/**
 	 * CSS font-palette-values rule:
-	 * @example: @font-palette-values Font Family Name { base-palette: ...; override-palette: ...; }
+	 * @example @font-palette-values Font Family Name { base-palette: ...; override-palette: ...; }
 	 */
 	RuleHelper.createAtRule('font-palette-values'),
 	/**
 	 * CSS keyframes rule:
-	 * @example: @keyframes slide { from { transform: translateX(0%); } to { transform: translateX(100%); } }
+	 * @example @keyframes slide { from { transform: translateX(0%); } to { transform: translateX(100%); } }
 	 */
 	RuleHelper.createAtRule('keyframes'),
 	/**
 	 * CSS layer rule (specific to Firefox):
-	 * @example: @layer base, components { ... }
+	 * @example @layer base, components { ... }
 	 */
 	RuleHelper.createAtRule('layer'),
 	/**
 	 * CSS property rule:
-	 * @example: @property --main-bg-color { syntax: '<color>'; initial-value: #c0ffee; inherits: false; }
+	 * @example @property --main-bg-color { syntax: '<color>'; initial-value: #c0ffee; inherits: false; }
 	 */
 	RuleHelper.createAtRule('property'),
 	/**
 	 * CSS counter-style rule:
-	 * @example: @counter-style custom { system: cyclic; symbols: '*' '+' '-' }
+	 * @example @counter-style custom { system: cyclic; symbols: '*' '+' '-' }
 	 */
 	RuleHelper.createAtRule('counter-style'),
 	/**
 	 * CSS namespace rule:
-	 * @example: @namespace svg url(http://www.w3.org/2000/svg);
+	 * @example @namespace svg url(http://www.w3.org/2000/svg);
 	 */
 	RuleHelper.createAtRule('namespace'),
 	/**
 	 * Custom properties:
-	 * @example: --property: 10px;
+	 * @example --property: 10px;
 	 */
 	'custom-properties',
 	/**
 	 * Dollar variables:
-	 * @example: $variable: 12px !default;
+	 * @example $variable: 12px !default;
 	 */
 	'dollar-variables',
 	/**
 	 * SCSS includes that has prefix reset:
-	 * @example: @include reset-list;
+	 * @example @include reset-list;
 	 */
 	RuleHelper.createInclude('^reset'),
 	/**
 	 * CSS declarations:
-	 * @example: display: block;
+	 * @example display: block;
 	 */
 	'declarations',
 	/**
 	 * SCSS extend
-	 * @example: @extend .some-class
+	 * @example @extend .some-class
 	 */
 	RuleHelper.createAtRule('extend'),
 	/**
 	 * SCSS includes
-	 * @example: @include some-mixin;
+	 * @example @include some-mixin;
 	 */
 	RuleHelper.createInclude('include'),
 	/**
 	 * SCSS pseudo classes includes:
-	 * @example: @include hover;
+	 * @example @include hover;
 	 */
 	...ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES,
 	/**
 	 * SCSS pseudo elements includes:
-	 * @example: @include before-mixin;
+	 * @example @include before-mixin;
 	 */
 	...ORDER_CONTENT_PSEUDO_CLASS_INCLUDES,
 	/**
 	 * CSS pseudo classes:
-	 * @example: &:hover {}
+	 * @example &:hover {}
 	 */
 	...ORDER_CONTENT_PSEUDO_CLASSES,
 	/**
 	 * CSS pseudo elements:
-	 * @example: &::before {}
+	 * @example &::before {}
 	 */
 	...ORDER_CONTENT_PSEUDO_ELEMENTS,
 	/**
 	 * CSS selectors:
-	 * @example: div {}
+	 * @example div {}
 	 */
 	...ORDER_CONTENT_SELECTORS,
 	/**
 	 * SCSS Media includes for specific devices:
-	 * @example: @include media-desktop;
+	 * @example @include media-desktop;
 	 */
 	...MediaRuleHelper.createDeviceRulesOrder(MediaConfig.DEVICES),
 	/**
 	 * SCSS Media includes for minimum breakpoints:
-	 * @example: @include media-min(md);
+	 * @example @include media-min(md);
 	 */
 	...MediaRuleHelper.createBreakpointRulesOrder('min', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for maximum breakpoints:
-	 * @example: @include media-max(md);
+	 * @example @include media-max(md);
 	 */
 	...MediaRuleHelper.createBreakpointRulesOrder('max', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for specific breakpoints:
-	 * @example: @include media-only(md);
+	 * @example @include media-only(md);
 	 */
 	...MediaRuleHelper.createBreakpointRulesOrder('only', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for range between breakpoints:
-	 * @example: @include media-between(md, lg);
+	 * @example @include media-between(md, lg);
 	 */
 	...MediaRuleHelper.createBreakpointBetweenRulesOrder(MediaConfig.BREAKPOINTS),
 	/**
 	 * Media queries:
-	 * @example: @media (min-width: 768px) {}
+	 * @example @media (min-width: 768px) {}
 	 */
 	...ORDER_CONTENT_MEDIA_QUERY,
 	/**
 	 * CSS page rule:
-	 * @example: @page :first { margin: 2in }
+	 * @example @page :first { margin: 2in }
 	 */
 	RuleHelper.createAtRule('page'),
 	/**
 	 * CSS container rule:
-	 * @example: @container (min-width: 100%) { ... }
+	 * @example @container (min-width: 100%) { ... }
 	 */
 	RuleHelper.createAtRule('container'),
 	/**
 	 * CSS supports rule:
-	 * @example: @supports (display: grid) { ... }
+	 * @example @supports (display: grid) { ... }
 	 */
 	RuleHelper.createAtRule('supports'),
 ];

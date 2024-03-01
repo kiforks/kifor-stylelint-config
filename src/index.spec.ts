@@ -1,15 +1,17 @@
 import config from './index';
 
-jest.mock('./core/plugin/index', () => ({
-	MAX_NESTING_DEPTH: 'kifor-stylelint/max-nesting-depth-mocked',
+jest.mock('./core/plugin', () => ({
+	MAX_NESTING_DEPTH: '',
 }));
+
+jest.mock('./core/plugin/decorators/plugin.decorator');
 
 describe('stylelint main config', () => {
 	const data = {
 		'customSyntax': 'postcss-scss',
 		'extends': ['stylelint-config-standard'],
 		'ignoreFiles': ['**/*.css'],
-		'plugins': ['stylelint-order', 'kifor-stylelint/max-nesting-depth-mocked'],
+		'plugins': ['stylelint-order'],
 		'rules': {
 			'at-rule-no-unknown': [
 				true,
@@ -76,7 +78,6 @@ describe('stylelint main config', () => {
 			'function-disallowed-list': ['rgb'],
 			'function-url-no-scheme-relative': true,
 			'function-url-scheme-disallowed-list': ['ftp', '/^http/'],
-			'kifor-stylelint/max-nesting-depth': true,
 			'media-feature-name-no-vendor-prefix': true,
 			'media-feature-name-unit-allowed-list': {
 				'/^border-(top|bottom)-(left|right)-radius/': ['px', '%'],

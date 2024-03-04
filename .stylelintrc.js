@@ -91,7 +91,10 @@ class MediaConfig {
 		this.DEVICES = ['desktop', 'mobile'];
 	}
 	static {
-		this.PREFIX = '^media-';
+		this.NAME = 'media';
+	}
+	static {
+		this.PREFIX = `^${MediaConfig.NAME}-`;
 	}
 }
 
@@ -362,7 +365,9 @@ class OrderContentHelper {
 	 * ].
 	 */
 	static createPseudoClasses(pseudoClasses) {
-		return RuleHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
+		const ampCollection = RuleHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
+		const collection = RuleHelper.createSelectors(pseudoClasses.map(element => `^:${element}`));
+		return [...collection, ...ampCollection];
 	}
 	/**
 	 * Creates an array of pseudo-element rules based on the provided pseudo-element strings.
@@ -379,7 +384,9 @@ class OrderContentHelper {
 	 * ].
 	 */
 	static createPseudoElements(pseudoElements) {
-		return RuleHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
+		const ampCollection = RuleHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
+		const collection = RuleHelper.createSelectors(pseudoElements.map(element => `^::${element}`));
+		return [...collection, ...ampCollection];
 	}
 }
 
@@ -449,6 +456,7 @@ const ORDER_CONTENT_MEDIA_QUERY = [
 const ORDER_CONTENT_PSEUDO_CLASS_INCLUDES = RuleHelper.createIncludes(['hover', 'active', 'focus']);
 
 const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
+	'root',
 	'first',
 	'first-child',
 	'first-of-type',
@@ -467,7 +475,6 @@ const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
 	'visited',
 	'invalid',
 	'valid',
-	'root',
 	'empty',
 	'target',
 	'enabled',
@@ -1440,6 +1447,15 @@ function isDeclaration(node) {
 }
 
 /**
+ * Checks if the value is a boolean or a Boolean object.
+ * @param {unknown} value
+ * @returns {value is boolean}
+ */
+function isBoolean(value) {
+	return typeof value === 'boolean' || value instanceof Boolean;
+}
+
+/**
  * Checks if the value is a number or a Number object.
  * @param {unknown} value
  * @returns {value is number}
@@ -1502,7 +1518,7 @@ const {
  * Tests:
  * @see ./.stylelintrc.spec.js
  */
-class MaxNestingDepthPlugin extends PluginBase {
+class PluginMaxNestingDepth extends PluginBase {
 	constructor() {
 		super(...arguments);
 		this.ruleName = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
@@ -1516,6 +1532,13 @@ class MaxNestingDepthPlugin extends PluginBase {
 		this.ruleBase = (maxDepth, secondaryOptions) => {
 			return (root, result) => {
 				this.maxDepth = maxDepth;
+				const possibleSecondary = {
+					ignore: ['blockless-at-rules', 'pseudo-classes'],
+					ignoreAtRules: [isString, isRegExp],
+					ignoreRules: [isString, isRegExp],
+					ignorePseudoClasses: [isString, isRegExp],
+					ignoreHostSelector: [isString, isRegExp, isBoolean],
+				};
 				const mainOptions = {
 					actual: maxDepth,
 					possible: [isNumber],
@@ -1523,12 +1546,7 @@ class MaxNestingDepthPlugin extends PluginBase {
 				const optionalOptions = {
 					optional: true,
 					actual: secondaryOptions,
-					possible: {
-						ignore: ['blockless-at-rules', 'pseudo-classes'],
-						ignoreAtRules: [isString, isRegExp],
-						ignoreRules: [isString, isRegExp],
-						ignorePseudoClasses: [isString, isRegExp],
-					},
+					possible: possibleSecondary,
 				};
 				const validOptions = validateOptions(result, this.ruleName, mainOptions, optionalOptions);
 				if (!validOptions) return;
@@ -1546,6 +1564,10 @@ class MaxNestingDepthPlugin extends PluginBase {
 			const isNotStandardSyntaxRule = isRule(rule) && !isStandardSyntaxRule(rule);
 			if (isIgnoreAtRule || isIgnoreRule || !hasRuleBlock || isNotStandardSyntaxRule) return;
 			const depth = this.nestingDepth(rule, 0, secondaryOptions);
+			const isIgnoreHostSelector = this.isIgnoreHostSelector(rule, secondaryOptions) && depth === 0;
+			if (isIgnoreHostSelector) {
+				this.maxDepth -= -1;
+			}
 			if (depth <= this.maxDepth) return;
 			const problem = {
 				ruleName: this.ruleName,
@@ -1594,6 +1616,9 @@ class MaxNestingDepthPlugin extends PluginBase {
 	isIgnoreAtRule(node, secondaryOptions = {}) {
 		return isAtRule(node) && optionsMatches(secondaryOptions, 'ignoreAtRules', node.name);
 	}
+	isIgnoreHostSelector(node, secondaryOptions = {}) {
+		return isRule(node) && optionsMatches(secondaryOptions, 'ignoreHostSelector', node.selector);
+	}
 	containsPseudoClassesOnly(selector) {
 		const normalized = parser().processSync(selector, { lossless: false });
 		const selectors = normalized.split(',');
@@ -1623,6 +1648,21 @@ class MaxNestingDepthPlugin extends PluginBase {
 	}
 }
 
+const plugins = [
+	{
+		provide: PluginMaxNestingDepth,
+		options: [
+			3,
+			{
+				ignore: ['blockless-at-rules', 'pseudo-classes'],
+				ignoreRules: ['/^&::/', '/^::/'],
+				ignoreHostSelector: ['/^:host/'],
+				ignoreAtRules: ['/^\\include/', `/^\\${MediaConfig.NAME}/`],
+			},
+		],
+	},
+];
+
 const Plugin = config => {
 	return constructor => {
 		return class extends constructor {
@@ -1643,19 +1683,6 @@ const Plugin = config => {
 	};
 };
 
-const providers = [
-	{
-		provide: MaxNestingDepthPlugin,
-		options: [
-			3,
-			{
-				'ignore': ['blockless-at-rules', 'pseudo-classes'],
-				'ignoreRules': ['/^&::/', '/^::/'],
-				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-			},
-		],
-	},
-];
 /**
  * Docs:
  * @see https://stylelint.io/user-guide/rules
@@ -1737,7 +1764,7 @@ let Configuration = class Configuration {
 		};
 	}
 };
-Configuration = __decorate([Plugin({ providers })], Configuration);
+Configuration = __decorate([Plugin({ providers: plugins })], Configuration);
 var index = { ...new Configuration() };
 
 export { index as default };

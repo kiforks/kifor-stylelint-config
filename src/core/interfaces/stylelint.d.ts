@@ -10,7 +10,11 @@ declare module 'stylelint/lib/utils/isStandardSyntaxRule.mjs' {
 }
 
 declare module 'stylelint/lib/utils/optionsMatches.mjs' {
-	export default function optionsMatches(options: { [x: string]: any }, propertyName: string, input: unknown): boolean;
+	export default function optionsMatches<Key extends string = string>(
+		options: { [x: string]: any },
+		propertyName: Key,
+		input: unknown
+	): boolean;
 }
 
 declare module 'stylelint/lib/utils/typeGuards.mjs' {

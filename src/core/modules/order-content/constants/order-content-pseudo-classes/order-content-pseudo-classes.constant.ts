@@ -1,6 +1,7 @@
 import { OrderContentHelper } from '../../helpers/order-content.helper';
 
 export const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
+	'root',
 	'first',
 	'first-child',
 	'first-of-type',
@@ -19,7 +20,6 @@ export const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClass
 	'visited',
 	'invalid',
 	'valid',
-	'root',
 	'empty',
 	'target',
 	'enabled',

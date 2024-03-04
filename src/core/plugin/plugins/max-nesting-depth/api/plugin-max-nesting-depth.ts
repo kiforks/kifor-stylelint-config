@@ -6,11 +6,15 @@ import hasBlock from 'stylelint/lib/utils/hasBlock.mjs';
 import isStandardSyntaxRule from 'stylelint/lib/utils/isStandardSyntaxRule.mjs';
 import optionsMatches from 'stylelint/lib/utils/optionsMatches.mjs';
 import { isAtRule, isDeclaration, isRoot, isRule } from 'stylelint/lib/utils/typeGuards.mjs';
-import { isNumber, isRegExp, isString } from 'stylelint/lib/utils/validateTypes.mjs';
+import { isBoolean, isNumber, isRegExp, isString } from 'stylelint/lib/utils/validateTypes.mjs';
 
 import { PluginConfig } from '../../../configs/plugin.config';
 
-import { MaxNestingDepthCheckStatementFn, MaxNestingDepthOptions } from '../interfaces/max-nesting-depth.interface';
+import {
+	PluginMaxNestingDepthCheckStatementFn,
+	PluginMaxNestingDepthPossibleOptions,
+	PluginMaxNestingDepthSecondaryOptions,
+} from '../interfaces/plugin-max-nesting-depth.interface';
 
 import { PluginBase } from '../../plugin-base/api/plugin-base';
 
@@ -25,7 +29,7 @@ const {
  * Tests:
  * @see ./.stylelintrc.spec.js
  */
-export class MaxNestingDepthPlugin extends PluginBase {
+export class PluginMaxNestingDepth extends PluginBase {
 	public readonly ruleName = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
 	public readonly meta = {
 		url: PluginConfig.REPOSITORY_URL,
@@ -36,10 +40,17 @@ export class MaxNestingDepthPlugin extends PluginBase {
 
 	private maxDepth: number = 0;
 
-	public readonly ruleBase: RuleBase = (maxDepth: number, secondaryOptions: MaxNestingDepthOptions) => {
+	public readonly ruleBase: RuleBase = (maxDepth: number, secondaryOptions: PluginMaxNestingDepthSecondaryOptions) => {
 		return (root: PostCSS.Root, result: PostcssResult): void => {
 			this.maxDepth = maxDepth;
 
+			const possibleSecondary: PluginMaxNestingDepthPossibleOptions = {
+				ignore: ['blockless-at-rules', 'pseudo-classes'],
+				ignoreAtRules: [isString, isRegExp],
+				ignoreRules: [isString, isRegExp],
+				ignorePseudoClasses: [isString, isRegExp],
+				ignoreHostSelector: [isString, isRegExp, isBoolean],
+			};
 			const mainOptions: RuleOptions = {
 				actual: maxDepth,
 				possible: [isNumber],
@@ -47,12 +58,7 @@ export class MaxNestingDepthPlugin extends PluginBase {
 			const optionalOptions: RuleOptions = {
 				optional: true,
 				actual: secondaryOptions,
-				possible: {
-					ignore: ['blockless-at-rules', 'pseudo-classes'],
-					ignoreAtRules: [isString, isRegExp],
-					ignoreRules: [isString, isRegExp],
-					ignorePseudoClasses: [isString, isRegExp],
-				},
+				possible: possibleSecondary,
 			};
 
 			const validOptions = validateOptions(result, this.ruleName, mainOptions, optionalOptions);
@@ -68,8 +74,8 @@ export class MaxNestingDepthPlugin extends PluginBase {
 
 	private checkStatement(
 		result: PostcssResult,
-		secondaryOptions: MaxNestingDepthOptions
-	): MaxNestingDepthCheckStatementFn {
+		secondaryOptions: PluginMaxNestingDepthSecondaryOptions
+	): PluginMaxNestingDepthCheckStatementFn {
 		return rule => {
 			const isIgnoreAtRule = this.isIgnoreAtRule(rule, secondaryOptions);
 			const isIgnoreRule = this.isIgnoreRule(rule, secondaryOptions);
@@ -79,6 +85,12 @@ export class MaxNestingDepthPlugin extends PluginBase {
 			if (isIgnoreAtRule || isIgnoreRule || !hasRuleBlock || isNotStandardSyntaxRule) return;
 
 			const depth = this.nestingDepth(rule, 0, secondaryOptions);
+
+			const isIgnoreHostSelector = this.isIgnoreHostSelector(rule, secondaryOptions) && depth === 0;
+
+			if (isIgnoreHostSelector) {
+				this.maxDepth -= -1;
+			}
 
 			if (depth <= this.maxDepth) return;
 
@@ -94,7 +106,7 @@ export class MaxNestingDepthPlugin extends PluginBase {
 		};
 	}
 
-	private nestingDepth(node: Node, level: number, secondaryOptions: MaxNestingDepthOptions): number {
+	private nestingDepth(node: Node, level: number, secondaryOptions: PluginMaxNestingDepthSecondaryOptions): number {
 		const parent = node.parent;
 
 		if (!parent || this.isIgnoreAtRule(parent)) {
@@ -131,12 +143,25 @@ export class MaxNestingDepthPlugin extends PluginBase {
 		return this.nestingDepth(parent, isIgnoreRule ? level : level + 1, secondaryOptions);
 	}
 
-	private isIgnoreRule(node: Node, secondaryOptions: MaxNestingDepthOptions = {}): boolean {
-		return isRule(node) && optionsMatches(secondaryOptions, 'ignoreRules', node.selector);
+	private isIgnoreRule(node: Node, secondaryOptions: PluginMaxNestingDepthSecondaryOptions = {}): boolean {
+		return (
+			isRule(node) &&
+			optionsMatches<keyof PluginMaxNestingDepthSecondaryOptions>(secondaryOptions, 'ignoreRules', node.selector)
+		);
 	}
 
-	private isIgnoreAtRule(node: Node, secondaryOptions: MaxNestingDepthOptions = {}): boolean {
-		return isAtRule(node) && optionsMatches(secondaryOptions, 'ignoreAtRules', node.name);
+	private isIgnoreAtRule(node: Node, secondaryOptions: PluginMaxNestingDepthSecondaryOptions = {}): boolean {
+		return (
+			isAtRule(node) &&
+			optionsMatches<keyof PluginMaxNestingDepthSecondaryOptions>(secondaryOptions, 'ignoreAtRules', node.name)
+		);
+	}
+
+	private isIgnoreHostSelector(node: Node, secondaryOptions: PluginMaxNestingDepthSecondaryOptions = {}): boolean {
+		return (
+			isRule(node) &&
+			optionsMatches<keyof PluginMaxNestingDepthSecondaryOptions>(secondaryOptions, 'ignoreHostSelector', node.selector)
+		);
 	}
 
 	private containsPseudoClassesOnly(selector: string): boolean {
@@ -148,7 +173,7 @@ export class MaxNestingDepthPlugin extends PluginBase {
 
 	private containsIgnoredPseudoClassesOrRulesOnly(
 		selectors: string[],
-		secondaryOptions: MaxNestingDepthOptions
+		secondaryOptions: PluginMaxNestingDepthSecondaryOptions
 	): boolean {
 		const ignorePseudoClasses = secondaryOptions?.ignorePseudoClasses;
 		const ignoreRules = secondaryOptions?.ignoreRules;
@@ -157,7 +182,10 @@ export class MaxNestingDepthPlugin extends PluginBase {
 		return secondaryOptions && hasIgnoredEntities && this.allSelectorsMatchIgnoredRules(selectors, secondaryOptions);
 	}
 
-	private allSelectorsMatchIgnoredRules(selectors: string[], secondaryOptions: MaxNestingDepthOptions): boolean {
+	private allSelectorsMatchIgnoredRules(
+		selectors: string[],
+		secondaryOptions: PluginMaxNestingDepthSecondaryOptions
+	): boolean {
 		return selectors.every(selector => {
 			const ignoresRules = secondaryOptions?.ignoreRules && optionsMatches(secondaryOptions, 'ignoreRules', selector);
 			const ignorePseudoClasses = secondaryOptions?.ignorePseudoClasses;

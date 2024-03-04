@@ -1529,6 +1529,7 @@ class PluginMaxNestingDepth extends PluginBase {
 			expected: depth => `Expected nesting depth to be no more than ${depth}`,
 		});
 		this.maxDepth = 0;
+		this._isIgnoreHostSelector = false;
 		this.ruleBase = (maxDepth, secondaryOptions) => {
 			return (root, result) => {
 				this.maxDepth = maxDepth;
@@ -1565,8 +1566,9 @@ class PluginMaxNestingDepth extends PluginBase {
 			if (isIgnoreAtRule || isIgnoreRule || !hasRuleBlock || isNotStandardSyntaxRule) return;
 			const depth = this.nestingDepth(rule, 0, secondaryOptions);
 			const isIgnoreHostSelector = this.isIgnoreHostSelector(rule, secondaryOptions) && depth === 0;
+			!this._isIgnoreHostSelector && (this._isIgnoreHostSelector = isIgnoreHostSelector);
 			if (isIgnoreHostSelector) {
-				this.maxDepth -= -1;
+				this.maxDepth = this.maxDepth + 1;
 			}
 			if (depth <= this.maxDepth) return;
 			const problem = {
@@ -1574,7 +1576,7 @@ class PluginMaxNestingDepth extends PluginBase {
 				result,
 				node: rule,
 				message: this.messages.expected,
-				messageArgs: [this.maxDepth],
+				messageArgs: [this._isIgnoreHostSelector ? this.maxDepth - 1 : this.maxDepth],
 			};
 			report(problem);
 		};

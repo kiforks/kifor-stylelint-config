@@ -40,6 +40,8 @@ export class PluginMaxNestingDepth extends PluginBase {
 
 	private maxDepth: number = 0;
 
+	private _isIgnoreHostSelector = false;
+
 	public readonly ruleBase: RuleBase = (maxDepth: number, secondaryOptions: PluginMaxNestingDepthSecondaryOptions) => {
 		return (root: PostCSS.Root, result: PostcssResult): void => {
 			this.maxDepth = maxDepth;
@@ -88,8 +90,10 @@ export class PluginMaxNestingDepth extends PluginBase {
 
 			const isIgnoreHostSelector = this.isIgnoreHostSelector(rule, secondaryOptions) && depth === 0;
 
+			!this._isIgnoreHostSelector && (this._isIgnoreHostSelector = isIgnoreHostSelector);
+
 			if (isIgnoreHostSelector) {
-				this.maxDepth -= -1;
+				this.maxDepth = this.maxDepth + 1;
 			}
 
 			if (depth <= this.maxDepth) return;
@@ -99,7 +103,7 @@ export class PluginMaxNestingDepth extends PluginBase {
 				result,
 				node: rule,
 				message: this.messages.expected,
-				messageArgs: [this.maxDepth],
+				messageArgs: [this._isIgnoreHostSelector ? this.maxDepth - 1 : this.maxDepth],
 			};
 
 			report(problem);

@@ -192,11 +192,19 @@ describe('PluginMaxNestingDepth', () => {
 		expect(warning).toBeNull();
 	});
 
-	fit('should not report an error for host when ignoring host selector', async () => {
+	it('should not report an error for host when ignoring host selector', async () => {
 		const result = await lint({
 			code: `
 				:host {
-					margin: 0;
+					.child-1 {
+						.child-2 {
+							.child-3 {
+								.child-4 {
+									color: red;
+								}
+							}
+						}
+					}
 				}
 			`,
 			config,
@@ -205,5 +213,30 @@ describe('PluginMaxNestingDepth', () => {
 		const warning = getWarning(result, ruleName);
 
 		expect(warning).toBeNull();
+	});
+
+	it('should report an error for host when ignoring host selector', async () => {
+		const result = await lint({
+			code: `
+				:host {
+					.child-1 {
+						.child-2 {
+							.child-3 {
+								.child-4 {
+									.child-5 {
+										color: red;
+									}
+								}
+							}
+						}
+					}
+				}
+			`,
+			config,
+		});
+
+		const warning = getWarning(result, ruleName);
+
+		expect(warning.text).toBe(`Expected nesting depth to be no more than 3 (${ruleName})`);
 	});
 });

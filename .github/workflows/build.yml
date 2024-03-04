@@ -37,15 +37,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-      - name: Check if version has been incremented compared to main branch
+      - name: Check if version has been incremented compared to the main branch
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
+
           git fetch origin main
           git checkout origin/main -- package.json
           MAIN_VERSION=$(node -p "require('./package.json').version")
+
           git checkout -- package.json
 
-          # Use sort -V for version comparison
+          # Use `sort -V` to compare versions properly
           if [ "$(echo -e "$CURRENT_VERSION\n$MAIN_VERSION" | sort -V | tail -n1)" != "$CURRENT_VERSION" ]; then
             echo "Error: Version in package.json ($CURRENT_VERSION) is not higher than on the main branch ($MAIN_VERSION)."
             exit 1

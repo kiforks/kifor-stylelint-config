@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.25
+## 0.0.2
 
 - Added: new "max-nesting-depth" rule. Changed ordering and some config rules
 

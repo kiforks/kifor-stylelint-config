@@ -47,8 +47,10 @@ jobs:
 
           git checkout -- package.json
 
-          # Use `sort -V` to compare versions properly
-          if [ "$(echo -e "$CURRENT_VERSION\n$MAIN_VERSION" | sort -V | tail -n1)" != "$CURRENT_VERSION" ]; then
+          # Compare versions using node
+          VERSION_COMPARISON=$(node -e "console.log(require('semver').gt('$CURRENT_VERSION', '$MAIN_VERSION'))")
+
+          if [ "$VERSION_COMPARISON" = "false" ]; then
             echo "Error: Version in package.json ($CURRENT_VERSION) is not higher than on the main branch ($MAIN_VERSION)."
             exit 1
           else

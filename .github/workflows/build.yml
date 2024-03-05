@@ -33,12 +33,10 @@ jobs:
     needs: validation
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.x'
-      - name: Install packaging module
-        run: python -m pip install packaging
+          node-version: '20.x'
       - name: Check if version has been incremented compared to the main branch
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
@@ -50,10 +48,7 @@ jobs:
           echo "Current Version: $CURRENT_VERSION"
           echo "Main Branch Version: $MAIN_VERSION"
 
-          # Python script for version comparison
-          python -c "from packaging import version; import sys; sys.exit(0 if version.parse('$CURRENT_VERSION') > version.parse('$MAIN_VERSION') else 1)"
-
-          if [ $? -ne 0 ]; then
+          if [ "$(printf '%s\n' "$CURRENT_VERSION" "$MAIN_VERSION" | sort -V | tail -n 1)" != "$CURRENT_VERSION" ]; then
             echo "Error: Version in package.json ($CURRENT_VERSION) is not higher than on the main branch ($MAIN_VERSION)."
             exit 1
           else

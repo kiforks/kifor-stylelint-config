@@ -2,7 +2,7 @@ import { ORDER_PROPERTIES } from './order-properties.constant';
 
 describe('ORDER_PROPERTIES', () => {
 	it('should have the following value', () => {
-		expect(ORDER_PROPERTIES).toEqual([
+		const data = [
 			'content',
 			'position',
 			'top',
@@ -361,6 +361,7 @@ describe('ORDER_PROPERTIES', () => {
 			'-ms-animation-fill-mode',
 			'-o-animation-fill-mode',
 			'animation-fill-mode',
+			'contain',
 			'appearance',
 			'clip',
 			'clip-path',
@@ -388,6 +389,8 @@ describe('ORDER_PROPERTIES', () => {
 			'stroke',
 			'aspect-ratio',
 			'accent-color',
-		]);
+		];
+
+		expect(ORDER_PROPERTIES).toEqual(data);
 	});
 });

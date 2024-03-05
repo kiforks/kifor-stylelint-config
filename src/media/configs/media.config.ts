@@ -5,5 +5,7 @@ export abstract class MediaConfig {
 	public static readonly BREAKPOINTS: readonly MediaBreakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 	public static readonly DEVICES: readonly MediaRuleDevice[] = ['desktop', 'mobile'];
 
-	public static readonly PREFIX: MediaRulePrefix = '^media-';
+	public static readonly NAME = 'media';
+
+	public static readonly PREFIX: MediaRulePrefix = `^${MediaConfig.NAME}-`;
 }

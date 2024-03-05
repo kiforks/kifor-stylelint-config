@@ -1,5 +1,6 @@
-import { Rule, RuleAt } from '../../../../rule/interfaces/rule.interface';
 import { RuleHelper } from '../../../../rule/helpers/rule-order/rule.helper';
+
+import { Rule, RuleAt } from '../../../../rule/interfaces/rule.interface';
 
 export abstract class OrderContentHelper {
 	/**
@@ -38,7 +39,10 @@ export abstract class OrderContentHelper {
 	 * ].
 	 */
 	public static createPseudoClasses(pseudoClasses: string[]): Rule[] {
-		return RuleHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
+		const ampCollection = RuleHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
+		const collection = RuleHelper.createSelectors(pseudoClasses.map(element => `^:${element}`));
+
+		return [...collection, ...ampCollection] as Rule[];
 	}
 
 	/**
@@ -56,6 +60,9 @@ export abstract class OrderContentHelper {
 	 * ].
 	 */
 	public static createPseudoElements(pseudoElements: string[]): Rule[] {
-		return RuleHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
+		const ampCollection = RuleHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
+		const collection = RuleHelper.createSelectors(pseudoElements.map(element => `^::${element}`));
+
+		return [...collection, ...ampCollection] as Rule[];
 	}
 }

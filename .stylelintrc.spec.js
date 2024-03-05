@@ -1,13 +1,14 @@
 import stylelint from 'stylelint';
+
 import config from './.stylelintrc.js';
 
 const lint = stylelint.lint;
 
 describe('stylelint', () => {
-	/** @see https://stylelint.io/user-guide/rules/ */
+	/** @see https://stylelint.io/user-guide/rules/  */
 	describe('stylelint-config-standart', () => {
 		describe('duplicate', () => {
-			/** @see https://stylelint.io/user-guide/rules/list/no-descending-specificity */
+			/** @see https://stylelint.io/user-guide/rules/list/no-descending-specificity  */
 			describe('no-descending-specificity', () => {
 				it('should report an error for selectors with descending specificity', async () => {
 					const result = await lint({
@@ -26,7 +27,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/declaration-block-no-duplicate-properties */
+			/** @see https://stylelint.io/user-guide/rules/list/declaration-block-no-duplicate-properties  */
 			describe('declaration-block-no-duplicate-properties', () => {
 				it('should report an error for duplicate properties in the same declaration block', async () => {
 					const result = await lint({
@@ -49,14 +50,14 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/declaration-block-no-duplicate-custom-properties */
+			/** @see https://stylelint.io/user-guide/rules/declaration-block-no-duplicate-custom-properties  */
 			describe('declaration-block-no-duplicate-custom-properties', () => {
 				it('should report an error for duplicate custom properties', async () => {
 					const result = await lint({
 						code: `
 					        p {
 					          --my-color: red;
-					          --my-color: blue; /* Make sure there's an empty line before this declaration if required by your config */
+					          --my-color: blue; /* Make sure there's an empty line before this declaration if required by your config  */
 					          color: var(--my-color);
 					        }
 					    `,
@@ -73,7 +74,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/font-family-no-duplicate-names */
+			/** @see https://stylelint.io/user-guide/rules/list/font-family-no-duplicate-names  */
 			describe('font-family-no-duplicate-names', () => {
 				it('should report an error for duplicate font family names', async () => {
 					const result = await lint({
@@ -98,7 +99,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/keyframe-block-no-duplicate-selectors */
+			/** @see https://stylelint.io/user-guide/rules/list/keyframe-block-no-duplicate-selectors  */
 			describe('keyframe-block-no-duplicate-selectors', () => {
 				it('should report an error for duplicate selectors within keyframes', async () => {
 					const result = await lint({
@@ -130,7 +131,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/no-duplicate-at-import-rules */
+			/** @see https://stylelint.io/user-guide/rules/list/no-duplicate-at-import-rules  */
 			describe('no-duplicate-at-import-rules', () => {
 				it('should report an error for duplicate @import rules', async () => {
 					const result = await lint({
@@ -154,7 +155,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/no-duplicate-selectors */
+			/** @see https://stylelint.io/user-guide/rules/list/no-duplicate-selectors  */
 			describe('no-duplicate-selectors', () => {
 				it('should report an error for duplicate selectors', async () => {
 					const result = await lint({
@@ -177,7 +178,7 @@ describe('stylelint', () => {
 		});
 
 		describe('empty', () => {
-			/** @see https://stylelint.io/user-guide/rules/list/block-no-empty */
+			/** @see https://stylelint.io/user-guide/rules/list/block-no-empty  */
 			describe('block-no-empty', () => {
 				it('should report an error for empty blocks', async () => {
 					const result = await lint({
@@ -195,12 +196,12 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/comment-no-empty */
+			/** @see https://stylelint.io/user-guide/rules/list/comment-no-empty  */
 			describe('comment-no-empty', () => {
 				it('should report an error for empty comments', async () => {
 					const result = await lint({
 						code: `
-							/* */
+							/*  */
 						`,
 						config,
 					});
@@ -213,7 +214,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/no-empty-source */
+			/** @see https://stylelint.io/user-guide/rules/list/no-empty-source  */
 			describe('no-empty-source', () => {
 				it('should report an error for empty sources', async () => {
 					const result = await lint({
@@ -231,7 +232,7 @@ describe('stylelint', () => {
 		});
 
 		describe('invalid', () => {
-			/** @see https://stylelint.io/user-guide/rules/list/color-no-invalid-hex */
+			/** @see https://stylelint.io/user-guide/rules/list/color-no-invalid-hex  */
 			describe('color-no-invalid-hex', () => {
 				it('should report an error for invalid hex colors', async () => {
 					const result = await lint({
@@ -253,7 +254,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/function-calc-no-unspaced-operator */
+			/** @see https://stylelint.io/user-guide/rules/list/function-calc-no-unspaced-operator  */
 			describe('function-calc-no-unspaced-operator', () => {
 				it('should report an error for unspaced operators in calc functions', async () => {
 					const result = await lint({
@@ -277,7 +278,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/keyframe-declaration-no-important */
+			/** @see https://stylelint.io/user-guide/rules/list/keyframe-declaration-no-important  */
 			describe('keyframe-declaration-no-important', () => {
 				it('should report an error for !important in keyframe declarations', async () => {
 					const result = await lint({
@@ -302,7 +303,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-unknown  */
 			describe('media-feature-name-no-unknown', () => {
 				it('should report an error for unknown media feature names', async () => {
 					const result = await lint({
@@ -325,7 +326,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/named-grid-areas-no-invalid */
+			/** @see https://stylelint.io/user-guide/rules/list/named-grid-areas-no-invalid  */
 			describe('named-grid-areas-no-invalid', () => {
 				it('should report an error for invalid named grid areas', async () => {
 					const result = await lint({
@@ -347,7 +348,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/no-invalid-position-at-import-rule */
+			/** @see https://stylelint.io/user-guide/rules/list/no-invalid-position-at-import-rule  */
 			describe('no-invalid-position-at-import-rule', () => {
 				it('should report an error for @import rules that are not at the start of the document', async () => {
 					const result = await lint({
@@ -369,7 +370,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/string-no-newline */
+			/** @see https://stylelint.io/user-guide/rules/list/string-no-newline  */
 			describe('string-no-newline', () => {
 				it('should report an error for strings that contain newlines', async () => {
 					const result = await lint({
@@ -392,7 +393,7 @@ describe('stylelint', () => {
 
 		describe('missing', () => {
 			describe('font-family-no-missing-generic-family-keyword', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/font-family-no-missing-generic-family-keyword */
+				/** @see https://stylelint.io/user-guide/rules/list/font-family-no-missing-generic-family-keyword  */
 				it('should report an error for font-family without a generic family keyword', async () => {
 					const result = await lint({
 						code: `
@@ -416,7 +417,7 @@ describe('stylelint', () => {
 		});
 
 		describe('non-standard', () => {
-			/** @see https://stylelint.io/user-guide/rules/list/function-linear-gradient-no-nonstandard-direction */
+			/** @see https://stylelint.io/user-guide/rules/list/function-linear-gradient-no-nonstandard-direction  */
 			describe('function-linear-gradient-no-nonstandard-direction', () => {
 				it('should report an error for linear-gradient with non-standard direction syntax', async () => {
 					const result = await lint({
@@ -441,7 +442,7 @@ describe('stylelint', () => {
 		});
 
 		describe('overrides', () => {
-			/** @see https://stylelint.io/user-guide/rules/list/declaration-block-no-shorthand-property-overrides */
+			/** @see https://stylelint.io/user-guide/rules/list/declaration-block-no-shorthand-property-overrides  */
 			describe('declaration-block-no-shorthand-property-overrides', () => {
 				it('should report an error for shorthand properties that override related longhand properties', async () => {
 					const result = await lint({
@@ -467,7 +468,7 @@ describe('stylelint', () => {
 		});
 
 		describe('unmatchable', () => {
-			/** @see https://stylelint.io/user-guide/rules/list/selector-anb-no-unmatchable */
+			/** @see https://stylelint.io/user-guide/rules/list/selector-anb-no-unmatchable  */
 			describe('selector-anb-no-unmatchable', () => {
 				it('should report an error for :nth-child or :nth-last-child selectors with an+b values that are unmatchable', async () => {
 					const result = await lint({
@@ -488,7 +489,7 @@ describe('stylelint', () => {
 		});
 
 		describe('unknown', () => {
-			/** @see https://stylelint.io/user-guide/rules/list/at-rule-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/at-rule-no-unknown  */
 			describe('at-rule-no-unknown', () => {
 				it('should report an error for unknown at-rules', async () => {
 					const result = await lint({
@@ -507,7 +508,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/annotation-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/annotation-no-unknown  */
 			describe('annotation-no-unknown', () => {
 				it('should report an error for unknown annotations', async () => {
 					const result = await lint({
@@ -528,7 +529,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/function-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/function-no-unknown  */
 			describe('function-no-unknown', () => {
 				it('should report an error for unknown functions', async () => {
 					const result = await lint({
@@ -549,7 +550,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-unknown  */
 			describe('media-feature-name-no-unknown', () => {
 				it('should report an error for unknown media feature names', async () => {
 					const result = await lint({
@@ -572,7 +573,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/property-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/property-no-unknown  */
 			describe('property-no-unknown', () => {
 				it('should report an error for unknown properties', async () => {
 					const result = await lint({
@@ -593,7 +594,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/selector-pseudo-class-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/selector-pseudo-class-no-unknown  */
 			describe('selector-pseudo-class-no-unknown', () => {
 				it('should report an error for unknown pseudo-class selectors', async () => {
 					const result = await lint({
@@ -616,7 +617,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/selector-pseudo-element-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/selector-pseudo-element-no-unknown  */
 			describe('selector-pseudo-element-no-unknown', () => {
 				it('should report an error for unknown pseudo-element selectors', async () => {
 					const result = await lint({
@@ -657,7 +658,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/selector-type-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/selector-type-no-unknown  */
 			describe('selector-type-no-unknown', () => {
 				it('should report an error for unknown type selectors', async () => {
 					const result = await lint({
@@ -678,7 +679,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/list/unit-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/list/unit-no-unknown  */
 			describe('unit-no-unknown', () => {
 				it('should report an error for unknown units', async () => {
 					const result = await lint({
@@ -700,7 +701,7 @@ describe('stylelint', () => {
 
 		describe('allowed, disallowed & required', () => {
 			describe('at-rule', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/at-rule-no-vendor-prefix */
+				/** @see https://stylelint.io/user-guide/rules/list/at-rule-no-vendor-prefix  */
 				describe('at-rule-no-vendor-prefix', () => {
 					it('should report an error for vendor prefixes in at-rules', async () => {
 						const result = await lint({
@@ -724,7 +725,7 @@ describe('stylelint', () => {
 			});
 
 			describe('length', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/length-zero-no-unit */
+				/** @see https://stylelint.io/user-guide/rules/list/length-zero-no-unit  */
 				describe('length-zero-no-unit', () => {
 					it('should report an error for zero lengths with units', async () => {
 						const result = await lint({
@@ -746,7 +747,7 @@ describe('stylelint', () => {
 			});
 
 			describe('media feature', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-vendor-prefix */
+				/** @see https://stylelint.io/user-guide/rules/list/media-feature-name-no-vendor-prefix  */
 				describe('media-feature-name-no-vendor-prefix', () => {
 					it('should report an error for vendor prefixes in media feature names', async () => {
 						const result = await lint({
@@ -771,7 +772,7 @@ describe('stylelint', () => {
 			});
 
 			describe('property', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/property-no-vendor-prefix */
+				/** @see https://stylelint.io/user-guide/rules/list/property-no-vendor-prefix  */
 				describe('property-no-vendor-prefix', () => {
 					it('should report an error for vendor prefixes in property names', async () => {
 						const result = await lint({
@@ -796,7 +797,7 @@ describe('stylelint', () => {
 			});
 
 			describe('selector', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/selector-no-vendor-prefix */
+				/** @see https://stylelint.io/user-guide/rules/list/selector-no-vendor-prefix  */
 				describe('selector-no-vendor-prefix', () => {
 					it('should report an error for vendor prefixes in selector names', async () => {
 						const result = await lint({
@@ -821,7 +822,7 @@ describe('stylelint', () => {
 			});
 
 			describe('value', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/value-no-vendor-prefix */
+				/** @see https://stylelint.io/user-guide/rules/list/value-no-vendor-prefix  */
 				describe('value-no-vendor-prefix', () => {
 					it('should report an error for vendor prefixes in values', async () => {
 						const result = await lint({
@@ -842,7 +843,7 @@ describe('stylelint', () => {
 			});
 
 			describe('case', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/function-name-case */
+				/** @see https://stylelint.io/user-guide/rules/list/function-name-case  */
 				describe('function-name-case', () => {
 					it('should report an error for function names that are not in lowercase', async () => {
 						const result = await lint({
@@ -861,7 +862,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/selector-type-case */
+				/** @see https://stylelint.io/user-guide/rules/list/selector-type-case  */
 				describe('selector-type-case', () => {
 					it('should report an error for type selectors that are not in lowercase', async () => {
 						const result = await lint({
@@ -880,7 +881,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/value-keyword-case */
+				/** @see https://stylelint.io/user-guide/rules/list/value-keyword-case  */
 				describe('value-keyword-case', () => {
 					it('should report an error for keyword values that are not in lowercase', async () => {
 						const result = await lint({
@@ -901,7 +902,7 @@ describe('stylelint', () => {
 			});
 
 			describe('empty lines', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/at-rule-empty-line-before */
+				/** @see https://stylelint.io/user-guide/rules/list/at-rule-empty-line-before  */
 				describe('at-rule-empty-line-before', () => {
 					it('should report an error if there is no empty line before at-rules', async () => {
 						const result = await lint({
@@ -922,13 +923,13 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/comment-empty-line-before */
+				/** @see https://stylelint.io/user-guide/rules/list/comment-empty-line-before  */
 				describe('comment-empty-line-before', () => {
 					it('should report an error if there is no empty line before comments', async () => {
 						const result = await lint({
 							code: `
 								.example { color: pink; }
-								/* This is a comment without an empty line before */
+								/* This is a comment without an empty line before  */
 								.another-example { color: red; }
 							`,
 							config,
@@ -945,7 +946,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/custom-property-empty-line-before */
+				/** @see https://stylelint.io/user-guide/rules/list/custom-property-empty-line-before  */
 				describe('custom-property-empty-line-before', () => {
 					it('should report an error if there is no empty line before custom properties', async () => {
 						const result = await lint({
@@ -969,7 +970,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/rule-empty-line-before */
+				/** @see https://stylelint.io/user-guide/rules/list/rule-empty-line-before  */
 				describe('rule-empty-line-before', () => {
 					it('should report an error if there is no empty line before rules', async () => {
 						const result = await lint({
@@ -998,7 +999,7 @@ describe('stylelint', () => {
 			});
 
 			describe('max & min', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/declaration-block-single-line-max-declarations */
+				/** @see https://stylelint.io/user-guide/rules/list/declaration-block-single-line-max-declarations  */
 				describe('declaration-block-single-line-max-declarations', () => {
 					it('should report an error if there are too many declarations in a single line', async () => {
 						const result = await lint({
@@ -1019,7 +1020,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/number-max-precision */
+				/** @see https://stylelint.io/user-guide/rules/list/number-max-precision  */
 				describe('number-max-precision', () => {
 					it('should report an error for numbers with too many decimal places', async () => {
 						const result = await lint({
@@ -1042,7 +1043,7 @@ describe('stylelint', () => {
 			});
 
 			describe('notation', () => {
-				/** @see https://stylelint.io/user-guide/rules/list/alpha-value-notation */
+				/** @see https://stylelint.io/user-guide/rules/list/alpha-value-notation  */
 				describe('alpha-value-notation', () => {
 					it('should report an error for incorrect alpha values', async () => {
 						const result = await lint({
@@ -1061,7 +1062,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/color-function-notation */
+				/** @see https://stylelint.io/user-guide/rules/list/color-function-notation  */
 				describe('color-function-notation', () => {
 					it('should report an error for incorrect color function notation', async () => {
 						const result = await lint({
@@ -1080,7 +1081,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/color-hex-length */
+				/** @see https://stylelint.io/user-guide/rules/list/color-hex-length  */
 				describe('color-hex-length', () => {
 					it('should report an error for short hexadecimal color codes', async () => {
 						const result = await lint({
@@ -1099,7 +1100,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/hue-degree-notation */
+				/** @see https://stylelint.io/user-guide/rules/list/hue-degree-notation  */
 				describe('hue-degree-notation', () => {
 					it('should report an error for incorrect hue degree notation', async () => {
 						const result = await lint({
@@ -1116,7 +1117,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/keyframe-selector-notation */
+				/** @see https://stylelint.io/user-guide/rules/list/keyframe-selector-notation  */
 				describe('keyframe-selector-notation', () => {
 					it('should report an error for incorrect keyframe selector notation', async () => {
 						const result = await lint({
@@ -1140,7 +1141,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/media-feature-range-notation */
+				/** @see https://stylelint.io/user-guide/rules/list/media-feature-range-notation  */
 				describe('media-feature-range-notation', () => {
 					it('should report an error for incorrect media feature range notation', async () => {
 						const result = await lint({
@@ -1159,7 +1160,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/list/selector-not-notation */
+				/** @see https://stylelint.io/user-guide/rules/list/selector-not-notation  */
 				describe('selector-not-notation', () => {
 					it('should report an error for selectors with incorrect notation', async () => {
 						const result = await lint({
@@ -1178,7 +1179,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/selector-pseudo-element-colon-notation */
+				/** @see https://stylelint.io/user-guide/rules/selector-pseudo-element-colon-notation  */
 				describe('selector-pseudo-element-colon-notation', () => {
 					it('should report an error for pseudo-elements with double colons', async () => {
 						const result = await lint({
@@ -1200,7 +1201,7 @@ describe('stylelint', () => {
 			});
 
 			describe('pattern', () => {
-				/** @see https://stylelint.io/user-guide/rules/custom-media-pattern */
+				/** @see https://stylelint.io/user-guide/rules/custom-media-pattern  */
 				describe('custom-media-pattern', () => {
 					it('should report an error for custom media query names that do not match the pattern', async () => {
 						const result = await lint({
@@ -1221,7 +1222,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/custom-property-pattern */
+				/** @see https://stylelint.io/user-guide/rules/custom-property-pattern  */
 				describe('custom-property-pattern', () => {
 					it('should report an error for custom properties with invalid names', async () => {
 						const result = await lint({
@@ -1239,7 +1240,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/keyframes-name-pattern */
+				/** @see https://stylelint.io/user-guide/rules/keyframes-name-pattern  */
 				describe('keyframes-name-pattern', () => {
 					it('should report an error for keyframes with invalid names', async () => {
 						const result = await lint({
@@ -1255,7 +1256,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/selector-class-pattern */
+				/** @see https://stylelint.io/user-guide/rules/selector-class-pattern  */
 				describe('selector-class-pattern', () => {
 					it('should report an error for selectors with invalid class names', async () => {
 						const result = await lint({
@@ -1271,7 +1272,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/selector-id-pattern */
+				/** @see https://stylelint.io/user-guide/rules/selector-id-pattern  */
 				describe('selector-id-pattern', () => {
 					it('should report an error for selectors with invalid ID names', async () => {
 						const result = await lint({
@@ -1289,7 +1290,7 @@ describe('stylelint', () => {
 			});
 
 			describe('quotes', () => {
-				/** @see https://stylelint.io/user-guide/rules/font-family-name-quotes */
+				/** @see https://stylelint.io/user-guide/rules/font-family-name-quotes  */
 				describe('font-family-name-quotes', () => {
 					it('should report an error for font family names without quotes', async () => {
 						const result = await lint({
@@ -1307,7 +1308,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/function-url-quotes */
+				/** @see https://stylelint.io/user-guide/rules/function-url-quotes  */
 				describe('function-url-quotes', () => {
 					it('should report an error for unquoted URL in a function', async () => {
 						const result = await lint({
@@ -1325,7 +1326,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/selector-attribute-quotes */
+				/** @see https://stylelint.io/user-guide/rules/selector-attribute-quotes  */
 				describe('selector-attribute-quotes', () => {
 					it('should report an error for unquoted attribute value in a selector', async () => {
 						const result = await lint({
@@ -1345,7 +1346,7 @@ describe('stylelint', () => {
 			});
 
 			describe('redundant', () => {
-				/** @see https://stylelint.io/user-guide/rules/declaration-block-no-redundant-longhand-properties */
+				/** @see https://stylelint.io/user-guide/rules/declaration-block-no-redundant-longhand-properties  */
 				describe('declaration-block-no-redundant-longhand-properties', () => {
 					it('should report an error for redundant longhand properties', async () => {
 						const result = await lint({
@@ -1370,7 +1371,7 @@ describe('stylelint', () => {
 					});
 				});
 
-				/** @see https://stylelint.io/user-guide/rules/shorthand-property-no-redundant-values */
+				/** @see https://stylelint.io/user-guide/rules/shorthand-property-no-redundant-values  */
 				describe('shorthand-property-no-redundant-values', () => {
 					it('should report an error for shorthand properties with redundant values', async () => {
 						const result = await lint({
@@ -1392,11 +1393,11 @@ describe('stylelint', () => {
 			});
 
 			describe('whitespace inside', () => {
-				/** @see https://stylelint.io/user-guide/rules/comment-whitespace-inside */
+				/** @see https://stylelint.io/user-guide/rules/comment-whitespace-inside  */
 				describe('comment-whitespace-inside', () => {
 					it('should report an error for comments with extra whitespace inside', async () => {
 						const result = await lint({
-							code: '/*comment*/',
+							code: '/*comment */',
 							config,
 						});
 
@@ -1417,7 +1418,7 @@ describe('stylelint', () => {
 
 	describe('built-in rules', () => {
 		describe('at-rule', () => {
-			/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/ */
+			/** @see https://stylelint.io/user-guide/rules/at-rule-property-required-list/  */
 			describe('at-rule-property-required-list', () => {
 				it('should report an error for @font-face without font-display', async () => {
 					const result = await lint({
@@ -1442,7 +1443,7 @@ describe('stylelint', () => {
 		});
 
 		describe('color', () => {
-			/** @see https://stylelint.io/user-guide/rules/color-no-hex/ */
+			/** @see https://stylelint.io/user-guide/rules/color-no-hex/  */
 			describe('color-no-hex', () => {
 				it('should report an error for hex color usage', async () => {
 					const result = await lint({
@@ -1462,7 +1463,7 @@ describe('stylelint', () => {
 		});
 
 		describe('function', () => {
-			/** @see https://stylelint.io/user-guide/rules/function-disallowed-list/ */
+			/** @see https://stylelint.io/user-guide/rules/function-disallowed-list/  */
 			describe('function-disallowed-list', () => {
 				it('should report an error for using the rgb function', async () => {
 					const result = await lint({
@@ -1482,7 +1483,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/function-url-no-scheme-relative/ */
+			/** @see https://stylelint.io/user-guide/rules/function-url-no-scheme-relative/  */
 			describe('function-url-no-scheme-relative', () => {
 				it('should report an error for using scheme-relative URLs', async () => {
 					const result = await lint({
@@ -1506,7 +1507,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/function-url-scheme-disallowed-list/ */
+			/** @see https://stylelint.io/user-guide/rules/function-url-scheme-disallowed-list/  */
 			describe('function-url-scheme-disallowed-list', () => {
 				it('should report an error for URLs with the "ftp" scheme', async () => {
 					const result = await lint({
@@ -1549,7 +1550,7 @@ describe('stylelint', () => {
 		});
 
 		describe('rule', () => {
-			/** @see https://stylelint.io/user-guide/rules/rule-selector-property-disallowed-list */
+			/** @see https://stylelint.io/user-guide/rules/rule-selector-property-disallowed-list  */
 			describe('rule-selector-property-disallowed-list', () => {
 				it('should report an error for using the font size for the ".ri-" class', async () => {
 					const result = await lint({
@@ -1608,7 +1609,7 @@ describe('stylelint', () => {
 		});
 
 		describe('selector', () => {
-			/** @see https://stylelint.io/user-guide/rules/selector-disallowed-list */
+			/** @see https://stylelint.io/user-guide/rules/selector-disallowed-list  */
 			describe('selector-disallowed-list', () => {
 				it('should report an error for using the ".container" class', async () => {
 					const result = await lint({
@@ -1723,7 +1724,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/selector-no-qualifying-type */
+			/** @see https://stylelint.io/user-guide/rules/selector-no-qualifying-type  */
 			describe('selector-no-qualifying-type', () => {
 				it('should report an error for using the "input.button" type and class combination', async () => {
 					const result = await lint({
@@ -1764,7 +1765,7 @@ describe('stylelint', () => {
 		});
 
 		describe('unknown', () => {
-			/** @see https://stylelint.io/user-guide/rules/at-rule-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/at-rule-no-unknown  */
 			describe('at-rule-no-unknown', () => {
 				it('should report an error for unknown at-rule', async () => {
 					const result = await lint({
@@ -1783,7 +1784,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/declaration-property-value-no-unknown */
+			/** @see https://stylelint.io/user-guide/rules/declaration-property-value-no-unknown  */
 			describe('declaration-property-value-no-unknown', () => {
 				it('should report an error for unknown at-rule', async () => {
 					const result = await lint({
@@ -1804,176 +1805,7 @@ describe('stylelint', () => {
 		});
 
 		describe('max & min', () => {
-			/** @see https://stylelint.io/user-guide/rules/max-nesting-depth*/
-			describe('max-nesting-depth', () => {
-				it('should report an error for nesting depth more than 3', async () => {
-					const result = await lint({
-						code: `
-							.a-parent {
-								.a-1 {
-									.a-2 {
-										.a-3 {
-											.a-4 {
-												color: red;
-											}
-										}
-									}
-								}
-							}
-						`,
-						config,
-					});
-
-					const { warnings } = result.results[0];
-					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
-
-					expect(warning.text).toContain('Expected nesting depth to be no more than 3');
-				});
-
-				it('should not report an error for nesting depth 3', async () => {
-					const result = await lint({
-						code: `
-							.a-parent {
-								.a-1 {
-									.a-2 {
-										.a-3 {
-												color: red;
-										}
-									}
-								}
-							}
-						`,
-						config, // Assuming config is already defined in the scope
-					});
-
-					const { warnings } = result.results[0];
-					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
-
-					expect(warning).toBeFalsy();
-				});
-
-				it('should not report an error for nesting depth more than 3 with "@include"', async () => {
-					const result = await lint({
-						code: `
-							.a-parent {
-								.a-1 {
-									.a-2 {
-										.a-3 {
-											@include mixin {
-												color: red;
-											}
-										}
-									}
-								}
-							}
-						`,
-						config, // Assuming config is already defined in the scope
-					});
-
-					const { warnings } = result.results[0];
-					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
-
-					expect(warning).toBeFalsy();
-				});
-
-				it('should not report an error for nesting depth more than 3 with "@media"', async () => {
-					const result = await lint({
-						code: `
-							.a-parent {
-								.a-1 {
-									.a-2 {
-										.a-3 {
-											@media (min-width: 768px) {
-												color: red;
-											}
-										}
-									}
-								}
-							}
-						`,
-						config, // Assuming config is already defined in the scope
-					});
-
-					const { warnings } = result.results[0];
-					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
-
-					expect(warning).toBeFalsy();
-				});
-
-				it('should not report an error for nesting depth more than 3 with pseudoclass', async () => {
-					const result = await lint({
-						code: `
-							.a-parent {
-								.a-1 {
-									.a-2 {
-										.a-3 {
-											&:hover {
-												color: red;
-											}
-										}
-									}
-								}
-							}
-						`,
-						config, // Assuming config is already defined in the scope
-					});
-
-					const { warnings } = result.results[0];
-					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
-
-					expect(warning).toBeFalsy();
-				});
-
-				it('should not report an error for nesting depth more than 3 with pseudoelement', async () => {
-					const result = await lint({
-						code: `
-							.a-parent {
-								.a-1 {
-									.a-2 {
-										.a-3 {
-											::before {
-												color: red;
-											}
-										}
-									}
-								}
-							}
-						`,
-						config, // Assuming config is already defined in the scope
-					});
-
-					const { warnings } = result.results[0];
-					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
-
-					expect(warning).toBeFalsy();
-				});
-
-				it('should not report an error for nesting depth more than 3 with "&" pseudoelement', async () => {
-					const result = await lint({
-						code: `
-							.a-parent {
-								.a-1 {
-									.a-2 {
-										.a-3 {
-											&::before {
-												color: red;
-											}
-										}
-									}
-								}
-							}
-						`,
-						config, // Assuming config is already defined in the scope
-					});
-
-					const { warnings } = result.results[0];
-					const warning = warnings.find(warning => warning.rule === 'max-nesting-depth');
-
-					expect(warning).toBeFalsy();
-				});
-			});
-
-			/** @see https://stylelint.io/user-guide/rules/max-nesting-depth*/
+			/** @see https://stylelint.io/user-guide/rules/max-nesting-depth */
 			describe('selector-max-attribute', () => {
 				it('should report an error when more than 1 attribute selectors are used', async () => {
 					const result = await lint({
@@ -1982,7 +1814,7 @@ describe('stylelint', () => {
 								color: red;
 							}
 						`,
-						config, // Assuming config is already defined in the scope
+						config,
 					});
 
 					const { warnings } = result.results[0];
@@ -1994,7 +1826,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/max-nesting-id*/
+			/** @see https://stylelint.io/user-guide/rules/max-nesting-id */
 			describe('selector-max-id', () => {
 				it('should report an error when more than 1 attribute selectors are used', async () => {
 					const result = await lint({
@@ -2017,7 +1849,7 @@ describe('stylelint', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/time-min-milliseconds*/
+			/** @see https://stylelint.io/user-guide/rules/time-min-milliseconds */
 			describe('time-min-milliseconds', () => {
 				it('should report an error when more than 1 attribute selectors are used', async () => {
 					const result = await lint({
@@ -2038,7 +1870,7 @@ describe('stylelint', () => {
 		});
 
 		describe('notation', () => {
-			/** @see https://stylelint.io/user-guide/rules/font-weight-notation*/
+			/** @see https://stylelint.io/user-guide/rules/font-weight-notation */
 			describe('font-weight-notation', () => {
 				it('should report an error when more than 1 attribute selectors are used', async () => {
 					const result = await lint({
@@ -2055,6 +1887,267 @@ describe('stylelint', () => {
 
 					expect(warning.text).toContain('Expected "bold" to be "700" (font-weight-notation)');
 				});
+			});
+		});
+	});
+
+	describe('order', () => {
+		/** @see https://github.com/hudochenkov/stylelint-order/blob/master/rules/properties-order/README.md */
+		describe('order/properties-order', () => {
+			const ruleName = 'order/properties-order';
+
+			it('should not report an error when ordering is the following', async () => {
+				const result = await lint({
+					code: `
+					.example {
+						content: "test";
+						position: absolute;
+						top: 0;
+						right: 0;
+						bottom: 0;
+						left: 0;
+						z-index: 1;
+						display: flex;
+						flex: 1;
+						flex-grow: 1;
+						flex-shrink: 1;
+						flex-basis: 10%;
+						flex-flow: row wrap;
+						flex-direction: row;
+						flex-wrap: wrap;
+						place-content: center space-between;
+						justify-content: center;
+						align-content: center;
+						align-items: center;
+						order: 1;
+						align-self: center;
+						justify-self: center;
+						grid: auto / auto;
+						grid-area: 1 / 1 / 2 / 2;
+						grid-auto-columns: auto;
+						grid-auto-flow: row;
+						grid-auto-rows: auto;
+						grid-column: 1 / span 2;
+						grid-column-end: span 3;
+						grid-column-gap: 10px;
+						grid-column-start: 2;
+						gap: 10px;
+						grid-row: 1 / span 2;
+						grid-row-end: span 3;
+						grid-row-gap: 10px;
+						grid-row-start: 2;
+						grid-template: none;
+						grid-template-areas: "a b c";
+						grid-template-columns: 1fr 2fr;
+						grid-template-rows: 100px 200px;
+						float: left;
+						clear: both;
+						box-sizing: border-box;
+						width: 100px;
+						min-width: 50px;
+						max-width: 150px;
+						height: 100px;
+						min-height: 50px;
+						max-height: 150px;
+						margin: 10px;
+						margin-top: 10px;
+						margin-right: 20px;
+						margin-bottom: 30px;
+						margin-left: 40px;
+						padding: 5px;
+						padding-top: 5px;
+						padding-right: 10px;
+						padding-bottom: 15px;
+						padding-left: 20px;
+						overflow: auto;
+						overflow-x: hidden;
+						overflow-y: scroll;
+						list-style: square inside;
+						list-style-position: inside;
+						list-style-type: disc;
+						list-style-image: url('bullet.png');
+						border-collapse: collapse;
+						border-spacing: 2px;
+						table-layout: fixed;
+						empty-cells: show;
+						caption-side: top;
+						font: 400 12px/1.5 "Helvetica Neue", sans-serif;
+						font-weight: 700;
+						font-size: 14px;
+						line-height: 1.5;
+						font-family: "Helvetica Neue", sans-serif;
+						vertical-align: top;
+						text-align: center;
+						direction: ltr;
+						color: black;
+						text-transform: uppercase;
+						text-decoration: underline;
+						font-style: italic;
+						font-variant: small-caps;
+						font-size-adjust: none;
+						font-stretch: expanded;
+						text-align-last: justify;
+						letter-spacing: 1px;
+						word-spacing: 2px;
+						white-space: nowrap;
+						text-emphasis: circle;
+						text-emphasis-color: black;
+						text-emphasis-style: filled;
+						text-emphasis-position: under;
+						text-indent: 20px;
+						text-justify: inter-word;
+						text-outline: 1px solid black;
+						text-wrap: balance;
+						text-overflow: ellipsis;
+						text-orientation: mixed;
+						word-wrap: break-word;
+						word-break: break-all;
+						overflow-wrap: break-word;
+						tab-size: 4;
+						hyphens: auto;
+						unicode-bidi: bidi-override;
+						columns: 100px 3;
+						column-count: 3;
+						column-fill: balance;
+						column-gap: 20px;
+						column-rule: 1px solid black;
+						column-rule-color: black;
+						column-rule-style: solid;
+						column-rule-width: 1px;
+						column-span: all;
+						column-width: 100px;
+						text-shadow: 1px 1px 2px black;
+						page-break-after: auto;
+						page-break-before: auto;
+						page-break-inside: avoid;
+						src: url('font.woff2') format('woff2');
+						background: black;
+						background-color: black;
+						background-image: url('bg.jpg');
+						background-repeat: no-repeat;
+						background-position: center top;
+						background-position-x: center;
+						background-position-y: top;
+						background-size: cover;
+						background-clip: padding-box;
+						background-origin: content-box;
+						background-attachment: fixed;
+						box-decoration-break: clone;
+						background-blend-mode: multiply;
+						border: 1px solid black;
+						border-width: 1px;
+						border-style: solid;
+						border-color: black;
+						border-top: 1px solid black;
+						border-top-width: 1px;
+						border-top-style: solid;
+						border-top-color: black;
+						border-right: 1px solid black;
+						border-right-width: 1px;
+						border-right-style: solid;
+						border-right-color: black;
+						border-bottom: 1px solid black;
+						border-bottom-width: 1px;
+						border-bottom-style: solid;
+						border-bottom-color: black;
+						border-left: 1px solid black;
+						border-left-width: 1px;
+						border-left-style: solid;
+						border-left-color: black;
+						border-radius: 4px;
+						border-top-left-radius: 4px;
+						border-top-right-radius: 4px;
+						border-bottom-right-radius: 4px;
+						border-bottom-left-radius: 4px;
+						border-image: url('border.png') 30 stretch;
+						border-image-source: url('border.png');
+						border-image-slice: 30;
+						border-image-width: 30px;
+						border-image-outset: 1;
+						border-image-repeat: stretch;
+						outline: 1px solid black;
+						outline-width: 1px;
+						outline-style: solid;
+						outline-color: black;
+						outline-offset: 2px;
+						box-shadow: 2px 2px 5px black;
+						transform: rotate(45deg);
+						transform-origin: center;
+						backface-visibility: hidden;
+						perspective: 1000px;
+						perspective-origin: 50% 50%;
+						transform-style: preserve-3d;
+						visibility: visible;
+						cursor: pointer;
+						opacity: 1;
+						interpolation-mode: bicubic;
+						filter: blur(5px);
+						backdrop-filter: blur(10px);
+						transition: all 0.3s ease-out;
+						transition-delay: 0.1s;
+						transition-timing-function: ease-in-out;
+						transition-duration: 0.2s;
+						transition-property: opacity;
+						animation: slidein 3s ease-in 1s infinite reverse both running;
+						animation-name: slidein;
+						animation-duration: 3s;
+						animation-play-state: running;
+						animation-timing-function: ease-in;
+						animation-delay: 1s;
+						animation-iteration-count: infinite;
+						animation-direction: reverse;
+						animation-fill-mode: forwards;
+						contain: none;
+						appearance: none;
+						clip: rect(0, 0, 0, 0);
+						clip-path: circle(50%);
+						counter-reset: section;
+						counter-increment: section;
+						resize: both;
+						user-select: none;
+						nav-index: auto;
+						nav-up: auto;
+						nav-right: auto;
+						nav-down: auto;
+						nav-left: auto;
+						pointer-events: auto;
+						quotes: '“' '”' '‘' '’';
+						touch-action: manipulation;
+						will-change: transform;
+						zoom: 1;
+						fill: currentcolor;
+						fill-rule: nonzero;
+						clip-rule: evenodd;
+						stroke: currentcolor;
+						aspect-ratio: auto 1 / 1;
+						accent-color: auto;
+					}
+				`,
+					config,
+				});
+
+				const { warnings } = result.results[0];
+				const warning = warnings.find(warning => warning.rule === ruleName);
+
+				expect(warning).toBeFalsy();
+			});
+
+			it('should not report an error when ordering is the following', async () => {
+				const result = await lint({
+					code: `
+					.example {
+						accent-color: auto;
+						aspect-ratio: auto 1 / 1;
+						content: "test";
+					}
+				`,
+					config,
+				});
+
+				const { warnings } = result.results[0];
+				const warning = warnings.find(warning => warning.rule === ruleName);
+
+				expect(warning.text).toBe(`Expected "aspect-ratio" to come before "accent-color" (${ruleName})`);
 			});
 		});
 	});

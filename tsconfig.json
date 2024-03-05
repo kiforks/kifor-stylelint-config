@@ -22,6 +22,7 @@
 		"noUnusedParameters": true,
 		"target": "ESNext",
 		"lib": ["ESNext", "dom"],
-		"skipLibCheck": true,
+		"skipLibCheck": true
 	},
+	"include": ["./src/**/*.ts"]
 }

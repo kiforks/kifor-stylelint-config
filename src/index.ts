@@ -1,20 +1,32 @@
-import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
-import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
-import { RULE_PROPERTY_UNIT_ALLOWED_LIST } from './rule/configs/rule-property-unit-allowed-list/rule-property-unit-allowed-list.config';
-import { RULE_UNIT_ALLOWED_LIST } from './rule/configs/rule-unit-allowed-list/rule-unit-allowed-list.config';
-import { RULE_NO_UNKNOWN } from './rule/configs/rule-no-unknown/rule-no-unknown.config';
 import { Config } from 'stylelint';
 
-export default {
-	/**
-	 * Docs:
-	 * @see https://stylelint.io/user-guide/rules
-	 */
-	extends: ['stylelint-config-standard'],
-	customSyntax: 'postcss-scss',
-	ignoreFiles: ['**/*.css'],
-	plugins: ['stylelint-order'],
-	rules: {
+import { RULE_NO_UNKNOWN } from './rule/configs/rule-no-unknown/rule-no-unknown.config';
+import { RULE_PROPERTY_UNIT_ALLOWED_LIST } from './rule/configs/rule-property-unit-allowed-list/rule-property-unit-allowed-list.config';
+import { RULE_UNIT_ALLOWED_LIST } from './rule/configs/rule-unit-allowed-list/rule-unit-allowed-list.config';
+
+import { ORDER_CONTENT } from './core/modules/order-content/constants/order-content/order-content.constant';
+import { ORDER_PROPERTIES } from './core/modules/order-property/constants/order-properties/order-properties.constant';
+import { plugins } from './core/plugin';
+import { Plugin } from './core/plugin/decorators/plugin.decorator';
+
+/**
+ * Docs:
+ * @see https://stylelint.io/user-guide/rules
+ */
+@Plugin({ providers: plugins })
+class Configuration implements Config {
+	public extends = ['stylelint-config-standard'];
+	public customSyntax = 'postcss-scss';
+	public ignoreFiles = ['**/*.css'];
+	public plugins = [
+		/**
+		 * @name order/order
+		 * @name order/properties-order
+		 * @see https://www.npmjs.com/package/stylelint-order
+		 */
+		'stylelint-order',
+	];
+	public rules = {
 		/* At-rule */
 		'at-rule-no-unknown': [
 			true,
@@ -32,7 +44,7 @@ export default {
 
 		/* Declaration block */
 		'declaration-block-no-duplicate-properties': true,
-		'declaration-block-no-redundant-longhand-properties': false,
+		'declaration-block-no-redundant-longhand-properties': null,
 
 		/* Declaration property */
 		'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
@@ -85,15 +97,7 @@ export default {
 
 		/* Notation */
 		'font-weight-notation': 'numeric',
+	};
+}
 
-		/* Other */
-		'max-nesting-depth': [
-			3,
-			{
-				'ignore': ['blockless-at-rules', 'pseudo-classes'],
-				'ignoreRules': ['/^&::/', '/^::/'],
-				'ignoreAtRules': ['/^\\include/', '/^\\media/'],
-			},
-		],
-	},
-} as Config;
+export default { ...new Configuration() };

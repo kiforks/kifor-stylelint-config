@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.25
+
+- Added: new "max-nesting-depth" rule. Changed ordering and some config rules
+
 ## 0.0.17
 
 - Added: new GitHub actions flow

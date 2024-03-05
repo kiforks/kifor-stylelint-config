@@ -19,8 +19,22 @@ describe('OrderContentHelper', () => {
 			const pseudoClassRules = OrderContentHelper.createPseudoClasses(pseudoClasses);
 
 			expect(pseudoClassRules).toEqual([
-				{ type: 'rule', selector: '^&:hover' },
-				{ type: 'rule', selector: '^&:active' },
+				{
+					'selector': '^:hover',
+					'type': 'rule',
+				},
+				{
+					'selector': '^:active',
+					'type': 'rule',
+				},
+				{
+					'selector': '^&:hover',
+					'type': 'rule',
+				},
+				{
+					'selector': '^&:active',
+					'type': 'rule',
+				},
 			]);
 		});
 	});
@@ -31,8 +45,22 @@ describe('OrderContentHelper', () => {
 			const pseudoElementRules = OrderContentHelper.createPseudoElements(pseudoElements);
 
 			expect(pseudoElementRules).toEqual([
-				{ type: 'rule', selector: '^&::before' },
-				{ type: 'rule', selector: '^&::after' },
+				{
+					'selector': '^::before',
+					'type': 'rule',
+				},
+				{
+					'selector': '^::after',
+					'type': 'rule',
+				},
+				{
+					'selector': '^&::before',
+					'type': 'rule',
+				},
+				{
+					'selector': '^&::after',
+					'type': 'rule',
+				},
 			]);
 		});
 	});

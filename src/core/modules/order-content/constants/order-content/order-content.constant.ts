@@ -1,8 +1,8 @@
 import { MediaConfig } from '../../../../../media/configs/media.config';
 
 import { MediaRuleHelper } from '../../../../../media/helpers/media-rule-helper/media-rule.helper';
-import { RuleHelper } from '../../../../../rule/helpers/rule-order/rule.helper';
 import { RegExpHelper } from '../../../../helpers/reg-exp/reg-exp.helper';
+import { RuleHelper } from '../../../../rule/helpers/rule-order/rule.helper';
 
 import { ORDER_CONTENT_MEDIA_QUERY } from '../order-content-media-query/order-content-media-query.constant';
 import { ORDER_CONTENT_PSEUDO_CLASS_INCLUDES } from '../order-content-pseudo-class-includes/order-content-pseudo-class-includes.constant';

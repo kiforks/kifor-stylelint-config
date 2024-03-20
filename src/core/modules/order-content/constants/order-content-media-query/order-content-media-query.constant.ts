@@ -1,4 +1,4 @@
-import { RuleHelper } from '../../../../../rule/helpers/rule-order/rule.helper';
+import { RuleHelper } from '../../../../rule/helpers/rule-order/rule.helper';
 import { OrderContentHelper } from '../../helpers/order-content.helper';
 
 export const ORDER_CONTENT_MEDIA_QUERY = [

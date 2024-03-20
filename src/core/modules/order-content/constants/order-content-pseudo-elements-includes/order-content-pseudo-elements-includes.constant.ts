@@ -1,4 +1,4 @@
-import { RuleHelper } from '../../../../../rule/helpers/rule-order/rule.helper';
+import { RuleHelper } from '../../../../rule/helpers/rule-order/rule.helper';
 
 export const ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES = RuleHelper.createIncludes([
 	// before

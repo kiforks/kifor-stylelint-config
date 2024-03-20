@@ -14,9 +14,11 @@ export const Plugin = (config: PluginDecoratorConfig): (<T extends PluginConstru
 				this.rules = Object.assign(
 					{},
 					currentRules,
-					...config.providers.map(({ options }, index) => ({
-						[new config.providers[index].provide().ruleName]: options,
-					}))
+					...config.providers.map(({ options }, index) => {
+						const ruleName = new config.providers[index].provide().name;
+
+						return { [ruleName]: options };
+					})
 				);
 			}
 		};

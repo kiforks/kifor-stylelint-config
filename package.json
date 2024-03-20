@@ -59,6 +59,7 @@
 		"@rollup/plugin-typescript": "^11.1.6",
 		"@stylelint/remark-preset": "^5.0.0",
 		"@types/jest": "^29.5.12",
+		"@types/lodash": "^4.17.0",
 		"@typescript-eslint/eslint-plugin": "^7.1.1",
 		"@typescript-eslint/parser": "^7.1.1",
 		"chokidar-cli": "^3.0.0",
@@ -89,7 +90,7 @@
 	"scripts": {
 		"update": "ncu -u && npm install",
 		"build": "rollup -c && prettier --write .stylelintrc.js",
-		"watch": "chokidar 'src/**/*.ts' --ignore '**/*.spec.ts' -c 'npm run build'",
+		"watch": "npm run build && chokidar 'src/**/*.ts' --ignore '**/*.spec.ts' -c 'npm run build'",
 		"stylelint": "npx stylelint **/*.scss --config .stylelintrc.js --fix",
 		"lint": "npx eslint '**/*.{ts,html,js}' --quiet --fix",
 		"lint:check": "npx eslint '**/*.{ts,html,js}' --quiet",

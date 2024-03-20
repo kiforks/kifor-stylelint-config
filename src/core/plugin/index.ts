@@ -1,24 +1,9 @@
-import { MediaConfig } from '../../media/configs/media.config';
-
 import { PluginProvider } from './interfaces/plugin.interface';
-import { PluginMaxNestingDepthOptions } from './plugins/max-nesting-depth/interfaces/plugin-max-nesting-depth.interface';
 
-import { PluginMaxNestingDepth } from './plugins/max-nesting-depth/api/plugin-max-nesting-depth';
+import { pluginMaxNestingDepthProvider } from './plugins/plugin-max-nesting-depth/providers/plugin-max-nesting-depth.provider';
+import { pluginNoNestingProvider } from './plugins/plugin-no-nesting/providers/plugin-no-nesting.provider';
 
-export * from './plugins/max-nesting-depth/api/plugin-max-nesting-depth';
+export * from './plugins/plugin-max-nesting-depth/api/plugin-max-nesting-depth';
 export * from './plugins/plugin-base/api/plugin-base';
 
-export const plugins: PluginProvider[] = [
-	{
-		provide: PluginMaxNestingDepth,
-		options: [
-			3,
-			{
-				ignore: ['blockless-at-rules', 'pseudo-classes'],
-				ignoreRules: ['/^&::/', '/^::/'],
-				ignoreHostSelector: ['/^:host/'],
-				ignoreAtRules: ['/^\\include/', `/^\\${MediaConfig.NAME}/`],
-			},
-		] as PluginMaxNestingDepthOptions,
-	},
-];
+export const plugins: PluginProvider[] = [pluginMaxNestingDepthProvider(), pluginNoNestingProvider()];

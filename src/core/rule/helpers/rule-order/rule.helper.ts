@@ -1,14 +1,51 @@
-import { Rule, RuleAt, RuleString } from '../../interfaces/rule.interface';
+import { Rule, RuleAt } from '../../interfaces/rule.interface';
 
 export abstract class RuleHelper {
+	/**
+	 * Checks if the given object conforms to the Rule interface.
+	 * @param obj - The object to be checked.
+	 * @returns true if obj is a Rule type, false otherwise.
+	 * @example For isRule({ type: 'rule', selector: '.example' }), returns true.
+	 */
+	public static isRule(obj: unknown): obj is Rule {
+		const isObject = typeof obj === 'object' && obj !== null;
+		const hasType = isObject && 'type' in obj;
+		const isTypeRule = hasType && obj['type'] === 'rule';
+		const hasSelector = isTypeRule && 'selector' in obj;
+
+		return isTypeRule && hasSelector;
+	}
+
 	/**
 	 * Checks if the given object conforms to the RuleAt interface.
 	 * @param obj - The object to be checked.
 	 * @returns true if obj is a RuleAt type, false otherwise.
-	 * @example For isRuleAt({ type: 'at-rule', parameter: 'example' }), returns true.
+	 * @example For isRuleAt({ type: 'at-rule', name: 'font-feature-values' }), returns true.
 	 */
 	public static isRuleAt(obj: unknown): obj is RuleAt {
-		return typeof obj === 'object' && obj !== null && 'type' in obj && 'parameter' in obj;
+		const isObject = typeof obj === 'object' && obj !== null;
+		const hasType = isObject && 'type' in obj;
+		const isTypeAtRule = hasType && obj['type'] === 'at-rule';
+		const ruleAtObj = isTypeAtRule ? (obj as RuleAt) : null;
+
+		const hasName =
+			ruleAtObj && 'name' in ruleAtObj && (typeof ruleAtObj.name === 'string' || ruleAtObj.name instanceof RegExp);
+		const hasParameter =
+			ruleAtObj &&
+			'parameter' in ruleAtObj &&
+			(typeof ruleAtObj.parameter === 'string' || ruleAtObj.parameter instanceof RegExp);
+
+		return isTypeAtRule && !!(hasName || hasParameter);
+	}
+
+	/**
+	 * Checks if all elements in the given array are of type Rule or RuleAt.
+	 * @param array - The array to be checked.
+	 * @returns true if all elements are either Rule or RuleAt, false otherwise.
+	 * @example For areRulesOrRuleAts([{ type: 'rule', selector: '.example' }, { type: 'at-rule', parameter: 'print' }]), returns true.
+	 */
+	public static areRulesOrRuleAts(array: unknown): boolean {
+		return Array.isArray(array) && array.every(element => RuleHelper.isRule(element) || RuleHelper.isRuleAt(element));
 	}
 
 	/**
@@ -18,7 +55,7 @@ export abstract class RuleHelper {
 	 * @example: For createAtRule('media', 'screen and (max-width: 768px)'), the output is:
 	 * { type: 'at-rule', name: 'media', parameter: 'screen and (max-width: 768px)' }.
 	 */
-	public static createAtRule(name: RuleString, parameter?: RuleString): RuleAt {
+	public static createAtRule(name: RuleRegExp, parameter?: RuleRegExp): RuleAt {
 		return parameter
 			? {
 					type: 'at-rule',
@@ -37,7 +74,7 @@ export abstract class RuleHelper {
 	 * @example: For createSelector('.myClass'), the output is:
 	 * { type: 'rule', selector: '.myClass' }.
 	 */
-	public static createSelector(selector: RuleString): Rule {
+	public static createSelector(selector: RuleRegExp): Rule {
 		return {
 			type: 'rule',
 			selector,
@@ -50,7 +87,7 @@ export abstract class RuleHelper {
 	 * @example: For createInclude('mixinName'), the output is:
 	 * { type: 'at-rule', name: 'include', parameter: 'mixinName' }.
 	 */
-	public static createInclude<P extends RuleString = RuleString>(mixin: P): RuleAt<P> {
+	public static createInclude<P extends RuleRegExp = RuleRegExp>(mixin: P): RuleAt<P> {
 		return {
 			type: 'at-rule',
 			name: 'include',
@@ -67,7 +104,7 @@ export abstract class RuleHelper {
 	 *    { type: 'rule', selector: '.class2' }
 	 * ].
 	 */
-	public static createSelectors(selectors: RuleString[]): Rule[] {
+	public static createSelectors(selectors: RuleRegExp[]): Rule[] {
 		return selectors.map(selector => RuleHelper.createSelector(selector));
 	}
 
@@ -80,7 +117,7 @@ export abstract class RuleHelper {
 	 *    { type: 'at-rule', name: 'include', parameter: 'mixin2' }
 	 * ].
 	 */
-	public static createIncludes<P extends RuleString = RuleString>(mixins: P[]): Array<RuleAt<P>> {
+	public static createIncludes<P extends RuleRegExp = RuleRegExp>(mixins: P[]): Array<RuleAt<P>> {
 		return mixins.map(mixin => RuleHelper.createInclude(mixin));
 	}
 
@@ -94,7 +131,7 @@ export abstract class RuleHelper {
 	 *    { type: 'at-rule', name: 'media', parameter: 'print' }
 	 * ].
 	 */
-	public static createAtRules(name: RuleString, parameters: RuleString[]): RuleAt[] {
+	public static createAtRules(name: RuleRegExp, parameters: RuleRegExp[]): RuleAt[] {
 		return parameters.map(parameter => RuleHelper.createAtRule(name, parameter));
 	}
 }

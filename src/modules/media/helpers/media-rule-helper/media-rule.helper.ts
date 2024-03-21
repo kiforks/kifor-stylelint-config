@@ -1,6 +1,6 @@
 import { MediaConfig } from '../../configs/media.config';
 
-import { RuleHelper } from '../../../core/rule/helpers/rule-order/rule.helper';
+import { RuleHelper } from '../../../../core/rule/helpers/rule-order/rule.helper';
 
 import {
 	MediaRuleAtOrderBreakpoint,

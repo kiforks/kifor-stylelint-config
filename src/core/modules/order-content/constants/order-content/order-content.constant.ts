@@ -1,6 +1,6 @@
-import { MediaConfig } from '../../../../../media/configs/media.config';
+import { MediaConfig } from '../../../../../modules/media/configs/media.config';
 
-import { MediaRuleHelper } from '../../../../../media/helpers/media-rule-helper/media-rule.helper';
+import { MediaRuleHelper } from '../../../../../modules/media/helpers/media-rule-helper/media-rule.helper';
 import { RegExpHelper } from '../../../../helpers/reg-exp/reg-exp.helper';
 import { RuleHelper } from '../../../../rule/helpers/rule-order/rule.helper';
 

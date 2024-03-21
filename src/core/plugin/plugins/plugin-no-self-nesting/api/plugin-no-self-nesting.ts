@@ -3,23 +3,23 @@ import { PluginHelper } from '../../../helpers/plugin.helper';
 
 import { PluginCheckData, PluginData, PluginRule, PluginRuleOptions } from '../../../interfaces/plugin.interface';
 import {
-	PluginNoNestingData,
-	PluginNoNestingMessageArgs,
-	PluginNoNestingName,
-	PluginNoNestingOptions,
-	PluginNoNestingScopeName,
-} from '../interfaces/plugin-no-nesting.interface';
+	PluginNoSelfNestingData,
+	PluginNoSelfNestingMessageArgs,
+	PluginNoSelfNestingName,
+	PluginNoSelfNestingOptions,
+	PluginNoSelfNestingScopeName,
+} from '../interfaces/plugin-no-self-nesting.interface';
 
 import { PluginBase } from '../../plugin-base/api/plugin-base';
 
-export class PluginNoNesting extends PluginBase {
+export class PluginNoSelfNesting extends PluginBase {
 	protected override readonly isArrayOptions = true;
 
-	protected readonly ruleName = 'no-nesting';
-	protected readonly message = (scopeName: PluginNoNestingScopeName, nestedName: PluginNoNestingName): string =>
-		`Nesting of "${nestedName}" within "${scopeName}" is not allowed.`;
+	protected readonly ruleName = 'no-self-nesting';
+	protected readonly message = (scopeName: PluginNoSelfNestingScopeName, nestedName: PluginNoSelfNestingName): string =>
+		`Nesting is not allowed for child selector '${nestedName}' under parent selector '${scopeName}' when they match the specified pattern.`;
 
-	protected initialize({ options, result }: PluginData<PluginNoNestingOptions, PluginNoNestingOptions>): void {
+	protected initialize({ options, result }: PluginData<PluginNoSelfNestingOptions, PluginNoSelfNestingOptions>): void {
 		const mainOptions: PluginRuleOptions = { actual: options, possible: RuleHelper.areRulesOrRuleAts };
 
 		if (!this.validateOptions(mainOptions)) return;
@@ -28,19 +28,22 @@ export class PluginNoNesting extends PluginBase {
 		this.checkAtRule(result, options);
 	}
 
-	protected check({ rule, options }: PluginCheckData<PluginNoNestingOptions, PluginNoNestingOptions>): false | void {
+	protected check({
+		rule,
+		options,
+	}: PluginCheckData<PluginNoSelfNestingOptions, PluginNoSelfNestingOptions>): false | void {
 		if (PluginHelper.validateSyntaxBlock(rule)) return;
 
 		const nestedData = this.getNestingData(rule, options);
 
 		if (!nestedData) return;
 
-		const messageArgs: PluginNoNestingMessageArgs = [nestedData.scopeName, nestedData.violatedName];
+		const messageArgs: PluginNoSelfNestingMessageArgs = [nestedData.scopeName, nestedData.violatedName];
 
 		this.reportProblem({ node: nestedData.violatedNode, messageArgs });
 	}
 
-	private getNestingData(node: PluginRule, options: PluginNoNestingOptions): Nullable<PluginNoNestingData> {
+	private getNestingData(node: PluginRule, options: PluginNoSelfNestingOptions): Nullable<PluginNoSelfNestingData> {
 		const validationRuleName = PluginHelper.getRuleName(node);
 		const validationRuleParams = PluginHelper.getRuleParams(node);
 		const validationRule = options.find(option => {

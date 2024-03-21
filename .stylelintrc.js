@@ -1412,6 +1412,9 @@ class PluginConfig {
 const {
 	utils: { ruleMessages, validateOptions, report },
 } = stylelint;
+/**
+ * @private used only for development
+ */
 class PluginBase {
 	constructor() {
 		this.isArrayOptions = false;
@@ -1592,12 +1595,13 @@ const pluginMaxNestingDepthProvider = () => {
 	};
 };
 
-class PluginNoNesting extends PluginBase {
+class PluginNoSelfNesting extends PluginBase {
 	constructor() {
 		super(...arguments);
 		this.isArrayOptions = true;
-		this.ruleName = 'no-nesting';
-		this.message = (scopeName, nestedName) => `Nesting of "${nestedName}" within "${scopeName}" is not allowed.`;
+		this.ruleName = 'no-self-nesting';
+		this.message = (scopeName, nestedName) =>
+			`Nesting is not allowed for child selector '${nestedName}' under parent selector '${scopeName}' when they match the specified pattern.`;
 	}
 	initialize({ options, result }) {
 		const mainOptions = { actual: options, possible: RuleHelper.areRulesOrRuleAts };
@@ -1657,15 +1661,16 @@ class PluginNoNesting extends PluginBase {
 	}
 }
 
-const pluginNoNestingProvider = () => {
+const pluginNoSelfNestingProvider = () => {
 	return {
-		provide: PluginNoNesting,
+		provide: PluginNoSelfNesting,
 		options: [
 			RuleHelper.createSelector('body'),
 			RuleHelper.createSelector('html'),
 			RuleHelper.createSelector('main'),
 			RuleHelper.createSelector('h1'),
 			RuleHelper.createSelector(/^:host/),
+			RuleHelper.createSelector(/^&:host/),
 			RuleHelper.createSelector(/^::ng-deep/),
 			RuleHelper.createSelector(/^&::ng-deep/),
 			RuleHelper.createInclude(/^media-/),
@@ -1673,7 +1678,7 @@ const pluginNoNestingProvider = () => {
 	};
 };
 
-const plugins = [pluginMaxNestingDepthProvider(), pluginNoNestingProvider()];
+const plugins = [pluginMaxNestingDepthProvider(), pluginNoSelfNestingProvider()];
 
 const Plugin = config => {
 	return constructor => {

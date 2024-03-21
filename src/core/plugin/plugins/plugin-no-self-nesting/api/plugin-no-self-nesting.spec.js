@@ -5,8 +5,8 @@ import { getWarning } from '../../../../../js/tests/spec-helpers.js';
 
 const lint = stylelint.lint;
 
-describe('PluginNoNesting', () => {
-	const ruleName = 'kifor-stylelint/no-nesting';
+describe('PluginNoSelfNesting', () => {
+	const ruleName = 'kifor-stylelint/no-self-nesting';
 
 	it('should report an error for nesting selector', async () => {
 		const result = await lint({
@@ -32,7 +32,9 @@ describe('PluginNoNesting', () => {
 
 		const warning = getWarning(result, ruleName);
 
-		expect(warning.text).toBe(`Nesting of "h1" within "h1" is not allowed. (${ruleName})`);
+		expect(warning.text).toBe(
+			`Nesting is not allowed for child selector 'h1' under parent selector 'h1' when they match the specified pattern. (${ruleName})`
+		);
 	});
 
 	it('should report an error for nesting at-rule', async () => {
@@ -64,11 +66,11 @@ describe('PluginNoNesting', () => {
 				if (warning.rule === ruleName) {
 					if (!index)
 						expect(warning.text).toBe(
-							`Nesting of "@include media-max(sm)" within "@include media-min(md)" is not allowed. (${ruleName})`
+							`Nesting is not allowed for child selector '@include media-max(sm)' under parent selector '@include media-min(md)' when they match the specified pattern. (${ruleName})`
 						);
 					if (index)
 						expect(warning.text).toBe(
-							`Nesting of "@include media-max(lg)" within "@include media-max(sm)" is not allowed. (${ruleName})`
+							`Nesting is not allowed for child selector '@include media-max(lg)' under parent selector '@include media-max(sm)' when they match the specified pattern. (${ruleName})`
 						);
 				}
 			});

@@ -19,6 +19,9 @@ const {
 	utils: { ruleMessages, validateOptions, report },
 } = stylelint;
 
+/**
+ * @private used only for development
+ */
 export abstract class PluginBase {
 	protected abstract readonly ruleName: string;
 	protected abstract readonly message: RuleMessage;

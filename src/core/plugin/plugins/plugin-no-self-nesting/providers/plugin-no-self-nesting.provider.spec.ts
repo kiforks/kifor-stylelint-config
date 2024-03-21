@@ -1,10 +1,10 @@
 import { PluginNoSelfNestingOptions } from '../interfaces/plugin-no-self-nesting.interface';
 
-import { stylelintUtilsMock } from '../../../../mocks/stylelint-utils.mock';
+import { stylelintMock } from '../../../../mocks/stylelint.mock';
 import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
 import { pluginNoSelfNestingProvider } from './plugin-no-self-nesting.provider';
 
-jest.mock('stylelint', () => stylelintUtilsMock);
+jest.mock('stylelint', () => stylelintMock());
 
 describe('PluginNoSelfNestingProvider', () => {
 	it('should have the following value', () => {

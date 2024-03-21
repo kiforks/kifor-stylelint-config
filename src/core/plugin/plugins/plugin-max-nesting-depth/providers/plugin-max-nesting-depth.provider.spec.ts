@@ -1,10 +1,10 @@
 import { PluginMaxNestingDepthOptions } from '../interfaces/plugin-max-nesting-depth.interface';
 
-import { stylelintUtilsMock } from '../../../../mocks/stylelint-utils.mock';
+import { stylelintMock } from '../../../../mocks/stylelint.mock';
 import { PluginMaxNestingDepth } from '../api/plugin-max-nesting-depth';
 import { pluginMaxNestingDepthProvider } from './plugin-max-nesting-depth.provider';
 
-jest.mock('stylelint', () => stylelintUtilsMock);
+jest.mock('stylelint', () => stylelintMock());
 
 describe('PluginMaxNestingDepthProvider', () => {
 	it('should have the following value', () => {

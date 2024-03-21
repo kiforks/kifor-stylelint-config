@@ -1413,20 +1413,39 @@ const {
 	utils: { ruleMessages, validateOptions, report },
 } = stylelint;
 /**
- * @private used only for development
+ * An abstract base class for creating plugins. This class provides a structured approach to
+ * implementing custom plugins for a system (like a linter or a compiler). Each plugin
+ * derived from this base class must define specific rules and behaviors.
+ *
+ * @abstract
+ * The class is abstract and intended to be extended by specific plugin implementations.
+ * It contains abstract methods and properties that must be defined by the extending class.
  */
 class PluginBase {
 	constructor() {
+		/**
+		 * Indicates whether the options are expected to be an array. Defaults to false.
+		 */
 		this.isArrayOptions = false;
 	}
+	/**
+	 * Returns the full rule name, including the namespace.
+	 */
 	get name() {
 		return `${PluginConfig.NAMESPACE}/${this.ruleName}`;
 	}
+	/**
+	 * Constructs the rule messages object for this plugin.
+	 */
 	get messages() {
 		return ruleMessages(this.name, {
 			expected: this.message,
 		});
 	}
+	/**
+	 * Creates a rule plugin that can be used within the stylelint configuration.
+	 * @returns The constructed plugin with the defined rule and configuration.
+	 */
 	createRule() {
 		const ruleBase = (options, secondaryOptions, context) => (root, result) =>
 			this.render({ options, secondaryOptions, context, result, root });
@@ -1439,6 +1458,9 @@ class PluginBase {
 		const rule = Object.assign(ruleBase, config);
 		return stylelint.createPlugin(this.name, rule);
 	}
+	/**
+	 * Orchestrates the validation, rule checking, and reporting based on the provided plugin data.
+	 */
 	render({ options, secondaryOptions, context, result, root }) {
 		const checkStatement = (result, options, secondaryOptions) => rule =>
 			this.check({

@@ -1,7 +1,7 @@
 # Changelog
 
-<a name="0.0.3"></a>
-# 0.0.3
+<a name="0.1.0"></a>
+# 0.1.0
 
 1. [x] Added: new `kifor-stylelint/no-self-nesting` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
 2. [x] Fixed: `kifor-stylelint/max-nesting-depth` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).

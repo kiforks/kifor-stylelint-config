@@ -18,13 +18,6 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="0.0.17"></a>
-# 0.0.17
-
-1. [x] Added: new GitHub actions flow ([@kiforks](https://github.com/kiforks)).
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="0.0.1"></a>
 # 0.0.1
 

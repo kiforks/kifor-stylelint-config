@@ -1,13 +1,24 @@
 # Changelog
 
-## 0.0.25
+<a name="0.1.0"></a>
+# 0.1.0
 
-- Added: new "max-nesting-depth" rule. Changed ordering and some config rules
+1. [x] Added: new `kifor-stylelint/no-self-nesting` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Fixed: `kifor-stylelint/max-nesting-depth` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Fixed: the main logic (including the `PluginBase` class) of plugins ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
+4. [x] Fixed: changed architecture and interfaces of plugins and rules ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
 
-## 0.0.17
+<!-- CHANGELOG SPLIT MARKER -->
 
-- Added: new GitHub actions flow
+<a name="0.0.25"></a>
+# 0.0.25
 
-## 0.0.1
+1. [x] Added: new `kifor-stylelint/max-nesting-depth` rule ([#10](https://github.com/kiforks/kifor-stylelint-config/pull/10)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Added: ordering and some config rules ([#10](https://github.com/kiforks/kifor-stylelint-config/pull/10)) ([@kiforks](https://github.com/kiforks)).
 
-- Added: `.stylelintrc.js` config file
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="0.0.1"></a>
+# 0.0.1
+
+1. [x] Added: `.stylelintrc.js` config file ([@kiforks](https://github.com/kiforks)).

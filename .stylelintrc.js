@@ -100,13 +100,45 @@ class MediaConfig {
 
 class RuleHelper {
 	/**
+	 * Checks if the given object conforms to the Rule interface.
+	 * @param obj - The object to be checked.
+	 * @returns true if obj is a Rule type, false otherwise.
+	 * @example For isRule({ type: 'rule', selector: '.example' }), returns true.
+	 */
+	static isRule(obj) {
+		const isObject = typeof obj === 'object' && obj !== null;
+		const hasType = isObject && 'type' in obj;
+		const isTypeRule = hasType && obj['type'] === 'rule';
+		const hasSelector = isTypeRule && 'selector' in obj;
+		return isTypeRule && hasSelector;
+	}
+	/**
 	 * Checks if the given object conforms to the RuleAt interface.
 	 * @param obj - The object to be checked.
 	 * @returns true if obj is a RuleAt type, false otherwise.
-	 * @example For isRuleAt({ type: 'at-rule', parameter: 'example' }), returns true.
+	 * @example For isRuleAt({ type: 'at-rule', name: 'font-feature-values' }), returns true.
 	 */
 	static isRuleAt(obj) {
-		return typeof obj === 'object' && obj !== null && 'type' in obj && 'parameter' in obj;
+		const isObject = typeof obj === 'object' && obj !== null;
+		const hasType = isObject && 'type' in obj;
+		const isTypeAtRule = hasType && obj['type'] === 'at-rule';
+		const ruleAtObj = isTypeAtRule ? obj : null;
+		const hasName =
+			ruleAtObj && 'name' in ruleAtObj && (typeof ruleAtObj.name === 'string' || ruleAtObj.name instanceof RegExp);
+		const hasParameter =
+			ruleAtObj &&
+			'parameter' in ruleAtObj &&
+			(typeof ruleAtObj.parameter === 'string' || ruleAtObj.parameter instanceof RegExp);
+		return isTypeAtRule && !!(hasName || hasParameter);
+	}
+	/**
+	 * Checks if all elements in the given array are of type Rule or RuleAt.
+	 * @param array - The array to be checked.
+	 * @returns true if all elements are either Rule or RuleAt, false otherwise.
+	 * @example For areRulesOrRuleAts([{ type: 'rule', selector: '.example' }, { type: 'at-rule', parameter: 'print' }]), returns true.
+	 */
+	static areRulesOrRuleAts(array) {
+		return Array.isArray(array) && array.every(element => RuleHelper.isRule(element) || RuleHelper.isRuleAt(element));
 	}
 	/**
 	 * Creates an at-rule with a given name and parameter.
@@ -1155,331 +1187,217 @@ const { position, blockModel, typography, decoration, animation, miscellanea } =
 const ORDER_PROPERTIES = [...position, ...blockModel, ...typography, ...decoration, ...animation, ...miscellanea];
 
 /**
- * Check if a statement has an block (empty or otherwise).
+ * All of these methods are the utilities version of stylelint
+ * @see https://github.com/stylelint/stylelint/tree/main/lib/utils
  *
- * @param {import('postcss').Container} statement
- * @return {boolean} True if `statement` has a block (empty or otherwise)
+ * Since this is a copied version of the original functions, there are no tests for this helper.
+ * This is done purely to be able to test our .ts files, because .mjs files are not allowed.
  */
-function hasBlock(statement) {
-	return statement.nodes !== undefined;
-}
-
-const HAS_LESS_INTERPOLATION = /@\{.+?\}/;
-
-/**
- * Check whether a string has less interpolation
- *
- * @param {string} string
- * @return {boolean} If `true`, a string has less interpolation
- */
-function hasLessInterpolation(string) {
-	return HAS_LESS_INTERPOLATION.test(string);
-}
-
-const HAS_PSV_INTERPOLATION = /\$\(.+?\)/;
-
-/**
- * Check whether a string has postcss-simple-vars interpolation
- *
- * @param {string} string
- * @returns {boolean}
- */
-function hasPsvInterpolation(string) {
-	return HAS_PSV_INTERPOLATION.test(string);
-}
-
-const HAS_SCSS_INTERPOLATION = /#\{.+?\}/s;
-
-/**
- * Check whether a string has scss interpolation
- *
- * @param {string} string
- * @returns {boolean}
- */
-function hasScssInterpolation(string) {
-	return HAS_SCSS_INTERPOLATION.test(string);
-}
-
-const HAS_TPL_INTERPOLATION = /\{.+?\}/s;
-
-/**
- * Check whether a string has JS template literal interpolation or HTML-like template
- *
- * @param {string} string
- * @return {boolean} If `true`, a string has template literal interpolation
- */
-function hasTplInterpolation(string) {
-	return HAS_TPL_INTERPOLATION.test(string);
-}
-
-/**
- * Check whether a string has interpolation
- *
- * @param {string} string
- * @return {boolean} If `true`, a string has interpolation
- */
-function hasInterpolation(string) {
-	// SCSS or Less interpolation
-	if (
-		hasLessInterpolation(string) ||
-		hasScssInterpolation(string) ||
-		hasTplInterpolation(string) ||
-		hasPsvInterpolation(string)
-	) {
-		return true;
+class PluginHelper {
+	static validateSyntaxBlock(rule) {
+		const hasRuleBlock = PluginHelper.hasBlock(rule);
+		const isNotStandardSyntaxRule = PluginHelper.isRule(rule) && !PluginHelper.isStandardSyntaxRule(rule);
+		return !hasRuleBlock || isNotStandardSyntaxRule;
 	}
-
-	return false;
-}
-
-/**
- * Check whether a selector is standard
- *
- * @param {string} selector
- * @returns {boolean}
- */
-function isStandardSyntaxSelector(selector) {
-	// SCSS or Less interpolation
-	if (hasInterpolation(selector)) {
-		return false;
+	static getRuleName(node) {
+		return PluginHelper.isRule(node) ? node.selector : node.name;
 	}
-
-	// SCSS placeholder selectors
-	if (selector.startsWith('%')) {
-		return false;
+	static getRuleParams(node) {
+		return PluginHelper.isAtRule(node) ? node.params : null;
 	}
-
-	// SCSS nested properties
-	if (selector.endsWith(':')) {
-		return false;
+	static isRoot(node) {
+		return node.type === 'root';
 	}
-
-	// Less :extend()
-	if (/:extend(?:\(.*?\))?/.test(selector)) {
-		return false;
+	static isParentRoot(node) {
+		return !!node?.parent && PluginHelper.isRoot(node.parent);
 	}
-
-	// Less mixin with resolved nested selectors (e.g. .foo().bar or .foo(@a, @b)[bar])
-	if (/\.[\w-]+\(.*\).+/.test(selector)) {
-		return false;
+	static isRule(node) {
+		return node.type === 'rule';
 	}
-
-	// Less non-outputting mixin definition (e.g. .mixin() {})
-	if (selector.endsWith(')') && !selector.includes(':')) {
-		return false;
+	static isAtRule(node) {
+		return node.type === 'atrule';
 	}
-
-	// Less Parametric mixins (e.g. .mixin(@variable: x) {})
-	if (/\(@.*\)$/.test(selector)) {
-		return false;
+	static isComment(node) {
+		return node.type === 'comment';
 	}
-
-	// ERB template tags
-	if (selector.includes('<%') || selector.includes('%>')) {
-		return false;
+	static isDeclaration(node) {
+		return node.type === 'decl';
 	}
-
-	//  SCSS and Less comments
-	if (selector.includes('//')) {
-		return false;
+	static isDocument(node) {
+		return node.type === 'document';
 	}
-
-	return true;
-}
-
-/**
- * Check whether a Node is a standard rule
- *
- * @param {import('postcss').Rule | import('postcss-less').Rule} rule
- * @returns {boolean}
- */
-function isStandardSyntaxRule(rule) {
-	if (rule.type !== 'rule') {
-		return false;
+	static isValueFunction(node) {
+		return node.type === 'function';
 	}
-
-	// Ignore Less &:extend rule
-	if ('extend' in rule && rule.extend) {
-		return false;
+	static hasSource(node) {
+		return Boolean(node.source);
 	}
-
-	if (!isStandardSyntaxSelector(rule.selector)) {
-		return false;
+	static hasBlock(statement) {
+		return statement.nodes !== undefined;
 	}
-
-	return true;
-}
-
-/**
- * Compares a string to a second value that, if it fits a certain convention,
- * is converted to a regular expression before the comparison.
- * If it doesn't fit the convention, then two strings are compared.
- *
- * Any strings starting and ending with `/` are interpreted
- * as regular expressions.
- *
- * @param {string | Array<string>} input
- * @param {string | RegExp | Array<string | RegExp>} comparison
- *
- * @returns {false | {match: string, pattern: (string | RegExp), substring: string}}
- */
-function matchesStringOrRegExp(input, comparison) {
-	if (!Array.isArray(input)) {
-		return testAgainstStringOrRegExpOrArray(input, comparison);
-	}
-
-	for (const inputItem of input) {
-		const testResult = testAgainstStringOrRegExpOrArray(inputItem, comparison);
-
-		if (testResult) {
-			return testResult;
+	static isStandardSyntaxRule(rule) {
+		if (rule.type !== 'rule') {
+			return false;
 		}
-	}
-
-	return false;
-}
-
-/**
- * @param {string} value
- * @param {string | RegExp | Array<string | RegExp>} comparison
- */
-function testAgainstStringOrRegExpOrArray(value, comparison) {
-	if (!Array.isArray(comparison)) {
-		return testAgainstStringOrRegExp(value, comparison);
-	}
-
-	for (const comparisonItem of comparison) {
-		const testResult = testAgainstStringOrRegExp(value, comparisonItem);
-
-		if (testResult) {
-			return testResult;
+		if ('extend' in rule && rule.extend) {
+			return false;
 		}
+		return PluginHelper.isStandardSyntaxSelector(rule.selector);
 	}
-
-	return false;
-}
-
-/**
- * @param {string} value
- * @param {string | RegExp} comparison
- */
-function testAgainstStringOrRegExp(value, comparison) {
-	// If it's a RegExp, test directly
-	if (comparison instanceof RegExp) {
-		const match = value.match(comparison);
-
-		return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
+	static isStandardSyntaxSelector(selector) {
+		if (PluginHelper.hasInterpolation(selector)) {
+			return false;
+		}
+		return !(
+			selector.startsWith('%') ||
+			selector.endsWith(':') ||
+			/:extend(?:\(.*?\))?/.test(selector) ||
+			/\.[\w-]+\(.*\).+/.test(selector) ||
+			(selector.endsWith(')') && !selector.includes(':')) ||
+			/\(@.*\)$/.test(selector) ||
+			selector.includes('<%') ||
+			selector.includes('%>') ||
+			selector.includes('//')
+		);
 	}
-
-	// Check if it's RegExp in a string
-	const firstComparisonChar = comparison[0];
-	const lastComparisonChar = comparison[comparison.length - 1];
-	const secondToLastComparisonChar = comparison[comparison.length - 2];
-
-	const comparisonIsRegex =
-		firstComparisonChar === '/' &&
-		(lastComparisonChar === '/' || (secondToLastComparisonChar === '/' && lastComparisonChar === 'i'));
-
-	const hasCaseInsensitiveFlag = comparisonIsRegex && lastComparisonChar === 'i';
-
-	// If so, create a new RegExp from it
-	if (comparisonIsRegex) {
-		const valueMatch = hasCaseInsensitiveFlag
-			? value.match(new RegExp(comparison.slice(1, -2), 'i'))
-			: value.match(new RegExp(comparison.slice(1, -1)));
-
-		return valueMatch ? { match: value, pattern: comparison, substring: valueMatch[0] || '' } : false;
+	static hasInterpolation(string) {
+		return (
+			PluginHelper.hasLessInterpolation(string) ||
+			PluginHelper.hasScssInterpolation(string) ||
+			PluginHelper.hasTplInterpolation(string) ||
+			PluginHelper.hasPsvInterpolation(string)
+		);
 	}
-
-	// Otherwise, it's a string. Do a strict comparison
-	return value === comparison ? { match: value, pattern: comparison, substring: value } : false;
-}
-
-/**
- * Check if an options object's propertyName contains a user-defined string or
- * regex that matches the passed in input.
- *
- * @param {{ [x: string]: any; }} options
- * @param {string} propertyName
- * @param {unknown} input
- *
- * @returns {boolean}
- */
-function optionsMatches(options, propertyName, input) {
-	return Boolean(
-		options && options[propertyName] && typeof input === 'string' && matchesStringOrRegExp(input, options[propertyName])
-	);
-}
-
-/** @typedef {import('postcss').Node} Node */
-/** @typedef {import('postcss').Source} NodeSource */
-
-/**
- * @param {Node} node
- * @returns {node is import('postcss').Root}
- */
-function isRoot(node) {
-	return node.type === 'root';
-}
-
-/**
- * @param {Node} node
- * @returns {node is import('postcss').Rule}
- */
-function isRule(node) {
-	return node.type === 'rule';
-}
-
-/**
- * @param {Node} node
- * @returns {node is import('postcss').AtRule}
- */
-function isAtRule(node) {
-	return node.type === 'atrule';
-}
-
-/**
- * @param {Node} node
- * @returns {node is import('postcss').Declaration}
- */
-function isDeclaration(node) {
-	return node.type === 'decl';
-}
-
-/**
- * Checks if the value is a boolean or a Boolean object.
- * @param {unknown} value
- * @returns {value is boolean}
- */
-function isBoolean(value) {
-	return typeof value === 'boolean' || value instanceof Boolean;
-}
-
-/**
- * Checks if the value is a number or a Number object.
- * @param {unknown} value
- * @returns {value is number}
- */
-function isNumber(value) {
-	return typeof value === 'number' || value instanceof Number;
-}
-
-/**
- * Checks if the value is a regular expression.
- * @param {unknown} value
- * @returns {value is RegExp}
- */
-function isRegExp(value) {
-	return value instanceof RegExp;
-}
-
-/**
- * Checks if the value is a string or a String object.
- * @param {unknown} value
- * @returns {value is string}
- */
-function isString(value) {
-	return typeof value === 'string' || value instanceof String;
+	static hasLessInterpolation(string) {
+		return /@\{.+?}/.test(string);
+	}
+	static hasPsvInterpolation(string) {
+		return /\$\(.+?\)/.test(string);
+	}
+	static hasScssInterpolation(string) {
+		return /#\{.+?}/s.test(string);
+	}
+	static hasTplInterpolation(string) {
+		return /\{.+?}/s.test(string);
+	}
+	/**
+	 * Compares a string to a second value that, if it fits a certain convention,
+	 * is converted to a regular expression before the comparison.
+	 * If it doesn't fit the convention, then two strings are compared.
+	 *
+	 * Any strings starting and ending with `/` are interpreted
+	 * as regular expressions.
+	 */
+	static matchesStringOrRegExp(input, comparison) {
+		if (!Array.isArray(input)) {
+			return PluginHelper.testAgainstStringOrRegExpOrArray(input, comparison);
+		}
+		for (const inputItem of input) {
+			const testResult = PluginHelper.testAgainstStringOrRegExpOrArray(inputItem, comparison);
+			if (testResult) {
+				return testResult;
+			}
+		}
+		return false;
+	}
+	/**
+	 * Check if an options object's propertyName contains a user-defined string or
+	 * regex that matches the passed-in input.
+	 */
+	static optionsMatches(options, propertyName, input) {
+		if (!options || typeof input !== 'string') {
+			return false;
+		}
+		const propertyValue = options[propertyName];
+		if (propertyValue instanceof RegExp || Array.isArray(propertyValue)) {
+			return !!PluginHelper.matchesStringOrRegExp(input, propertyValue);
+		}
+		return false;
+	}
+	static isBoolean(value) {
+		return typeof value === 'boolean' || value instanceof Boolean;
+	}
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	static isFunction(value) {
+		return typeof value === 'function' || value instanceof Function;
+	}
+	static isNullish(value) {
+		return value == null;
+	}
+	static isNumber(value) {
+		return typeof value === 'number' || value instanceof Number;
+	}
+	static isObject(value) {
+		return value !== null && typeof value === 'object';
+	}
+	static isRegExp(value) {
+		return value instanceof RegExp;
+	}
+	static isString(value) {
+		return typeof value === 'string' || value instanceof String;
+	}
+	static isPlainObject(value) {
+		return PluginHelper._isPlainObject(value);
+	}
+	static assert(value, message) {
+		// eslint-disable-next-line no-console
+		console.assert(value, message);
+	}
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	static assertFunction(value) {
+		// eslint-disable-next-line no-console
+		console.assert(PluginHelper.isFunction(value), `"${value}" must be a function`);
+	}
+	static assertNumber(value) {
+		// eslint-disable-next-line no-console
+		console.assert(PluginHelper.isNumber(value), `"${value}" must be a number`);
+	}
+	static assertString(value) {
+		// eslint-disable-next-line no-console
+		console.assert(PluginHelper.isString(value), `"${value}" must be a string`);
+	}
+	// Internal helper method to check if an object is plain
+	static _isPlainObject(o) {
+		if (!PluginHelper.isObject(o)) return false;
+		const obj = o;
+		const ctor = obj.constructor;
+		if (ctor === undefined) return true;
+		const prot = ctor.prototype;
+		if (!PluginHelper.isObject(prot)) return false;
+		return Object.prototype.hasOwnProperty.call(prot, 'isPrototypeOf');
+	}
+	static testAgainstStringOrRegExpOrArray(value, comparison) {
+		if (!Array.isArray(comparison)) {
+			return PluginHelper.testAgainstStringOrRegExp(value, comparison);
+		}
+		for (const comparisonItem of comparison) {
+			const testResult = PluginHelper.testAgainstStringOrRegExp(value, comparisonItem);
+			if (testResult) {
+				return testResult;
+			}
+		}
+		return false;
+	}
+	static testAgainstStringOrRegExp(value, comparison) {
+		if (comparison instanceof RegExp) {
+			const match = value.match(comparison);
+			return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
+		}
+		const firstComparisonChar = comparison[0];
+		const lastComparisonChar = comparison[comparison.length - 1];
+		const secondToLastComparisonChar = comparison[comparison.length - 2];
+		const comparisonIsRegex =
+			firstComparisonChar === '/' &&
+			(lastComparisonChar === '/' || (secondToLastComparisonChar === '/' && lastComparisonChar === 'i'));
+		const hasCaseInsensitiveFlag = comparisonIsRegex && lastComparisonChar === 'i';
+		if (comparisonIsRegex) {
+			const regexPattern = hasCaseInsensitiveFlag ? comparison.slice(1, -2) : comparison.slice(1, -1);
+			const regexFlags = hasCaseInsensitiveFlag ? 'i' : '';
+			const valueMatch = value.match(new RegExp(regexPattern, regexFlags));
+			return valueMatch ? { match: value, pattern: comparison, substring: valueMatch[0] || '' } : false;
+		}
+		return value === comparison ? { match: value, pattern: comparison, substring: value } : false;
+	}
 }
 
 class PluginConfig {
@@ -1491,103 +1409,130 @@ class PluginConfig {
 	}
 }
 
-class PluginHelper {
-	static createRule(ruleName, ruleBase, config) {
-		const rule = Object.assign(ruleBase, config);
-		return stylelint.createPlugin(ruleName, rule);
-	}
-}
-
+const {
+	utils: { ruleMessages, validateOptions, report },
+} = stylelint;
+/**
+ * An abstract base class for creating plugins. This class provides a structured approach to
+ * implementing custom plugins for a system (like a linter or a compiler). Each plugin
+ * derived from this base class must define specific rules and behaviors.
+ *
+ * @abstract
+ * The class is abstract and intended to be extended by specific plugin implementations.
+ * It contains abstract methods and properties that must be defined by the extending class.
+ */
 class PluginBase {
-	createRule() {
-		return PluginHelper.createRule(this.ruleName, this.ruleBase, {
-			ruleName: this.ruleName,
-			messages: this.messages,
-			meta: this.meta,
+	constructor() {
+		/**
+		 * Indicates whether the options are expected to be an array. Defaults to false.
+		 */
+		this.isArrayOptions = false;
+	}
+	/**
+	 * Returns the full rule name, including the namespace.
+	 */
+	get name() {
+		return `${PluginConfig.NAMESPACE}/${this.ruleName}`;
+	}
+	/**
+	 * Constructs the rule messages object for this plugin.
+	 */
+	get messages() {
+		return ruleMessages(this.name, {
+			expected: this.message,
 		});
 	}
+	/**
+	 * Creates a rule plugin that can be used within the stylelint configuration.
+	 * @returns The constructed plugin with the defined rule and configuration.
+	 */
+	createRule() {
+		const ruleBase = (options, secondaryOptions, context) => (root, result) =>
+			this.render({ options, secondaryOptions, context, result, root });
+		const config = {
+			ruleName: this.name,
+			messages: this.messages,
+			meta: { url: PluginConfig.REPOSITORY_URL },
+			primaryOptionArray: this.isArrayOptions,
+		};
+		const rule = Object.assign(ruleBase, config);
+		return stylelint.createPlugin(this.name, rule);
+	}
+	/**
+	 * Orchestrates the validation, rule checking, and reporting based on the provided plugin data.
+	 */
+	render({ options, secondaryOptions, context, result, root }) {
+		const checkStatement = (result, options, secondaryOptions) => rule =>
+			this.check({
+				rule,
+				result,
+				options,
+				secondaryOptions: secondaryOptions || {},
+			});
+		this.checkRule = (result, options, secondaryOptions) => {
+			root.walkRules(checkStatement(result, options, secondaryOptions));
+		};
+		this.checkAtRule = (result, options, secondaryOptions) => {
+			root.walkAtRules(checkStatement(result, options, secondaryOptions));
+		};
+		this.validateOptions = (options, secondaryOptions) =>
+			secondaryOptions
+				? validateOptions(result, this.name, options, secondaryOptions)
+				: validateOptions(result, this.name, options);
+		this.reportProblem = problem =>
+			report({ ruleName: this.name, result, message: this.messages.expected, ...problem });
+		this.initialize({ options, root, result, secondaryOptions, context });
+	}
 }
 
-const {
-	utils: { report, ruleMessages, validateOptions },
-} = stylelint;
 /**
  * Source was taken from:
  * @see https://github.com/stylelint/stylelint/blob/main/lib/rules/max-nesting-depth/README.md
- *
- * Tests:
- * @see ./.stylelintrc.spec.js
  */
 class PluginMaxNestingDepth extends PluginBase {
 	constructor() {
 		super(...arguments);
-		this.ruleName = `${PluginConfig.NAMESPACE}/max-nesting-depth`;
-		this.meta = {
-			url: PluginConfig.REPOSITORY_URL,
-		};
-		this.messages = ruleMessages(this.ruleName, {
-			expected: depth => `Expected nesting depth to be no more than ${depth}`,
-		});
-		this.maxDepth = 0;
-		this._isIgnoreHostSelector = false;
-		this.ruleBase = (maxDepth, secondaryOptions) => {
-			return (root, result) => {
-				this.maxDepth = maxDepth;
-				const possibleSecondary = {
-					ignore: ['blockless-at-rules', 'pseudo-classes'],
-					ignoreAtRules: [isString, isRegExp],
-					ignoreRules: [isString, isRegExp],
-					ignorePseudoClasses: [isString, isRegExp],
-					ignoreHostSelector: [isString, isRegExp, isBoolean],
-				};
-				const mainOptions = {
-					actual: maxDepth,
-					possible: [isNumber],
-				};
-				const optionalOptions = {
-					optional: true,
-					actual: secondaryOptions,
-					possible: possibleSecondary,
-				};
-				const validOptions = validateOptions(result, this.ruleName, mainOptions, optionalOptions);
-				if (!validOptions) return;
-				const checkStatement = this.checkStatement(result, secondaryOptions);
-				root.walkRules(checkStatement);
-				root.walkAtRules(checkStatement);
-			};
-		};
+		this.ruleName = 'max-nesting-depth';
+		this.isIgnoreHostSelector = false;
+		this.message = depth => `Expected nesting depth to be no more than ${depth}`;
 	}
-	checkStatement(result, secondaryOptions) {
-		return rule => {
-			const isIgnoreAtRule = this.isIgnoreAtRule(rule, secondaryOptions);
-			const isIgnoreRule = this.isIgnoreRule(rule, secondaryOptions);
-			const hasRuleBlock = hasBlock(rule);
-			const isNotStandardSyntaxRule = isRule(rule) && !isStandardSyntaxRule(rule);
-			if (isIgnoreAtRule || isIgnoreRule || !hasRuleBlock || isNotStandardSyntaxRule) return;
-			const depth = this.nestingDepth(rule, 0, secondaryOptions);
-			const isIgnoreHostSelector = this.isIgnoreHostSelector(rule, secondaryOptions) && depth === 0;
-			!this._isIgnoreHostSelector && (this._isIgnoreHostSelector = isIgnoreHostSelector);
-			if (isIgnoreHostSelector) {
-				this.maxDepth = this.maxDepth + 1;
-			}
-			if (depth <= this.maxDepth) return;
-			const problem = {
-				ruleName: this.ruleName,
-				result,
-				node: rule,
-				message: this.messages.expected,
-				messageArgs: [this._isIgnoreHostSelector ? this.maxDepth - 1 : this.maxDepth],
-			};
-			report(problem);
+	initialize({ options: maxDepth, secondaryOptions, result }) {
+		const possibleValues = [PluginHelper.isString, PluginHelper.isRegExp];
+		const possibleSecondary = {
+			ignore: ['blockless-at-rules', 'pseudo-classes'],
+			ignoreAtRules: possibleValues,
+			ignoreRules: possibleValues,
+			ignorePseudoClasses: possibleValues,
+			ignoreHostSelectors: possibleValues,
 		};
+		const mainOptions = { actual: maxDepth, possible: [PluginHelper.isNumber] };
+		const optionalOptions = {
+			optional: true,
+			actual: secondaryOptions,
+			possible: possibleSecondary,
+		};
+		if (!this.validateOptions(mainOptions, optionalOptions)) return;
+		this.checkRule(result, maxDepth, secondaryOptions);
+		this.checkAtRule(result, maxDepth, secondaryOptions);
+	}
+	check({ options: maxDepth, secondaryOptions, rule }) {
+		const isIgnoreAtRule = this.isIgnoreAtRule(rule, secondaryOptions);
+		const isIgnoreRule = this.isIgnoreRule(rule, secondaryOptions);
+		if (isIgnoreAtRule || isIgnoreRule || PluginHelper.validateSyntaxBlock(rule)) return;
+		const nestingDepth = this.nestingDepth(rule, 0, secondaryOptions);
+		if (nestingDepth === 0) this.isIgnoreHostSelector = this.isIgnoreHostSelectors(rule, secondaryOptions);
+		const depth = this.isIgnoreHostSelector ? maxDepth + 1 : maxDepth;
+		if (nestingDepth <= depth) return;
+		this.reportProblem({ node: rule, messageArgs: [maxDepth] });
 	}
 	nestingDepth(node, level, secondaryOptions) {
 		const parent = node.parent;
-		if (!parent || this.isIgnoreAtRule(parent)) {
+		if (!parent) {
 			return 0;
 		}
-		const isParentRoot = isRoot(parent);
-		const isGrandparentRootAndParentAtRule = isAtRule(parent) && parent.parent && isRoot(parent.parent);
+		const isParentRoot = PluginHelper.isRoot(parent);
+		const isGrandparentRootAndParentAtRule =
+			PluginHelper.isAtRule(parent) && parent.parent && PluginHelper.isRoot(parent.parent);
 		// The nesting maxDepth level's computation has finished
 		// when this function, recursively called, receives
 		// a node that is not nested -- a direct child of the
@@ -1595,31 +1540,37 @@ class PluginMaxNestingDepth extends PluginBase {
 		if (isParentRoot || isGrandparentRootAndParentAtRule) {
 			return level;
 		}
+		const isIgnoreAtRule = this.isIgnoreAtRule(parent, secondaryOptions);
 		const ignoresBlocklessAtRules =
-			optionsMatches(secondaryOptions, 'ignore', 'blockless-at-rules') &&
-			isAtRule(node) &&
-			node.every(child => !isDeclaration(child));
+			PluginHelper.optionsMatches(secondaryOptions, 'ignore', 'blockless-at-rules') &&
+			PluginHelper.isAtRule(node) &&
+			node.every(child => !PluginHelper.isDeclaration(child));
 		const ignoresPseudoClasses =
-			optionsMatches(secondaryOptions, 'ignore', 'pseudo-classes') &&
-			isRule(node) &&
+			PluginHelper.optionsMatches(secondaryOptions, 'ignore', 'pseudo-classes') &&
+			PluginHelper.isRule(node) &&
 			this.containsPseudoClassesOnly(node.selector);
 		const ignoresSpecificPseudoClassesOrRules =
-			isRule(node) && this.containsIgnoredPseudoClassesOrRulesOnly(node.selectors, secondaryOptions);
-		const isIgnoreRule = ignoresBlocklessAtRules || ignoresPseudoClasses || ignoresSpecificPseudoClassesOrRules;
+			PluginHelper.isRule(node) && this.containsIgnoredPseudoClassesOrRulesOnly(node.selectors, secondaryOptions);
+		const isIgnoreRule =
+			isIgnoreAtRule || ignoresBlocklessAtRules || ignoresPseudoClasses || ignoresSpecificPseudoClassesOrRules;
 		// Unless any of the conditions above apply, we want to
 		// add 1 to the nesting maxDepth level and then check the parent,
 		// continuing to add and move up the hierarchy
 		// until we hit the root node
 		return this.nestingDepth(parent, isIgnoreRule ? level : level + 1, secondaryOptions);
 	}
-	isIgnoreRule(node, secondaryOptions = {}) {
-		return isRule(node) && optionsMatches(secondaryOptions, 'ignoreRules', node.selector);
+	isIgnoreRule(node, secondaryOptions) {
+		return PluginHelper.isRule(node) && PluginHelper.optionsMatches(secondaryOptions, 'ignoreRules', node.selector);
 	}
-	isIgnoreAtRule(node, secondaryOptions = {}) {
-		return isAtRule(node) && optionsMatches(secondaryOptions, 'ignoreAtRules', node.name);
+	isIgnoreAtRule(node, secondaryOptions) {
+		return PluginHelper.isAtRule(node) && PluginHelper.optionsMatches(secondaryOptions, 'ignoreAtRules', node.name);
 	}
-	isIgnoreHostSelector(node, secondaryOptions = {}) {
-		return isRule(node) && optionsMatches(secondaryOptions, 'ignoreHostSelector', node.selector);
+	isIgnoreHostSelectors(node, secondaryOptions) {
+		return (
+			PluginHelper.isParentRoot(node) &&
+			PluginHelper.isRule(node) &&
+			PluginHelper.optionsMatches(secondaryOptions, 'ignoreHostSelectors', node.selector)
+		);
 	}
 	containsPseudoClassesOnly(selector) {
 		const normalized = parser().processSync(selector, { lossless: false });
@@ -1634,12 +1585,13 @@ class PluginMaxNestingDepth extends PluginBase {
 	}
 	allSelectorsMatchIgnoredRules(selectors, secondaryOptions) {
 		return selectors.every(selector => {
-			const ignoresRules = secondaryOptions?.ignoreRules && optionsMatches(secondaryOptions, 'ignoreRules', selector);
+			const ignoresRules =
+				secondaryOptions?.ignoreRules && PluginHelper.optionsMatches(secondaryOptions, 'ignoreRules', selector);
 			const ignorePseudoClasses = secondaryOptions?.ignorePseudoClasses;
 			if (ignoresRules) return true;
 			if (!ignorePseudoClasses) return false;
 			const pseudoRule = this.extractPseudoRule(selector);
-			return pseudoRule && optionsMatches(secondaryOptions, 'ignorePseudoClasses', pseudoRule);
+			return pseudoRule && PluginHelper.optionsMatches(secondaryOptions, 'ignorePseudoClasses', pseudoRule);
 		});
 	}
 	extractPseudoRule(selector) {
@@ -1650,21 +1602,151 @@ class PluginMaxNestingDepth extends PluginBase {
 	}
 }
 
-const plugins = [
-	{
+const pluginMaxNestingDepthProvider = () => {
+	return {
 		provide: PluginMaxNestingDepth,
 		options: [
 			3,
 			{
-				ignore: ['blockless-at-rules', 'pseudo-classes'],
+				ignore: ['pseudo-classes'],
 				ignoreRules: ['/^&::/', '/^::/'],
-				ignoreHostSelector: ['/^:host/'],
-				ignoreAtRules: ['/^\\include/', `/^\\${MediaConfig.NAME}/`],
+				ignoreAtRules: ['/^\\include/', '/^\\media/'],
+				ignoreHostSelectors: [/:host/],
 			},
 		],
-	},
-];
+	};
+};
 
+class PluginNoSelfNesting extends PluginBase {
+	constructor() {
+		super(...arguments);
+		this.isArrayOptions = true;
+		this.ruleName = 'no-self-nesting';
+		this.message = (scopeName, nestedName) =>
+			`Nesting is not allowed for child selector '${nestedName}' under parent selector '${scopeName}' when they match the specified pattern.`;
+	}
+	initialize({ options, result }) {
+		const mainOptions = { actual: options, possible: RuleHelper.areRulesOrRuleAts };
+		if (!this.validateOptions(mainOptions)) return;
+		this.checkRule(result, options);
+		this.checkAtRule(result, options);
+	}
+	check({ rule, options }) {
+		if (PluginHelper.validateSyntaxBlock(rule)) return;
+		const nestedData = this.getNestingData(rule, options);
+		if (!nestedData) return;
+		const messageArgs = [nestedData.scopeName, nestedData.violatedName];
+		this.reportProblem({ node: nestedData.violatedNode, messageArgs });
+	}
+	getNestingData(node, options) {
+		const validationRuleName = PluginHelper.getRuleName(node);
+		const validationRuleParams = PluginHelper.getRuleParams(node);
+		const validationRule = options.find(option => {
+			if (RuleHelper.isRule(option)) {
+				return PluginHelper.matchesStringOrRegExp(validationRuleName, option.selector);
+			}
+			const hasParams = !!validationRuleParams && !!option.parameter;
+			const isMatchedName = !!PluginHelper.matchesStringOrRegExp(validationRuleName, option.name);
+			const isMatchedParams = hasParams && !!PluginHelper.matchesStringOrRegExp(validationRuleParams, option.parameter);
+			return hasParams ? isMatchedName && isMatchedParams : isMatchedName;
+		});
+		if (!validationRule) return null;
+		const childNodes = node.nodes;
+		if (!childNodes?.length) return null;
+		const childMatchNodes = [];
+		node.walk(child => {
+			const isValidRule = PluginHelper.isRule(child) || PluginHelper.isAtRule(child);
+			if (!isValidRule) return;
+			if (RuleHelper.isRule(validationRule) && PluginHelper.isRule(child)) {
+				PluginHelper.matchesStringOrRegExp(child.selector, validationRule.selector) && childMatchNodes.push(child);
+			}
+			if (RuleHelper.isRuleAt(validationRule) && PluginHelper.isAtRule(child)) {
+				const hasParams = !!validationRule.parameter && !!child.params;
+				const isMatched = !!PluginHelper.matchesStringOrRegExp(child.name, validationRule.name);
+				const isMatchedParams =
+					hasParams && !!PluginHelper.matchesStringOrRegExp(child.params, validationRule.parameter);
+				hasParams
+					? isMatched && isMatchedParams && childMatchNodes.push(child)
+					: isMatched && childMatchNodes.push(child);
+			}
+		});
+		const violatedNode = childMatchNodes.find(item => !!item);
+		if (!violatedNode) return null;
+		const scopeName = this.getMessageName(validationRuleName, validationRuleParams);
+		const violatedName = PluginHelper.getRuleName(violatedNode);
+		const violatedParams = PluginHelper.getRuleParams(violatedNode);
+		const violatedMessageName = this.getMessageName(violatedName, violatedParams);
+		return violatedNode && { scopeName, violatedNode, violatedName: violatedMessageName };
+	}
+	getMessageName(name, params) {
+		return params ? `@${name} ${params}` : name;
+	}
+}
+
+const pluginNoSelfNestingProvider = () => {
+	return {
+		provide: PluginNoSelfNesting,
+		options: [
+			RuleHelper.createSelector('body'),
+			RuleHelper.createSelector('html'),
+			RuleHelper.createSelector('main'),
+			RuleHelper.createSelector('h1'),
+			RuleHelper.createSelector(/^:host/),
+			RuleHelper.createSelector(/^&:host/),
+			RuleHelper.createSelector(/^::ng-deep/),
+			RuleHelper.createSelector(/^&::ng-deep/),
+			RuleHelper.createInclude(/^media-/),
+		],
+	};
+};
+
+const plugins = [pluginMaxNestingDepthProvider(), pluginNoSelfNestingProvider()];
+
+/**
+ * Decorator for enriching a configuration class with additional plugins and rules.
+ * This decorator modifies the class to include new plugins and their corresponding rules,
+ * merging them with any existing plugins and rules.
+ *
+ * @param config Configuration object specifying plugins and their options.
+ * @returns The class augmented with the specified plugins and rules.
+ *
+ * @example
+ * Applying the `Plugin` decorator to the `Configuration` class:
+ *
+ * @Plugin({
+ *   providers: [
+ *     {
+ *       provide: PluginNoSelfNesting,
+ *       options: { someOption: 'value' },
+ *     },
+ *     {
+ *       provide: PluginMaxNestingDepth,
+ *       options: { someOption: 'value-2' },
+ *     },
+ *   ],
+ * })
+ * class Configuration implements Config {
+ *   public plugins = ['stylelint-order'];
+ *   public rules = {
+ *     'color-no-hex': true,
+ *   };
+ * }
+ *
+ * Instantiating Configuration results in an object like this:
+ *
+ * Configuration {
+ *   plugins: [
+ *     'stylelint-order',
+ *     { ruleName: 'no-self-nesting', rule: [Function] },
+ *     { ruleName: 'max-nesting-depth', rule: [Function] }
+ *   ],
+ *   rules: {
+ *     'color-no-hex': true,
+ *     'no-self-nesting': { someOption: 'value' },
+ *     'max-nesting-depth': { someOption: 'value-2' }
+ *   }
+ * }
+ */
 const Plugin = config => {
 	return constructor => {
 		return class extends constructor {
@@ -1676,9 +1758,10 @@ const Plugin = config => {
 				this.rules = Object.assign(
 					{},
 					currentRules,
-					...config.providers.map(({ options }, index) => ({
-						[new config.providers[index].provide().ruleName]: options,
-					}))
+					...config.providers.map(({ options }, index) => {
+						const ruleName = new config.providers[index].provide().name;
+						return { [ruleName]: options };
+					})
 				);
 			}
 		};

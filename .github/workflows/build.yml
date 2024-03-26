@@ -7,30 +7,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  validation:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ['20.x']
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      - run: npm ci
-      - name: Check formatting
-        run: npm run format:check
-      - name: Lint check
-        run: npm run lint:check
-      - name: Run tests with coverage
-        run: npm test -- --coverage
-
   check-version:
     runs-on: ubuntu-latest
-    needs: validation
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -68,9 +46,31 @@ jobs:
         run: |
           VERSION_IN_PACKAGE_JSON=$(node -p "require('./package.json').version")
 
-          if ! grep -qE "## \[?$VERSION_IN_PACKAGE_JSON\]?" CHANGELOG.md; then
+          if ! grep -qE "# \[?$VERSION_IN_PACKAGE_JSON\]?" CHANGELOG.md; then
           echo "Error: CHANGELOG.md has not been updated for version $VERSION_IN_PACKAGE_JSON."
           exit 1
           else
           echo "CHANGELOG.md has been updated for version $VERSION_IN_PACKAGE_JSON."
           fi
+
+  validation:
+    runs-on: ubuntu-latest
+    needs: [check-version, check-changelog]
+    strategy:
+      matrix:
+        node-version: ['20.x']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+      - name: Check formatting
+        run: npm run format:check
+      - name: Lint check
+        run: npm run lint:check
+      - name: Run tests with coverage
+        run: npm test -- --coverage

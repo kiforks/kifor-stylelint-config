@@ -1,4 +1,4 @@
-import { RuleAt } from '../../rule/interfaces/rule.interface';
+import { RuleAt } from '../../../core/rule/interfaces/rule.interface';
 import { MediaBreakpoint } from './media.interface';
 
 export type MediaRuleDevice = 'mobile' | 'desktop';

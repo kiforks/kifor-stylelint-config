@@ -1,10 +1,6 @@
-import { AtRule } from 'postcss';
-import Rule from 'postcss/lib/rule';
 import { RuleOptionsPossible } from 'stylelint';
 
-import { PluginIgnoreRegExpArray } from '../../../interfaces/plugin.interface';
-
-export type PluginMaxNestingDepthCheckStatementFn = (rule: Rule | AtRule) => false | void;
+import { PluginRegExpArray } from '../../../interfaces/plugin.interface';
 
 export type PluginMaxNestingDepthIgnore = 'blockless-at-rules' | 'pseudo-classes';
 export type PluginMaxNestingDepthMainOptions = number;
@@ -19,8 +15,8 @@ export type PluginMaxNestingDepthPossibleOptions = Record<
 
 export interface PluginMaxNestingDepthSecondaryOptions {
 	ignore?: PluginMaxNestingDepthIgnore[];
-	ignoreAtRules?: PluginIgnoreRegExpArray;
-	ignoreHostSelector?: PluginIgnoreRegExpArray;
-	ignorePseudoClasses?: PluginIgnoreRegExpArray;
-	ignoreRules?: PluginIgnoreRegExpArray;
+	ignoreAtRules?: PluginRegExpArray;
+	ignoreHostSelectors?: PluginRegExpArray;
+	ignorePseudoClasses?: PluginRegExpArray;
+	ignoreRules?: PluginRegExpArray;
 }

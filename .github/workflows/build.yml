@@ -15,24 +15,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-      - name: Install compare-versions
-        run: npm install compare-versions
       - name: Check if version has been incremented compared to main branch
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
+
           git fetch origin main
           git checkout origin/main -- package.json
           MAIN_VERSION=$(node -p "require('./package.json').version")
-          git checkout -- package.json
-          npm install compare-versions
-          VERSION_COMPARISON=$(node src/js/workflow/compare-versions.cjs "$CURRENT_VERSION" "$MAIN_VERSION")
 
-          if [ "$VERSION_COMPARISON" -gt 0 ]; then
-            echo "Version in package.json ($CURRENT_VERSION) is higher than on the main branch ($MAIN_VERSION)."
-          else
-            echo "Error: Version in package.json ($CURRENT_VERSION) is not higher than on the main branch ($MAIN_VERSION)."
+          git checkout -- package.json
+
+          HIGHEST_VERSION=$(echo -e "$CURRENT_VERSION\n$MAIN_VERSION" | sort -V | tail -n1)
+
+          if [ "$CURRENT_VERSION" = "$MAIN_VERSION" ]; then
+            echo "Error: Version in package.json ($CURRENT_VERSION) has not been incremented compared to main branch ($MAIN_VERSION)."
             exit 1
-          fi
+            elif [ "$HIGHEST_VERSION" != "$CURRENT_VERSION" ]; then
+          echo "Error: Version in package.json ($CURRENT_VERSION) is not the highest compared to main branch ($MAIN_VERSION)."
+            exit 1
+            else
+            echo "Version in package.json ($CURRENT_VERSION) is higher than on the main branch ($MAIN_VERSION)."
+            fi
 
   check-changelog:
     runs-on: ubuntu-latest
@@ -44,11 +47,12 @@ jobs:
           VERSION_IN_PACKAGE_JSON=$(node -p "require('./package.json').version")
 
           if ! grep -qE "## \[?$VERSION_IN_PACKAGE_JSON\]?" CHANGELOG.md; then
-            echo "Error: CHANGELOG.md has not been updated for version $VERSION_IN_PACKAGE_JSON."
-            exit 1
+          echo "Error: CHANGELOG.md has not been updated for version $VERSION_IN_PACKAGE_JSON."
+          exit 1
           else
-            echo "CHANGELOG.md has been updated for version $VERSION_IN_PACKAGE_JSON."
+          echo "CHANGELOG.md has been updated for version $VERSION_IN_PACKAGE_JSON."
           fi
+
   validation:
     runs-on: ubuntu-latest
     needs: [check-version, check-changelog]

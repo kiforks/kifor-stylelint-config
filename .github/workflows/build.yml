@@ -47,17 +47,17 @@ jobs:
 
           git checkout -- package.json
 
-          HIGHEST_VERSION=$(echo -e "$CURRENT_VERSION\n$MAIN_VERSION" | sort -V | tail -n1)
+          VERSION_COMPARISON=$(npm version $CURRENT_VERSION --allow-same-version > /dev/null; npm version $MAIN_VERSION --allow-same-version > /dev/null; npm version | grep -A 1 $MAIN_VERSION | tail -n 1)
 
           if [ "$CURRENT_VERSION" = "$MAIN_VERSION" ]; then
             echo "Error: Version in package.json ($CURRENT_VERSION) has not been incremented compared to main branch ($MAIN_VERSION)."
             exit 1
-            elif [ "$HIGHEST_VERSION" != "$CURRENT_VERSION" ]; then
-          echo "Error: Version in package.json ($CURRENT_VERSION) is not the highest compared to main branch ($MAIN_VERSION)."
+          elif [ "$VERSION_COMPARISON" != "$CURRENT_VERSION" ]; then
+            echo "Error: Version in package.json ($CURRENT_VERSION) is not the highest compared to main branch ($MAIN_VERSION)."
             exit 1
-            else
+          else
             echo "Version in package.json ($CURRENT_VERSION) is higher than on the main branch ($MAIN_VERSION)."
-            fi
+          fi
 
   check-changelog:
     runs-on: ubuntu-latest

@@ -1843,9 +1843,7 @@ describe('stylelint', () => {
 					const { warnings } = result.results[0];
 					const warning = warnings.find(warning => warning.rule === 'selector-max-id');
 
-					expect(warning.text).toContain(
-						'Expected "#selector #selector-2" to have no more than 1 ID selector (selector-max-id)'
-					);
+					expect(warning.text).toContain('Expected "#selector-2" to have no more than 1 ID selector (selector-max-id)');
 				});
 			});
 

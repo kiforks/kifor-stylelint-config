@@ -44,7 +44,7 @@ The following patterns are considered problems:
 ```css
 .my-selector { /* parent */
   .foo {
-    .my-selector { /* child */
+    .my-selector { /* matched child */
       & > .bar {}
     }
   }
@@ -55,7 +55,7 @@ The following patterns are considered problems:
 ```css
 .ignored-selector {  /* parent */
   @media print {
-    .ignored-selector { /* child */
+    .ignored-selector { /* matched child */
       & .bar {}
     }
   }
@@ -78,6 +78,19 @@ The following patterns are _not_ considered problems:
 .ignored-selector { /* parent */
   & .foo { 
     &__foo {} 
+  }
+}
+```
+
+> [!NOTE]
+> Selectors that are at the same nesting level **will be ignored**. For example:
+<!-- prettier-ignore -->
+```css
+.my-selector .my-selector .my-selector { /* parent */
+  .foo {
+    p { /* matched child */
+      & > .bar {}
+    }
   }
 }
 ```

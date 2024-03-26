@@ -25,7 +25,7 @@ jobs:
           MAIN_VERSION=$(node -p "require('./package.json').version")
           git checkout -- package.json
           npm install compare-versions
-          VERSION_COMPARISON=$(node ./compare-versions.js "$CURRENT_VERSION" "$MAIN_VERSION")
+          VERSION_COMPARISON=$(node src/js/workflow/compare-versions.js "$CURRENT_VERSION" "$MAIN_VERSION")
 
           if [ "$VERSION_COMPARISON" -gt 0 ]; then
             echo "Version in package.json ($CURRENT_VERSION) is higher than on the main branch ($MAIN_VERSION)."

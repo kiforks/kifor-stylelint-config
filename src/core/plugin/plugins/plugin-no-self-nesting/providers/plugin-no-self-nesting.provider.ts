@@ -1,7 +1,9 @@
-import { RuleHelper } from '../../../../rule/helpers/rule-order/rule.helper';
+import { PluginMediaConfig } from '../../../configs/plugin-media/plugin-media.config';
 
+import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
+
+import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
 import { PluginProvider } from '../../../interfaces/plugin.interface';
-import { PluginNoSelfNestingOptions } from '../interfaces/plugin-no-self-nesting.interface';
 
 import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
 
@@ -9,15 +11,20 @@ export const pluginNoSelfNestingProvider = (): PluginProvider => {
 	return {
 		provide: PluginNoSelfNesting,
 		options: [
-			RuleHelper.createSelector('body'),
-			RuleHelper.createSelector('html'),
-			RuleHelper.createSelector('main'),
-			RuleHelper.createSelector('h1'),
-			RuleHelper.createSelector(/^:host/),
-			RuleHelper.createSelector(/^&:host/),
-			RuleHelper.createSelector(/^::ng-deep/),
-			RuleHelper.createSelector(/^&::ng-deep/),
-			RuleHelper.createInclude(/^media-/),
-		] as PluginNoSelfNestingOptions,
+			PluginConfigHelper.createRule('body'),
+			PluginConfigHelper.createRule('html'),
+			PluginConfigHelper.createRule('main'),
+			PluginConfigHelper.createRule('h1'),
+			PluginConfigHelper.createRule(/^:host/),
+			PluginConfigHelper.createRule(/^&:host/),
+			PluginConfigHelper.createRule(/^::ng-deep/),
+			PluginConfigHelper.createRule(/^&::ng-deep/),
+
+			/**
+			 * SCSS Media at-rules for breakpoints:
+			 * @example @include media-min(md);
+			 */
+			PluginMediaConfig.MEDIA_PREFIX_REGEXP_MIXIN,
+		] as PluginConfigRuleType[],
 	};
 };

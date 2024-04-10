@@ -1,4 +1,4 @@
-import { PluginNoSelfNestingOptions } from '../interfaces/plugin-no-self-nesting.interface';
+import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
 
 import { stylelintMock } from '../../../../mocks/stylelint.mock';
 import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
@@ -11,16 +11,16 @@ describe('PluginNoSelfNestingProvider', () => {
 		const provider = {
 			provide: PluginNoSelfNesting,
 			options: [
-				{ type: 'rule', selector: 'body' },
-				{ type: 'rule', selector: 'html' },
-				{ type: 'rule', selector: 'main' },
-				{ type: 'rule', selector: 'h1' },
-				{ type: 'rule', selector: /^:host/ },
-				{ type: 'rule', selector: /^&:host/ },
-				{ type: 'rule', selector: /^::ng-deep/ },
-				{ type: 'rule', selector: /^&::ng-deep/ },
-				{ type: 'at-rule', name: 'include', parameter: /^media-/ },
-			] as PluginNoSelfNestingOptions,
+				{ selector: 'body' },
+				{ selector: 'html' },
+				{ selector: 'main' },
+				{ selector: 'h1' },
+				{ selector: /^:host/ },
+				{ selector: /^&:host/ },
+				{ selector: /^::ng-deep/ },
+				{ selector: /^&::ng-deep/ },
+				{ name: 'include', params: /^media-/ },
+			] as PluginConfigRuleType[],
 		};
 
 		expect(pluginNoSelfNestingProvider()).toEqual(provider);

@@ -1,13 +1,13 @@
 import type * as PostCSS from 'postcss';
 import stylelint, { Plugin, PostcssResult, Rule, RuleBase, RuleContext, RuleMessage } from 'stylelint';
 
-import { PluginConfig } from '../../../configs/plugin.config';
+import { PluginConfig } from '../../../configs/plugin/plugin.config';
 
+import { PluginConfigData } from '../../../interfaces/plugin-config.interface';
 import {
 	PluginCheckData,
 	PluginCheckFn,
 	PluginCheckStatementFn,
-	PluginConfigData,
 	PluginData,
 	PluginProblem,
 	PluginRuleBaseFn,
@@ -47,7 +47,7 @@ export abstract class PluginBase {
 	/**
 	 * Validates the plugin's options.
 	 */
-	protected validateOptions!: (options: PluginRuleOptions, secondaryOptions?: PluginRuleOptions) => boolean;
+	protected isValidOptions!: (options: PluginRuleOptions, secondaryOptions?: PluginRuleOptions) => boolean;
 
 	/**
 	 * Reports a problem identified by the plugin.
@@ -149,7 +149,7 @@ export abstract class PluginBase {
 			root.walkAtRules(checkStatement(result, options, secondaryOptions));
 		};
 
-		this.validateOptions = (options: PluginRuleOptions, secondaryOptions?: PluginRuleOptions): boolean =>
+		this.isValidOptions = (options: PluginRuleOptions, secondaryOptions?: PluginRuleOptions): boolean =>
 			secondaryOptions
 				? validateOptions(result, this.name, options, secondaryOptions)
 				: validateOptions(result, this.name, options);

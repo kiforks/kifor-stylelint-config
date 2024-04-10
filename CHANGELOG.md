@@ -13,7 +13,7 @@
 1. [x] Added: new `kifor-stylelint/no-self-nesting` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
 2. [x] Fixed: `kifor-stylelint/max-nesting-depth` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
 3. [x] Fixed: the main logic of plugins ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
-4. [x] Fixed: changed architecture and interfaces of plugins and rules ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
+4. [x] Fixed: changed architecture and interfaces of plugins and rules. ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
 
 <!-- CHANGELOG SPLIT MARKER -->
 

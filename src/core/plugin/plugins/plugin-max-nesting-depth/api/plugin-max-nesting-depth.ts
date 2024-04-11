@@ -1,7 +1,7 @@
 import { Node } from 'postcss';
 import parser from 'postcss-selector-parser';
 
-import { PluginHelper } from '../../../helpers/plugin.helper';
+import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
 
 import { PluginCheckData, PluginData, PluginRuleOptions } from '../../../interfaces/plugin.interface';
 import {
@@ -42,7 +42,7 @@ export class PluginMaxNestingDepth extends PluginBase {
 			possible: possibleSecondary,
 		};
 
-		if (!this.validateOptions(mainOptions, optionalOptions)) return;
+		if (!this.isValidOptions(mainOptions, optionalOptions)) return;
 
 		this.checkRule(result, maxDepth, secondaryOptions);
 		this.checkAtRule(result, maxDepth, secondaryOptions);
@@ -56,7 +56,7 @@ export class PluginMaxNestingDepth extends PluginBase {
 		const isIgnoreAtRule = this.isIgnoreAtRule(rule, secondaryOptions);
 		const isIgnoreRule = this.isIgnoreRule(rule, secondaryOptions);
 
-		if (isIgnoreAtRule || isIgnoreRule || PluginHelper.validateSyntaxBlock(rule)) return;
+		if (isIgnoreAtRule || isIgnoreRule || PluginHelper.isInvalidSyntaxBlock(rule)) return;
 
 		const nestingDepth = this.nestingDepth(rule, 0, secondaryOptions);
 

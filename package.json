@@ -1,7 +1,7 @@
 {
 	"name": "kifor-stylelint-config",
 	"description": "Stylelint shareable config",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"exports": "./.stylelintrc.js",
 	"files": [
 		".stylelintrc.js"
@@ -76,13 +76,13 @@
 		"postcss-scss": "^4.0.9",
 		"prettier": "^3.2.5",
 		"remark-cli": "^12.0.0",
-		"rollup": "^4.13.0",
+		"rollup": "^4.14.1",
 		"stylelint": "^16.3.1",
 		"stylelint-config-standard": "^36.0.0",
 		"stylelint-order": "^6.0.4",
 		"ts-jest": "^29.1.2",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.4.3"
+		"typescript": "^5.4.5"
 	},
 	"peerDependencies": {
 		"stylelint": "~16.3.1"

@@ -83,6 +83,9 @@ const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
 
 const RULE_UNIT_ALLOWED_LIST = ['px', 'rem', 'deg', 'fr', '%', 'ms', 'vw', 'vh', 'vmin', 'vmax'];
 
+/**
+ * Provides configuration settings for media queries in a responsive design context.
+ */
 class MediaConfig {
 	static {
 		this.BREAKPOINTS = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
@@ -98,7 +101,7 @@ class MediaConfig {
 	}
 }
 
-class RuleHelper {
+class OrderHelper {
 	/**
 	 * Checks if the given object conforms to the Rule interface.
 	 * @param obj - The object to be checked.
@@ -107,38 +110,17 @@ class RuleHelper {
 	 */
 	static isRule(obj) {
 		const isObject = typeof obj === 'object' && obj !== null;
-		const hasType = isObject && 'type' in obj;
-		const isTypeRule = hasType && obj['type'] === 'rule';
-		const hasSelector = isTypeRule && 'selector' in obj;
-		return isTypeRule && hasSelector;
+		return isObject && 'type' in obj && obj.type === 'rule';
 	}
 	/**
-	 * Checks if the given object conforms to the RuleAt interface.
+	 * Checks if the given object conforms to the OrderAtRule interface.
 	 * @param obj - The object to be checked.
-	 * @returns true if obj is a RuleAt type, false otherwise.
-	 * @example For isRuleAt({ type: 'at-rule', name: 'font-feature-values' }), returns true.
+	 * @returns true if obj is a OrderAtRule type, false otherwise.
+	 * @example For isAtRule({ type: 'at-rule', name: 'font-feature-values' }), returns true.
 	 */
-	static isRuleAt(obj) {
+	static isAtRule(obj) {
 		const isObject = typeof obj === 'object' && obj !== null;
-		const hasType = isObject && 'type' in obj;
-		const isTypeAtRule = hasType && obj['type'] === 'at-rule';
-		const ruleAtObj = isTypeAtRule ? obj : null;
-		const hasName =
-			ruleAtObj && 'name' in ruleAtObj && (typeof ruleAtObj.name === 'string' || ruleAtObj.name instanceof RegExp);
-		const hasParameter =
-			ruleAtObj &&
-			'parameter' in ruleAtObj &&
-			(typeof ruleAtObj.parameter === 'string' || ruleAtObj.parameter instanceof RegExp);
-		return isTypeAtRule && !!(hasName || hasParameter);
-	}
-	/**
-	 * Checks if all elements in the given array are of type Rule or RuleAt.
-	 * @param array - The array to be checked.
-	 * @returns true if all elements are either Rule or RuleAt, false otherwise.
-	 * @example For areRulesOrRuleAts([{ type: 'rule', selector: '.example' }, { type: 'at-rule', parameter: 'print' }]), returns true.
-	 */
-	static areRulesOrRuleAts(array) {
-		return Array.isArray(array) && array.every(element => RuleHelper.isRule(element) || RuleHelper.isRuleAt(element));
+		return isObject && 'type' in obj && obj.type === 'at-rule';
 	}
 	/**
 	 * Creates an at-rule with a given name and parameter.
@@ -194,7 +176,7 @@ class RuleHelper {
 	 * ].
 	 */
 	static createSelectors(selectors) {
-		return selectors.map(selector => RuleHelper.createSelector(selector));
+		return selectors.map(selector => OrderHelper.createSelector(selector));
 	}
 	/**
 	 * Creates an array of @include rules with given mixin parameters.
@@ -206,7 +188,7 @@ class RuleHelper {
 	 * ].
 	 */
 	static createIncludes(mixins) {
-		return mixins.map(mixin => RuleHelper.createInclude(mixin));
+		return mixins.map(mixin => OrderHelper.createInclude(mixin));
 	}
 	/**
 	 * Creates an array of at-rules with a given name and an array of parameters.
@@ -219,7 +201,7 @@ class RuleHelper {
 	 * ].
 	 */
 	static createAtRules(name, parameters) {
-		return parameters.map(parameter => RuleHelper.createAtRule(name, parameter));
+		return parameters.map(parameter => OrderHelper.createAtRule(name, parameter));
 	}
 }
 
@@ -231,6 +213,14 @@ class MediaRuleHelper {
 	 */
 	static getDevicePrefixParameter(device) {
 		return `${MediaConfig.PREFIX}${device}`;
+	}
+	/**
+	 * Generates a breakpoint-specific media rule prefix.
+	 * @param prefix - Type of breakpoint prefix (e.g., 'min', 'max').
+	 * @example: For getBreakpointPrefixParameter('min'), the output is: '^media-min'.
+	 */
+	static getRuleFullBreakpointPrefix(prefix) {
+		return `${MediaConfig.PREFIX}${prefix}`;
 	}
 	/**
 	 * Generates a breakpoint-specific media rule prefix.
@@ -254,7 +244,7 @@ class MediaRuleHelper {
 	 * @example: For createDeviceRuleOrder('mobile'), the output is: { type: 'at-rule', name: 'include', parameter: '^media-mobile' }.
 	 */
 	static createDeviceRuleOrder(device) {
-		return RuleHelper.createInclude(MediaRuleHelper.getDevicePrefixParameter(device));
+		return OrderHelper.createInclude(MediaRuleHelper.getDevicePrefixParameter(device));
 	}
 	/**
 	 * @param prefix - Type of breakpoint prefix.
@@ -263,7 +253,7 @@ class MediaRuleHelper {
 	 * { type: 'at-rule', name: 'include', parameter: '^media-min(sm)' }.
 	 */
 	static createBreakpointRuleOrder(prefix, breakpoint) {
-		return RuleHelper.createInclude(MediaRuleHelper.getBreakpointPrefixParameter(prefix, breakpoint));
+		return OrderHelper.createInclude(MediaRuleHelper.getBreakpointPrefixParameter(prefix, breakpoint));
 	}
 	/**
 	 * @param breakpointFrom - Media breakpoint value (e.g., 'xs', 'sm').
@@ -272,7 +262,7 @@ class MediaRuleHelper {
 	 * { type: 'at-rule', name: 'include', parameter: '^media-between(xs, sm)' }.
 	 */
 	static createBreakpointBetweenRuleOrder(breakpointFrom, breakpointTo) {
-		return RuleHelper.createInclude(MediaRuleHelper.getBreakpointBetweenPrefixParameter(breakpointFrom, breakpointTo));
+		return OrderHelper.createInclude(MediaRuleHelper.getBreakpointBetweenPrefixParameter(breakpointFrom, breakpointTo));
 	}
 	/**
 	 * @param devices - Array of devices.
@@ -313,7 +303,7 @@ class MediaRuleHelper {
 	}
 }
 
-class RegExpHelper {
+class OrderRegExpHelper {
 	/**
 	 * Creates a RegExp based on the provided string, inserting a wildcard pattern for flexible matching.
 	 * @param parameter - The string to be converted into a RegExp.
@@ -350,11 +340,11 @@ class RegExpHelper {
 	 */
 	static paramToRegex(rules) {
 		return rules.map(rule => {
-			const isAtRule = RuleHelper.isRuleAt(rule) && rule.type === 'at-rule';
+			const isAtRule = OrderHelper.isAtRule(rule) && rule.type === 'at-rule';
 			return isAtRule && typeof rule.parameter === 'string'
 				? {
 						...rule,
-						parameter: RegExpHelper.makeRegex(rule.parameter).source,
+						parameter: OrderRegExpHelper.makeRegex(rule.parameter).source,
 					}
 				: rule;
 		});
@@ -367,7 +357,7 @@ class OrderContentHelper {
 	 * Each feature is wrapped in parentheses before being passed to the RuleHelper's createAtRules method.
 	 *
 	 * @param features - An array of string representing the media features (e.g., 'max-width: 768px', 'min-resolution: 2dppx').
-	 * @returns An array of RuleAt objects representing the created media feature at-rules.
+	 * @returns An array of AtRule objects representing the created media feature at-rules.
 	 *
 	 * @example
 	 * For createMediaFeatures(['max-width: 768px', 'min-resolution: 2dppx']), the output is:
@@ -377,7 +367,7 @@ class OrderContentHelper {
 	 * ].
 	 */
 	static createMediaFeatures(features) {
-		return RuleHelper.createAtRules(
+		return OrderHelper.createAtRules(
 			'media',
 			features.map(feature => `(${feature})`)
 		);
@@ -397,8 +387,8 @@ class OrderContentHelper {
 	 * ].
 	 */
 	static createPseudoClasses(pseudoClasses) {
-		const ampCollection = RuleHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
-		const collection = RuleHelper.createSelectors(pseudoClasses.map(element => `^:${element}`));
+		const ampCollection = OrderHelper.createSelectors(pseudoClasses.map(element => `^&:${element}`));
+		const collection = OrderHelper.createSelectors(pseudoClasses.map(element => `^:${element}`));
 		return [...collection, ...ampCollection];
 	}
 	/**
@@ -416,18 +406,18 @@ class OrderContentHelper {
 	 * ].
 	 */
 	static createPseudoElements(pseudoElements) {
-		const ampCollection = RuleHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
-		const collection = RuleHelper.createSelectors(pseudoElements.map(element => `^::${element}`));
+		const ampCollection = OrderHelper.createSelectors(pseudoElements.map(element => `^&::${element}`));
+		const collection = OrderHelper.createSelectors(pseudoElements.map(element => `^::${element}`));
 		return [...collection, ...ampCollection];
 	}
 }
 
 const ORDER_CONTENT_MEDIA_QUERY = [
-	RuleHelper.createAtRule('media'),
+	OrderHelper.createAtRule('media'),
 	/*
 	 * Standard media types
 	 * */
-	...RuleHelper.createAtRules('media', ['all', 'print', 'screen', 'speech']),
+	...OrderHelper.createAtRules('media', ['all', 'print', 'screen', 'speech']),
 	/**
 	 * Features related to the device display
 	 */
@@ -485,7 +475,7 @@ const ORDER_CONTENT_MEDIA_QUERY = [
 	...OrderContentHelper.createMediaFeatures(['device-width', 'device-height', 'device-aspect-ratio']),
 ];
 
-const ORDER_CONTENT_PSEUDO_CLASS_INCLUDES = RuleHelper.createIncludes(['hover', 'active', 'focus']);
+const ORDER_CONTENT_PSEUDO_CLASS_INCLUDES = OrderHelper.createIncludes(['hover', 'active', 'focus']);
 
 const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
 	'root',
@@ -528,7 +518,7 @@ const ORDER_CONTENT_PSEUDO_CLASSES = OrderContentHelper.createPseudoClasses([
 	'[a-z]',
 ]);
 
-const ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES = RuleHelper.createIncludes([
+const ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES = OrderHelper.createIncludes([
 	// before
 	'before-clean',
 	'before',
@@ -579,7 +569,7 @@ const ORDER_CONTENT_PSEUDO_ELEMENTS = OrderContentHelper.createPseudoElements([
 	'[a-z]',
 ]);
 
-const ORDER_CONTENT_SELECTORS = RuleHelper.createSelectors([
+const ORDER_CONTENT_SELECTORS = OrderHelper.createSelectors([
 	'^[a-z]', // example: 'div'
 	'^\\*', // example: '*'
 	'^\\.\\w+', // example: '.class'
@@ -626,52 +616,52 @@ const ORDER_CONFIG = [
 	 * CSS charset rule:
 	 * @example @charset "UTF-8";
 	 */
-	RuleHelper.createAtRule('charset'),
+	OrderHelper.createAtRule('charset'),
 	/**
 	 * CSS import rule:
 	 * @example @import url("fineprint.css");
 	 */
-	RuleHelper.createAtRule('import'),
+	OrderHelper.createAtRule('import'),
 	/**
 	 * CSS font-face rule:
 	 * @example @font-face { font-family: 'Graublau Web'; src: url('GraublauWeb.woff') format('woff'); }
 	 */
-	RuleHelper.createAtRule('font-face'),
+	OrderHelper.createAtRule('font-face'),
 	/**
 	 * CSS font-feature-values rule:
 	 * @example @font-feature-values Font Family Name { @styleset { style1 value1, style2 value2, ... } }
 	 */
-	RuleHelper.createAtRule('font-feature-values'),
+	OrderHelper.createAtRule('font-feature-values'),
 	/**
 	 * CSS font-palette-values rule:
 	 * @example @font-palette-values Font Family Name { base-palette: ...; override-palette: ...; }
 	 */
-	RuleHelper.createAtRule('font-palette-values'),
+	OrderHelper.createAtRule('font-palette-values'),
 	/**
 	 * CSS keyframes rule:
 	 * @example @keyframes slide { from { transform: translateX(0%); } to { transform: translateX(100%); } }
 	 */
-	RuleHelper.createAtRule('keyframes'),
+	OrderHelper.createAtRule('keyframes'),
 	/**
 	 * CSS layer rule (specific to Firefox):
 	 * @example @layer base, components { ... }
 	 */
-	RuleHelper.createAtRule('layer'),
+	OrderHelper.createAtRule('layer'),
 	/**
 	 * CSS property rule:
 	 * @example @property --main-bg-color { syntax: '<color>'; initial-value: #c0ffee; inherits: false; }
 	 */
-	RuleHelper.createAtRule('property'),
+	OrderHelper.createAtRule('property'),
 	/**
 	 * CSS counter-style rule:
 	 * @example @counter-style custom { system: cyclic; symbols: '*' '+' '-' }
 	 */
-	RuleHelper.createAtRule('counter-style'),
+	OrderHelper.createAtRule('counter-style'),
 	/**
 	 * CSS namespace rule:
 	 * @example @namespace svg url(http://www.w3.org/2000/svg);
 	 */
-	RuleHelper.createAtRule('namespace'),
+	OrderHelper.createAtRule('namespace'),
 	/**
 	 * Custom properties:
 	 * @example --property: 10px;
@@ -686,7 +676,7 @@ const ORDER_CONFIG = [
 	 * SCSS includes that has prefix reset:
 	 * @example @include reset-list;
 	 */
-	RuleHelper.createInclude('^reset'),
+	OrderHelper.createInclude('^reset'),
 	/**
 	 * CSS declarations:
 	 * @example display: block;
@@ -696,12 +686,12 @@ const ORDER_CONFIG = [
 	 * SCSS extend
 	 * @example @extend .some-class
 	 */
-	RuleHelper.createAtRule('extend'),
+	OrderHelper.createAtRule('extend'),
 	/**
 	 * SCSS includes
 	 * @example @include some-mixin;
 	 */
-	RuleHelper.createInclude('include'),
+	OrderHelper.createInclude('include'),
 	/**
 	 * SCSS pseudo classes includes:
 	 * @example @include hover;
@@ -761,19 +751,19 @@ const ORDER_CONFIG = [
 	 * CSS page rule:
 	 * @example @page :first { margin: 2in }
 	 */
-	RuleHelper.createAtRule('page'),
+	OrderHelper.createAtRule('page'),
 	/**
 	 * CSS container rule:
 	 * @example @container (min-width: 100%) { ... }
 	 */
-	RuleHelper.createAtRule('container'),
+	OrderHelper.createAtRule('container'),
 	/**
 	 * CSS supports rule:
 	 * @example @supports (display: grid) { ... }
 	 */
-	RuleHelper.createAtRule('supports'),
+	OrderHelper.createAtRule('supports'),
 ];
-const ORDER_CONTENT = RegExpHelper.paramToRegex(ORDER_CONFIG);
+const ORDER_CONTENT = OrderRegExpHelper.paramToRegex(ORDER_CONFIG);
 
 const ORDER_PROPERTIES_CONFIG = {
 	position: ['content', 'position', 'top', 'right', 'bottom', 'left', 'z-index'],
@@ -1194,16 +1184,10 @@ const ORDER_PROPERTIES = [...position, ...blockModel, ...typography, ...decorati
  * This is done purely to be able to test our .ts files, because .mjs files are not allowed.
  */
 class PluginHelper {
-	static validateSyntaxBlock(rule) {
+	static isInvalidSyntaxBlock(rule) {
 		const hasRuleBlock = PluginHelper.hasBlock(rule);
 		const isNotStandardSyntaxRule = PluginHelper.isRule(rule) && !PluginHelper.isStandardSyntaxRule(rule);
 		return !hasRuleBlock || isNotStandardSyntaxRule;
-	}
-	static getRuleName(node) {
-		return PluginHelper.isRule(node) ? node.selector : node.name;
-	}
-	static getRuleParams(node) {
-		return PluginHelper.isAtRule(node) ? node.params : null;
 	}
 	static isRoot(node) {
 		return node.type === 'root';
@@ -1243,6 +1227,12 @@ class PluginHelper {
 			return false;
 		}
 		return PluginHelper.isStandardSyntaxSelector(rule.selector);
+	}
+	static isChildPluginAtRule(child) {
+		return PluginHelper.isAtRule(child);
+	}
+	static isValidChildPluginRule(child) {
+		return PluginHelper.isRule(child) || PluginHelper.isAtRule(child);
 	}
 	static isStandardSyntaxSelector(selector) {
 		if (PluginHelper.hasInterpolation(selector)) {
@@ -1475,7 +1465,7 @@ class PluginBase {
 		this.checkAtRule = (result, options, secondaryOptions) => {
 			root.walkAtRules(checkStatement(result, options, secondaryOptions));
 		};
-		this.validateOptions = (options, secondaryOptions) =>
+		this.isValidOptions = (options, secondaryOptions) =>
 			secondaryOptions
 				? validateOptions(result, this.name, options, secondaryOptions)
 				: validateOptions(result, this.name, options);
@@ -1511,14 +1501,14 @@ class PluginMaxNestingDepth extends PluginBase {
 			actual: secondaryOptions,
 			possible: possibleSecondary,
 		};
-		if (!this.validateOptions(mainOptions, optionalOptions)) return;
+		if (!this.isValidOptions(mainOptions, optionalOptions)) return;
 		this.checkRule(result, maxDepth, secondaryOptions);
 		this.checkAtRule(result, maxDepth, secondaryOptions);
 	}
 	check({ options: maxDepth, secondaryOptions, rule }) {
 		const isIgnoreAtRule = this.isIgnoreAtRule(rule, secondaryOptions);
 		const isIgnoreRule = this.isIgnoreRule(rule, secondaryOptions);
-		if (isIgnoreAtRule || isIgnoreRule || PluginHelper.validateSyntaxBlock(rule)) return;
+		if (isIgnoreAtRule || isIgnoreRule || PluginHelper.isInvalidSyntaxBlock(rule)) return;
 		const nestingDepth = this.nestingDepth(rule, 0, secondaryOptions);
 		if (nestingDepth === 0) this.isIgnoreHostSelector = this.isIgnoreHostSelectors(rule, secondaryOptions);
 		const depth = this.isIgnoreHostSelector ? maxDepth + 1 : maxDepth;
@@ -1617,69 +1607,454 @@ const pluginMaxNestingDepthProvider = () => {
 	};
 };
 
+/**
+ * The PluginConfigHelper class provides static methods to create and validate plugin configuration
+ * rules and at-rules for CSS processing. It offers functionality to work with stylelint rules and
+ * configurations, aiding in the creation and validation of custom plugin configurations.
+ */
+class PluginConfigHelper {
+	/**
+	 * Determines if all elements in the array are AtRule objects.
+	 *
+	 * @param array - The array to be checked.
+	 * @returns True if all elements are AtRule objects, false otherwise.
+	 * @example
+	 * PluginConfigHelper.areAtRules([{ name: 'media', params: '(min-width: 500px)' }, { name: 'charset', params: '"utf-8"' }]); // returns true
+	 */
+	static areAtRules(array) {
+		return Array.isArray(array) && array.every(element => PluginConfigHelper.isAtRule(element));
+	}
+	/**
+	 * Determines if all elements in the array are Rule objects.
+	 *
+	 * @param array - The array to be checked.
+	 * @returns True if all elements are Rule objects, false otherwise.
+	 * @example
+	 * PluginConfigHelper.areRules([{ selector: '.example' }, { selector: '#id' }]); // returns true
+	 */
+	static areRules(array) {
+		return Array.isArray(array) && array.every(element => PluginConfigHelper.isRule(element));
+	}
+	/**
+	 * Checks if the provided object is a Rule.
+	 *
+	 * @param obj - The object to be checked.
+	 * @returns True if the object is a Rule, false otherwise.
+	 * @example
+	 * PluginConfigHelper.isRule({ selector: '.example' }); // returns true
+	 */
+	static isRule(obj) {
+		return typeof obj === 'object' && obj !== null && 'selector' in obj;
+	}
+	/**
+	 * Checks if the provided object is an AtRule.
+	 *
+	 * @param obj - The object to be checked.
+	 * @returns True if the object is an AtRule, false otherwise.
+	 * @example
+	 * PluginConfigHelper.isAtRule({ name: 'media', params: '(min-width: 500px)' }); // returns true
+	 */
+	static isAtRule(obj) {
+		return typeof obj === 'object' && obj !== null && 'name' in obj;
+	}
+	/**
+	 * Validates whether the provided data is a valid rule configuration.
+	 *
+	 * @param array - The data to validate.
+	 * @returns True if the data is a valid rule configuration, false otherwise.
+	 * @example PluginConfigHelper.isValidRuleData([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
+	 * // returns true
+	 */
+	static isValidRuleData(array) {
+		return (
+			Array.isArray(array) &&
+			array.every(element => PluginConfigHelper.isRule(element) || PluginConfigHelper.isAtRule(element))
+		);
+	}
+	/**
+	 * Creates an AtRule include object with specified parameters.
+	 *
+	 * @param params - The parameters for the AtRule.
+	 * @returns An AtRule include object.
+	 * @example
+	 * PluginConfigHelper.createAtRuleInclude('^media-'); // returns { name: 'include', params: '^media-' }
+	 */
+	static createAtRuleInclude(params) {
+		return params
+			? {
+					name: 'include',
+					params,
+				}
+			: { name: 'include' };
+	}
+	/**
+	 * Creates a Rule object with a specified selector.
+	 *
+	 * @param selector - The selector for the rule.
+	 * @returns A Rule object.
+	 * @example
+	 * PluginConfigHelper.createRule('.example'); // returns { selector: '.example' }
+	 */
+	static createRule(selector) {
+		return {
+			selector,
+		};
+	}
+	/**
+	 * Creates an AtRule object with specified name and parameters.
+	 *
+	 * @param name - The name of the AtRule.
+	 * @param params - The parameters of the AtRule.
+	 * @returns An AtRule object.
+	 * @example
+	 * PluginConfigHelper.createAtRule('media', '(min-width: 500px)'); // returns { name: 'media', params: '(min-width: 500px)' }
+	 */
+	static createAtRule(name, params) {
+		return params
+			? {
+					name,
+					params,
+				}
+			: { name };
+	}
+	/**
+	 * Creates an array of Rule objects from an array of selectors.
+	 *
+	 * @param selectors - An array of selectors.
+	 * @returns An array of Rule objects.
+	 * @example
+	 * PluginConfigHelper.createRules(['.example', '#id']); // returns [{ selector: '.example' }, { selector: '#id' }]
+	 */
+	static createRules(selector) {
+		return selector.map(selector => PluginConfigHelper.createRule(selector));
+	}
+	/**
+	 * Creates an array of AtRule objects from a name and an array of parameters.
+	 *
+	 * @param name - The name for the AtRules.
+	 * @param params - An array of parameters.
+	 * @returns An array of AtRule objects.
+	 * @example PluginConfigHelper.createAtRulesFromParams('media', ['(min-width: 500px)', '(max-width: 1000px)']);
+	 * // returns [{ name: 'media', params: '(min-width: 500px)' }, { name: 'media', params: '(max-width: 1000px)' }]
+	 */
+	static createAtRulesFromParams(name, params) {
+		return params.map(param => PluginConfigHelper.createAtRule(name, param));
+	}
+	/**
+	 * Creates an array of AtRule include objects from an array of parameters.
+	 *
+	 * @param params - An array of parameters for the include AtRules.
+	 * @returns An array of AtRule include objects.
+	 * @example
+	 * PluginConfigHelper.createAtRuleIncludes(['^media-', '^print-']); // returns [{ name: 'include', params: '^media-' }, { name: 'include', params: '^print-' }]
+	 */
+	static createAtRuleIncludes(params) {
+		return PluginConfigHelper.createAtRulesFromParams('include', params);
+	}
+	/**
+	 * Retrieves validation data for a given rule, determining if the rule conforms to the provided configuration.
+	 *
+	 * @param rule - The rule to validate.
+	 * @param configData - The configuration data against which the rule is validated.
+	 * @returns Validation data if the rule is valid, null otherwise.
+	 * @example
+	 * PluginConfigHelper.getValidationData(rule, [{ selector: '.example' }]);
+	 * // returns the validation data for '.example'
+	 */
+	static getValidationData(rule, configData) {
+		if (PluginHelper.isRule(rule)) {
+			const ruleConfigData = Array.isArray(configData) ? PluginConfigHelper.getRuleOptions(configData) : configData;
+			return PluginConfigHelper.getValidationRule(rule, ruleConfigData);
+		}
+		const atRuleConfigData = Array.isArray(configData) ? PluginConfigHelper.getAtRuleOptions(configData) : configData;
+		return PluginConfigHelper.getValidationAtRule(rule, atRuleConfigData);
+	}
+	/**
+	 * Retrieves validation data for a CSS rule based on the plugin configuration.
+	 *
+	 * @param rule - The CSS rule to validate.
+	 * @param configData - The plugin configuration for rules.
+	 * @returns Validation data for the rule, or null if it does not conform to the configuration.
+	 * @example
+	 * PluginConfigHelper.getValidationRule(rule, { selector: '.example' });
+	 * // returns validation data for '.example'
+	 */
+	static getValidationRule(rule, configData) {
+		const { selector } = rule;
+		const validationRule = Array.isArray(configData)
+			? configData.find(option => PluginHelper.matchesStringOrRegExp(selector, option.selector))
+			: PluginHelper.matchesStringOrRegExp(selector, configData.selector) && configData;
+		return validationRule
+			? {
+					rule: validationRule,
+					messageName: `${validationRule.selector}`,
+					messageFormattedName: `${validationRule.selector}`,
+				}
+			: null;
+	}
+	/**
+	 * Retrieves validation data for an AtRule based on the plugin configuration.
+	 *
+	 * @param rule - The AtRule to validate.
+	 * @param configData - The plugin configuration for at-rules.
+	 * @returns Validation data for the AtRule, or null if it does not conform to the configuration.
+	 * @example
+	 * PluginConfigHelper.getValidationAtRule(atRule, { name: 'media', params: '(min-width: 500px)' });
+	 * // returns validation data for the 'media' AtRule
+	 */
+	static getValidationAtRule(rule, configData) {
+		const validationRule = Array.isArray(configData)
+			? configData.find(option => PluginConfigHelper.isValidationAtRule(rule, option))
+			: PluginConfigHelper.isValidationAtRule(rule, configData) && configData;
+		if (!validationRule) return null;
+		const messageName = validationRule.params
+			? `"${validationRule.name} ${validationRule.params}"`
+			: `"${validationRule.name}"`;
+		const messageFormattedName = validationRule.params ? `"@${rule.name} ${rule.params}"` : `"@${rule.name}"`;
+		return {
+			rule: validationRule,
+			messageName,
+			messageFormattedName,
+		};
+	}
+	/**
+	 * Filters and returns an array of Rule configurations from the given plugin configuration options.
+	 *
+	 * @param options - The array of plugin configuration options.
+	 * @returns An array of Rule configurations.
+	 * @example
+	 * PluginConfigHelper.getRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
+	 * // returns [{ selector: '.example' }]
+	 */
+	static getRuleOptions(options) {
+		return options.filter(option => PluginConfigHelper.isRule(option));
+	}
+	/**
+	 * Filters and returns an array of AtRule configurations from the given plugin configuration options.
+	 *
+	 * @param options - The array of plugin configuration options.
+	 * @returns An array of AtRule configurations.
+	 * @example
+	 * PluginConfigHelper.getAtRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
+	 * // returns [{ name: 'media', params: '(max-width: 600px)' }]
+	 */
+	static getAtRuleOptions(options) {
+		return options.filter(option => PluginConfigHelper.isAtRule(option));
+	}
+	/**
+	 * Determines if a given AtRule object matches a specified validation AtRule configuration.
+	 *
+	 * @param rule - The AtRule object to be checked.
+	 * @param option - The validation AtRule configuration to match against.
+	 * @returns True if the AtRule object matches the validation configuration, false otherwise.
+	 * @example
+	 * // Given a plain AtRule object and a corresponding validation rule
+	 * const atRule = { name: 'media', params: '(max-width: 600px)' };
+	 * const validationRule = { name: 'media', params: '(max-width: 600px)' };
+	 * PluginConfigHelper.isValidationAtRule(atRule, validationRule);
+	 * // returns true
+	 *
+	 * @example
+	 * // If the AtRule object doesn't match the validation rule's parameters
+	 * const atRuleDifferentParams = { name: 'media', params: '(min-width: 300px)' };
+	 * PluginConfigHelper.isValidationAtRule(atRuleDifferentParams, validationRule);
+	 * // returns false
+	 */
+	static isValidationAtRule({ name, params }, option) {
+		const hasParams = !!params && !!option.params;
+		const isMatchedName = !!PluginHelper.matchesStringOrRegExp(name, option.name);
+		const isMatchedParams = hasParams && !!PluginHelper.matchesStringOrRegExp(params, option.params);
+		return hasParams ? isMatchedName && isMatchedParams : isMatchedName;
+	}
+}
+
+class PluginMediaConfig {
+	/**
+	 * Mixin for applying media prefix in CSS rules.
+	 * @example for PluginMediaConfig.MEDIA_PREFIX_MIXIN output is:
+	 * { name: 'include', params: '^media-' }.
+	 */
+	static {
+		this.MEDIA_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(MediaConfig.PREFIX);
+	}
+	/**
+	 * Regular expression mixin for matching media prefix in CSS rules.
+	 * @example for PluginMediaConfig.MEDIA_PREFIX_REGEXP_MIXIN output is:
+	 * { name: 'include', params: /^media-/ }.
+	 */
+	static {
+		this.MEDIA_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(new RegExp(MediaConfig.PREFIX));
+	}
+	/**
+	 * Mixin for creating minimum width media queries.
+	 * @example for PluginMediaConfig.MEDIA_MIN_PREFIX_MIXIN output is:
+	 * { name: 'include', params: '^media-min' }.
+	 */
+	static {
+		this.MEDIA_MIN_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			MediaRuleHelper.getRuleFullBreakpointPrefix('min')
+		);
+	}
+	/**
+	 * Mixin for creating maximum width media queries.
+	 * @example for PluginMediaConfig.MEDIA_MAX_PREFIX_MIXIN output is:
+	 * { name: 'include', params: '^media-max' }.
+	 */
+	static {
+		this.MEDIA_MAX_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			MediaRuleHelper.getRuleFullBreakpointPrefix('max')
+		);
+	}
+	/**
+	 * Mixin for media queries targeting a specific breakpoint only.
+	 * @example for PluginMediaConfig.MEDIA_ONLY_PREFIX_MIXIN output is:
+	 * { name: 'include', params: '^media-only' }.
+	 */
+	static {
+		this.MEDIA_ONLY_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			MediaRuleHelper.getRuleFullBreakpointPrefix('only')
+		);
+	}
+	/**
+	 * Mixin for media queries targeting a range of breakpoints.
+	 * @example for PluginMediaConfig.MEDIA_BETWEEN_PREFIX_MIXIN output is:
+	 * { name: 'include', params: '^media-between' }.
+	 */
+	static {
+		this.MEDIA_BETWEEN_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			MediaRuleHelper.getRuleFullBreakpointPrefix('between')
+		);
+	}
+	/**
+	 * Regular expression mixin for creating minimum width media queries.
+	 * @example for PluginMediaConfig.MEDIA_MIN_PREFIX_REGEXP_MIXIN output is:
+	 * { name: 'include', params: /^media-min/ }.
+	 */
+	static {
+		this.MEDIA_MIN_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('min'))
+		);
+	}
+	/**
+	 * Regular expression mixin for creating maximum width media queries.
+	 * @example for PluginMediaConfig.MEDIA_MAX_PREFIX_REGEXP_MIXIN output is:
+	 * { name: 'include', params: /^media-max/ }.
+	 */
+	static {
+		this.MEDIA_MAX_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('max'))
+		);
+	}
+	/**
+	 * Regular expression mixin for media queries targeting a specific breakpoint only.
+	 * @example for PluginMediaConfig.MEDIA_ONLY_PREFIX_REGEXP_MIXIN output is:
+	 * { name: 'include', params: /^media-only/ }.
+	 */
+	static {
+		this.MEDIA_ONLY_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('only'))
+		);
+	}
+	/**
+	 * Regular expression mixin for media queries targeting a range of breakpoints.
+	 * @example for PluginMediaConfig.MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN output is:
+	 * { name: 'include', params: /^media-between/ }.
+	 */
+	static {
+		this.MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
+			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('between'))
+		);
+	}
+}
+
+class PluginNoDuplicateAtRule extends PluginBase {
+	constructor() {
+		super(...arguments);
+		this.isArrayOptions = true;
+		this.ruleName = 'no-duplicate-at-rule';
+		this.violatedNodes = [];
+		this.message = name => `Unexpected duplicate at-rule ${name} at the same nesting level`;
+	}
+	initialize({ options, result }) {
+		const mainOptions = { actual: options, possible: PluginConfigHelper.areAtRules };
+		if (!this.isValidOptions(mainOptions)) return;
+		this.checkAtRule(result, options);
+	}
+	check({ rule, options }) {
+		if (PluginHelper.isInvalidSyntaxBlock(rule)) return;
+		const validationRule = PluginConfigHelper.getValidationAtRule(rule, options);
+		const parent = rule.parent;
+		if (!validationRule || !parent) return;
+		parent.walk(child => {
+			const isInvalidChild = !PluginHelper.isChildPluginAtRule(child) || child === rule || child.parent !== parent;
+			if (isInvalidChild) return;
+			const childValidationRule = PluginConfigHelper.getValidationAtRule(child, validationRule.rule);
+			if (!childValidationRule) return;
+			const isNameMatched = childValidationRule.rule === validationRule.rule;
+			if (!isNameMatched || this.violatedNodes.includes(child)) return;
+			const messageArgs = [childValidationRule.messageName];
+			this.reportProblem({ node: child, messageArgs });
+			this.violatedNodes.push(rule);
+		});
+	}
+}
+
+const pluginNoDuplicateAtRuleProvider = () => {
+	return {
+		provide: PluginNoDuplicateAtRule,
+		options: [
+			/**
+			 * SCSS Media at-rules for minimum breakpoints:
+			 * @example @include media-min(md);
+			 */
+			PluginMediaConfig.MEDIA_MIN_PREFIX_REGEXP_MIXIN,
+			/**
+			 * SCSS Media at-rules for maximum breakpoints:
+			 * @example @include media-max(md);
+			 */
+			PluginMediaConfig.MEDIA_MAX_PREFIX_REGEXP_MIXIN,
+			/**
+			 * SCSS Media at-rules for specific breakpoints:
+			 * @example @include media-only(md);
+			 */
+			PluginMediaConfig.MEDIA_ONLY_PREFIX_REGEXP_MIXIN,
+			/**
+			 * SCSS Media at-rules for range between breakpoints:
+			 * @example @include media-between(md, lg);
+			 */
+			PluginMediaConfig.MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN,
+		],
+	};
+};
+
 class PluginNoSelfNesting extends PluginBase {
 	constructor() {
 		super(...arguments);
 		this.isArrayOptions = true;
 		this.ruleName = 'no-self-nesting';
-		this.message = (scopeName, nestedName) =>
+		this.message = (nestedName, scopeName) =>
 			`Nesting is not allowed for child selector '${nestedName}' under parent selector '${scopeName}' when they match the specified pattern.`;
 	}
 	initialize({ options, result }) {
-		const mainOptions = { actual: options, possible: RuleHelper.areRulesOrRuleAts };
-		if (!this.validateOptions(mainOptions)) return;
+		const mainOptions = { actual: options, possible: PluginConfigHelper.isValidRuleData };
+		if (!this.isValidOptions(mainOptions)) return;
 		this.checkRule(result, options);
 		this.checkAtRule(result, options);
 	}
 	check({ rule, options }) {
-		if (PluginHelper.validateSyntaxBlock(rule)) return;
-		const nestedData = this.getNestingData(rule, options);
-		if (!nestedData) return;
-		const messageArgs = [nestedData.scopeName, nestedData.violatedName];
-		this.reportProblem({ node: nestedData.violatedNode, messageArgs });
-	}
-	getNestingData(node, options) {
-		const validationRuleName = PluginHelper.getRuleName(node);
-		const validationRuleParams = PluginHelper.getRuleParams(node);
-		const validationRule = options.find(option => {
-			if (RuleHelper.isRule(option)) {
-				return PluginHelper.matchesStringOrRegExp(validationRuleName, option.selector);
-			}
-			const hasParams = !!validationRuleParams && !!option.parameter;
-			const isMatchedName = !!PluginHelper.matchesStringOrRegExp(validationRuleName, option.name);
-			const isMatchedParams = hasParams && !!PluginHelper.matchesStringOrRegExp(validationRuleParams, option.parameter);
-			return hasParams ? isMatchedName && isMatchedParams : isMatchedName;
+		if (PluginHelper.isInvalidSyntaxBlock(rule)) return;
+		const validationRule = PluginConfigHelper.getValidationData(rule, options);
+		const childNodes = rule.nodes;
+		if (!validationRule || !childNodes?.length) return;
+		rule.walk(child => {
+			if (!PluginHelper.isValidChildPluginRule(child)) return;
+			const childValidationRule = PluginConfigHelper.getValidationData(child, options);
+			if (!childValidationRule) return;
+			const isNameMatched = childValidationRule.rule === validationRule.rule;
+			if (!isNameMatched) return;
+			const messageArgs = [childValidationRule.messageFormattedName, validationRule.messageName];
+			this.reportProblem({ node: child, messageArgs });
 		});
-		if (!validationRule) return null;
-		const childNodes = node.nodes;
-		if (!childNodes?.length) return null;
-		const childMatchNodes = [];
-		node.walk(child => {
-			const isValidRule = PluginHelper.isRule(child) || PluginHelper.isAtRule(child);
-			if (!isValidRule) return;
-			if (RuleHelper.isRule(validationRule) && PluginHelper.isRule(child)) {
-				PluginHelper.matchesStringOrRegExp(child.selector, validationRule.selector) && childMatchNodes.push(child);
-			}
-			if (RuleHelper.isRuleAt(validationRule) && PluginHelper.isAtRule(child)) {
-				const hasParams = !!validationRule.parameter && !!child.params;
-				const isMatched = !!PluginHelper.matchesStringOrRegExp(child.name, validationRule.name);
-				const isMatchedParams =
-					hasParams && !!PluginHelper.matchesStringOrRegExp(child.params, validationRule.parameter);
-				hasParams
-					? isMatched && isMatchedParams && childMatchNodes.push(child)
-					: isMatched && childMatchNodes.push(child);
-			}
-		});
-		const violatedNode = childMatchNodes.find(item => !!item);
-		if (!violatedNode) return null;
-		const scopeName = this.getMessageName(validationRuleName, validationRuleParams);
-		const violatedName = PluginHelper.getRuleName(violatedNode);
-		const violatedParams = PluginHelper.getRuleParams(violatedNode);
-		const violatedMessageName = this.getMessageName(violatedName, violatedParams);
-		return violatedNode && { scopeName, violatedNode, violatedName: violatedMessageName };
-	}
-	getMessageName(name, params) {
-		return params ? `@${name} ${params}` : name;
 	}
 }
 
@@ -1687,20 +2062,24 @@ const pluginNoSelfNestingProvider = () => {
 	return {
 		provide: PluginNoSelfNesting,
 		options: [
-			RuleHelper.createSelector('body'),
-			RuleHelper.createSelector('html'),
-			RuleHelper.createSelector('main'),
-			RuleHelper.createSelector('h1'),
-			RuleHelper.createSelector(/^:host/),
-			RuleHelper.createSelector(/^&:host/),
-			RuleHelper.createSelector(/^::ng-deep/),
-			RuleHelper.createSelector(/^&::ng-deep/),
-			RuleHelper.createInclude(/^media-/),
+			PluginConfigHelper.createRule('body'),
+			PluginConfigHelper.createRule('html'),
+			PluginConfigHelper.createRule('main'),
+			PluginConfigHelper.createRule('h1'),
+			PluginConfigHelper.createRule(/^:host/),
+			PluginConfigHelper.createRule(/^&:host/),
+			PluginConfigHelper.createRule(/^::ng-deep/),
+			PluginConfigHelper.createRule(/^&::ng-deep/),
+			/**
+			 * SCSS Media at-rules for breakpoints:
+			 * @example @include media-min(md);
+			 */
+			PluginMediaConfig.MEDIA_PREFIX_REGEXP_MIXIN,
 		],
 	};
 };
 
-const plugins = [pluginMaxNestingDepthProvider(), pluginNoSelfNestingProvider()];
+const plugins = [pluginMaxNestingDepthProvider(), pluginNoSelfNestingProvider(), pluginNoDuplicateAtRuleProvider()];
 
 /**
  * Decorator for enriching a configuration class with additional plugins and rules.

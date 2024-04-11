@@ -30,12 +30,103 @@ This rule integrates into this core the functionality.
 
 ## Options
 
-### `kifor-stylelint/no-self-nesting: ["/regex/", /regex/, "string"]`
+```ts
+type TextPattern = string | RegExp;
 
-For example:
+interface AtRule {
+	name: TextPattern;
+	parameter?: TextPattern;
+}
+
+interface Rule {
+	selector: TextPattern;
+}
+```
+
+Within an order array, you can include:
+
+- extended at-rule objects:
+
+	```json
+	{
+	  "name": "include",
+	  "parameter": "hello"
+	}
+	```
+
+- extended rule objects:
+
+	```json
+	{
+	  "selector": "div"
+	}
+	```
+
+### Extended at-rule objects
+
+Extended at-rule objects have different parameters and variations.
+
+Object parameters:
+
+* `name`: `string`. E. g., `name: "include"` for `@include`
+* `params`: `string | RegExp`. A string will be translated into a RegExp — `new RegExp(yourString)` — so _be sure to escape properly_. E. g., `params: "icon"` for `@include icon(20px);`
+
+
+Matches all at-rules with specific name:
 
 ```json
-[".my-selector", "/^.ignored-sel/"]
+{
+  "name": "media"
+}
+```
+
+Matches all at-rules with specific name and parameter:
+
+```json
+{
+  "name": "include",
+  "params": "icon"
+}
+```
+
+### Extended rule objects
+
+Object parameters:
+
+* `selector`: `string | RegExp`. Selector pattern. A string will be translated into a RegExp — `new RegExp(yourString)` — so _be sure to escape properly_. Examples:
+	* `selector: /^&:[\w-]+$/` matches simple pseudo-classes. E. g., `&:hover`, `&:first-child`. Doesn't match complex pseudo-classes, e. g. `&:not(.is-visible)`.
+	* `selector: /^&::[\w-]+$/` matches pseudo-elements. E. g. `&::before`, `&::placeholder`.
+
+Matches all rules with selector matching pattern:
+
+```json
+{
+  "selector": "div"
+}
+```
+
+```json
+{
+  "selector": "/^&:\\w+$/"
+}
+```
+
+### Example:
+```json
+{
+  "kifor-stylelint/no-self-nesting": [
+    {
+      "name": "include",
+      "params": "icon"
+    },
+    {
+      "name": "media"
+    },
+    {
+      "selector": "body"
+    }
+  ]
+}
 ```
 
 The following patterns are considered problems:

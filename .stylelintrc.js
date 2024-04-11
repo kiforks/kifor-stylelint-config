@@ -2212,6 +2212,7 @@ let Configuration = class Configuration {
 			'selector-no-qualifying-type': true,
 			'selector-not-notation': 'simple',
 			'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['ng-deep'] }],
+			'selector-nested-pattern': '^(?:&:?[^&]+|[^&:]+)$',
 			/* Time */
 			'time-min-milliseconds': 50,
 			/* Unit */

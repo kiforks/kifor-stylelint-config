@@ -658,6 +658,97 @@ describe('stylelint', () => {
 				});
 			});
 
+			/** @see https://stylelint.io/user-guide/rules/selector-nested-pattern/  */
+			describe('selector-nested-pattern', () => {
+				it('should report an error when pseudo-classes are not prefixed with "&"', async () => {
+					const result = await lint({
+						code: `
+			        .example {
+				        :hover { 
+				          display: block;
+				        }
+			        }
+			      `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const nestedPatternWarning = warnings.find(warning => warning.rule === 'selector-nested-pattern');
+
+					expect(nestedPatternWarning.text).toContain(
+						'Expected ":hover" to match pattern "^(?:&:?[^&]+|[^&:]+)$" (selector-nested-pattern)'
+					);
+				});
+
+				it('should report an error when pseudo-elements are not prefixed with "&"', async () => {
+					const result = await lint({
+						code: `
+			        .example {
+			          ::before {
+			            content: '';
+			          }
+			        }
+			      `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const nestedPatternWarning = warnings.find(warning => warning.rule === 'selector-nested-pattern');
+
+					expect(nestedPatternWarning.text).toContain(
+						'Expected "::before" to match pattern "^(?:&:?[^&]+|[^&:]+)$" (selector-nested-pattern)'
+					);
+				});
+
+				it('should not report an error for correctly prefixed pseudo-classes', async () => {
+					const result = await lint({
+						code: `
+			        .example {
+				        &:hover { 
+				          display: block;
+				        }
+			        }
+			      `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					expect(warnings.length).toBe(0);
+				});
+
+				it('should not report an error for correctly prefixed pseudo-elements', async () => {
+					const result = await lint({
+						code: `
+			        .example {
+			          &::before {
+			            content: '';
+			          }
+			        }
+			      `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					expect(warnings.length).toBe(0);
+				});
+
+				it('should not report an error for other selectors that are not pseudo elements or classees', async () => {
+					const result = await lint({
+						code: `
+			        .example {
+			          p {
+			            padding: 0;
+			          }
+			        }
+			      `,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					expect(warnings.length).toBe(0);
+				});
+			});
+
 			/** @see https://stylelint.io/user-guide/rules/list/selector-type-no-unknown  */
 			describe('selector-type-no-unknown', () => {
 				it('should report an error for unknown type selectors', async () => {

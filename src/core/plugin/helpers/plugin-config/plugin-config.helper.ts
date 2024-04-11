@@ -82,6 +82,49 @@ export abstract class PluginConfigHelper {
 	}
 
 	/**
+	 * Determines if the provided mode is 'always'.
+	 *
+	 * @param mode - The mode to check.
+	 * @returns True if the mode is 'always', false otherwise.
+	 * @example
+	 * PluginConfigHelper.isAlwaysExecutionMode('always'); // returns true
+	 * PluginConfigHelper.isAlwaysExecutionMode('never'); // returns false
+	 */
+	public static isAlwaysExecutionMode(mode: string): mode is 'always' {
+		return mode === 'always';
+	}
+
+	/**
+	 * Determines if the provided mode is 'never'.
+	 *
+	 * @param mode - The mode to check.
+	 * @returns True if the mode is 'never', false otherwise.
+	 * @example
+	 * PluginConfigHelper.isNeverExecutionMode('never'); // returns true
+	 * PluginConfigHelper.isNeverExecutionMode('always'); // returns false
+	 */
+	public static isNeverExecutionMode(mode: string): mode is 'never' {
+		return mode === 'never';
+	}
+
+	/**
+	 * Determines if the provided value is a valid execution mode.
+	 *
+	 * @param mode - The execution mode to check.
+	 * @returns True if the mode is a valid execution mode, false otherwise.
+	 * @example
+	 * PluginConfigHelper.isExecutionMode('always'); // returns true
+	 * PluginConfigHelper.isExecutionMode('never'); // returns true
+	 * PluginConfigHelper.isExecutionMode('sometimes'); // returns false
+	 */
+	public static isExecutionMode(mode: unknown): boolean {
+		return (
+			typeof mode === 'string' &&
+			(PluginConfigHelper.isAlwaysExecutionMode(mode) || PluginConfigHelper.isNeverExecutionMode(mode))
+		);
+	}
+
+	/**
 	 * Creates an AtRule include object with specified parameters.
 	 *
 	 * @param params - The parameters for the AtRule.

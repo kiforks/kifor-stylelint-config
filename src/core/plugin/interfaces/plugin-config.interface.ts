@@ -1,5 +1,6 @@
 import { Rule } from 'stylelint';
 
+export type PluginConfigExecutionMode = 'always' | 'never';
 export type PluginConfigData = Pick<Rule, 'primaryOptionArray' | 'messages' | 'meta' | 'ruleName'>;
 export type PluginConfigRuleType = PluginConfigRule | PluginConfigAtRule;
 export type PluginConfigValidationRule = PluginConfigValidationData<PluginConfigRule>;

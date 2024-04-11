@@ -1,11 +1,18 @@
 # Changelog
 
+<a name="0.3.0"></a>
+# 0.3.0
+
+1. [x] Added: new `kifor-stylelint/selector-combinator-nesting` rule ([#13](https://github.com/kiforks/kifor-stylelint-config/pull/13)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Added: configuration for `selector-nested-pattern` rule ([#13](https://github.com/kiforks/kifor-stylelint-config/pull/13)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Added: lodash package ([#13](https://github.com/kiforks/kifor-stylelint-config/pull/13)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="0.2.0"></a>
 # 0.2.0
 
 1. [x] Added: new `kifor-stylelint/no-duplicate-at-rule` plugin ([#12](https://github.com/kiforks/kifor-stylelint-config/pull/12)) ([@kiforks](https://github.com/kiforks)).
 2. [x] Fixed: `kifor-stylelint/no-self-nesting` plugin ([#12](https://github.com/kiforks/kifor-stylelint-config/pull/12)) ([@kiforks](https://github.com/kiforks)).
-4. [x] Fixed: changed architecture and interfaces of plugins and rules ([#12](https://github.com/kiforks/kifor-stylelint-config/pull/12)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Fixed: changed architecture and interfaces of plugins and rules ([#12](https://github.com/kiforks/kifor-stylelint-config/pull/12)) ([@kiforks](https://github.com/kiforks)).
 
 <a name="0.1.0"></a>
 # 0.1.0

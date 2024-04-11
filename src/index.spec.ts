@@ -1779,6 +1779,7 @@ describe('stylelint main config', () => {
 			],
 			'selector-max-attribute': 1,
 			'selector-max-id': 1,
+			'selector-nested-pattern': '^(?:&:?[^&]+|[^&:]+)$',
 			'selector-no-qualifying-type': true,
 			'selector-not-notation': 'simple',
 			'selector-pseudo-element-no-unknown': [

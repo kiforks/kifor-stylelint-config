@@ -1,7 +1,7 @@
 {
 	"name": "kifor-stylelint-config",
 	"description": "Stylelint shareable config",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"exports": "./.stylelintrc.js",
 	"files": [
 		".stylelintrc.js"

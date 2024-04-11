@@ -8,7 +8,7 @@ const lint = stylelint.lint;
 describe('PluginNoSelfNesting', () => {
 	const ruleName = 'kifor-stylelint/no-self-nesting';
 
-	describe('valid', () => {
+	describe('invalid', () => {
 		it('should report an error for nesting selector', async () => {
 			const result = await lint({
 				code: `
@@ -79,7 +79,7 @@ describe('PluginNoSelfNesting', () => {
 		});
 	});
 
-	describe('invalid', () => {
+	describe('valid', () => {
 		it('should not report an error for invalid nesting selector', async () => {
 			const result = await lint({
 				code: `

@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="0.4.0"></a>
+# 0.4.0
+
+1. [x] Added: new `kifor-stylelint/no-first-level-nesting` rule ([#14](https://github.com/kiforks/kifor-stylelint-config/pull/14)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="0.3.0"></a>
 # 0.3.0
 

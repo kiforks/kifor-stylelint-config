@@ -1270,6 +1270,15 @@ class PluginHelper {
 	static hasTplInterpolation(string) {
 		return /\{.+?}/s.test(string);
 	}
+	static getName(node) {
+		if (!PluginHelper.isPluginRuleType(node)) {
+			return null;
+		}
+		return PluginHelper.isRule(node) ? node.selector : node.params ? `@${node.name} ${node.params}` : `@${node.name}`;
+	}
+	static isPluginRuleType(node) {
+		return PluginHelper.isRule(node) || PluginHelper.isAtRule(node);
+	}
 	/**
 	 * Compares a string to a second value that, if it fits a certain convention,
 	 * is converted to a regular expression before the comparison.
@@ -2067,6 +2076,43 @@ const pluginNoDuplicateAtRuleProvider = () => {
 	};
 };
 
+class PluginNoFirstLevelNesting extends PluginBase {
+	constructor() {
+		super(...arguments);
+		this.isArrayOptions = true;
+		this.ruleName = 'no-first-level-nesting';
+		this.message = (name, pattern) =>
+			`First level nesting of "${name}" is not allowed for the given ${pattern} rule pattern.`;
+	}
+	initialize({ options, result }) {
+		const mainOptions = { actual: options, possible: PluginConfigHelper.isValidRuleData };
+		if (!this.isValidOptions(mainOptions)) return;
+		this.checkRule(result, options);
+		this.checkAtRule(result, options);
+	}
+	check({ rule, options }) {
+		const validationRule = PluginConfigHelper.getValidationData(rule, options);
+		if (!validationRule || !PluginHelper.isPluginRuleType(rule) || !PluginHelper.isParentRoot(rule)) return;
+		const messageArgs = [PluginHelper.getName(rule), validationRule.messageName];
+		this.reportProblem({ node: rule, messageArgs });
+	}
+}
+
+const pluginNoFirstLevelNestingProvider = () => {
+	return {
+		provide: PluginNoFirstLevelNesting,
+		options: [
+			PluginConfigHelper.createRule(/^(?![a-zA-Z.#])(?!(?::host|:root)).*$/),
+			PluginConfigHelper.createAtRule(/^media/),
+			/**
+			 * SCSS Media at-rules for breakpoints:
+			 * @example @include media-min(md);
+			 */
+			PluginMediaConfig.MEDIA_PREFIX_REGEXP_MIXIN,
+		],
+	};
+};
+
 class PluginNoSelfNesting extends PluginBase {
 	constructor() {
 		super(...arguments);
@@ -2246,6 +2292,7 @@ const plugins = [
 	pluginNoSelfNestingProvider(),
 	pluginNoDuplicateAtRuleProvider(),
 	pluginSelectorCombinatorNestingProvider(),
+	pluginNoFirstLevelNestingProvider(),
 ];
 
 /**

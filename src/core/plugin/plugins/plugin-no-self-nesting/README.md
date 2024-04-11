@@ -111,7 +111,7 @@ Matches all rules with selector matching pattern:
 }
 ```
 
-### Example:
+### Example Configuration:
 ```json
 {
   "kifor-stylelint/no-self-nesting": [

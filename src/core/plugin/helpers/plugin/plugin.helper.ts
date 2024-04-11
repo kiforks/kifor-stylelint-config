@@ -122,6 +122,18 @@ export abstract class PluginHelper {
 		return /\{.+?}/s.test(string);
 	}
 
+	public static getName(node: Node): Nullable<string> {
+		if (!PluginHelper.isPluginRuleType(node)) {
+			return null;
+		}
+
+		return PluginHelper.isRule(node) ? node.selector : node.params ? `@${node.name} ${node.params}` : `@${node.name}`;
+	}
+
+	public static isPluginRuleType(node: Node): node is PluginRuleType {
+		return PluginHelper.isRule(node) || PluginHelper.isAtRule(node);
+	}
+
 	/**
 	 * Compares a string to a second value that, if it fits a certain convention,
 	 * is converted to a regular expression before the comparison.

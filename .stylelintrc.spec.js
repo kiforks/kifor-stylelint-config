@@ -1697,6 +1697,25 @@ describe('stylelint', () => {
 					);
 				});
 			});
+
+			/** @see https://stylelint.io/user-guide/rules/at-rule-disallowed-list  */
+			describe('at-rule-disallowed-list', () => {
+				it('should report an error for using the "@extend"', async () => {
+					const result = await lint({
+						code: `
+							body {
+							  @extend .some-class;
+							}
+						`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const warning = warnings.find(warning => warning.rule === 'at-rule-disallowed-list');
+
+					expect(warning.text).toContain('Unexpected at-rule "extend" (at-rule-disallowed-list)');
+				});
+			});
 		});
 
 		describe('selector', () => {

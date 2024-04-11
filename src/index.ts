@@ -58,12 +58,14 @@ class Configuration implements Config {
 		/* Media feature */
 		'media-feature-name-no-vendor-prefix': true,
 		'media-feature-name-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
+
 		/* Rule */
 		'rule-selector-property-disallowed-list': {
 			'/ri\\-/': ['font-size'],
 			'/^\\.ri-/': ['font-size'],
 			'i': ['font-size'],
 		},
+		'at-rule-disallowed-list': ['extend'],
 
 		/* Selector */
 		'selector-disallowed-list': [

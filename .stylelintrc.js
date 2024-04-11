@@ -2411,6 +2411,7 @@ let Configuration = class Configuration {
 				'/^\\.ri-/': ['font-size'],
 				'i': ['font-size'],
 			},
+			'at-rule-disallowed-list': ['extend'],
 			/* Selector */
 			'selector-disallowed-list': [
 				'i',

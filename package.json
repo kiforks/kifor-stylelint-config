@@ -1,7 +1,7 @@
 {
 	"name": "kifor-stylelint-config",
 	"description": "Stylelint shareable config",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"exports": "./.stylelintrc.js",
 	"files": [
 		".stylelintrc.js"
@@ -72,6 +72,7 @@
 		"jest": "^29.7.0",
 		"jest-preset-stylelint": "^7.0.0",
 		"lint-staged": "^15.2.2",
+		"lodash": "^4.17.21",
 		"npm-run-all": "^4.1.5",
 		"postcss-scss": "^4.0.9",
 		"prettier": "^3.2.5",

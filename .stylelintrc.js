@@ -1672,6 +1672,46 @@ class PluginConfigHelper {
 		);
 	}
 	/**
+	 * Determines if the provided mode is 'always'.
+	 *
+	 * @param mode - The mode to check.
+	 * @returns True if the mode is 'always', false otherwise.
+	 * @example
+	 * PluginConfigHelper.isAlwaysExecutionMode('always'); // returns true
+	 * PluginConfigHelper.isAlwaysExecutionMode('never'); // returns false
+	 */
+	static isAlwaysExecutionMode(mode) {
+		return mode === 'always';
+	}
+	/**
+	 * Determines if the provided mode is 'never'.
+	 *
+	 * @param mode - The mode to check.
+	 * @returns True if the mode is 'never', false otherwise.
+	 * @example
+	 * PluginConfigHelper.isNeverExecutionMode('never'); // returns true
+	 * PluginConfigHelper.isNeverExecutionMode('always'); // returns false
+	 */
+	static isNeverExecutionMode(mode) {
+		return mode === 'never';
+	}
+	/**
+	 * Determines if the provided value is a valid execution mode.
+	 *
+	 * @param mode - The execution mode to check.
+	 * @returns True if the mode is a valid execution mode, false otherwise.
+	 * @example
+	 * PluginConfigHelper.isExecutionMode('always'); // returns true
+	 * PluginConfigHelper.isExecutionMode('never'); // returns true
+	 * PluginConfigHelper.isExecutionMode('sometimes'); // returns false
+	 */
+	static isExecutionMode(mode) {
+		return (
+			typeof mode === 'string' &&
+			(PluginConfigHelper.isAlwaysExecutionMode(mode) || PluginConfigHelper.isNeverExecutionMode(mode))
+		);
+	}
+	/**
 	 * Creates an AtRule include object with specified parameters.
 	 *
 	 * @param params - The parameters for the AtRule.
@@ -2079,7 +2119,134 @@ const pluginNoSelfNestingProvider = () => {
 	};
 };
 
-const plugins = [pluginMaxNestingDepthProvider(), pluginNoSelfNestingProvider(), pluginNoDuplicateAtRuleProvider()];
+var PluginSelectorNodeType;
+(function (PluginSelectorNodeType) {
+	PluginSelectorNodeType['Tag'] = 'tag';
+	PluginSelectorNodeType['String'] = 'string';
+	PluginSelectorNodeType['Selector'] = 'selector';
+	PluginSelectorNodeType['Root'] = 'root';
+	PluginSelectorNodeType['Pseudo'] = 'pseudo';
+	PluginSelectorNodeType['Nested'] = 'nested';
+	PluginSelectorNodeType['ID'] = 'id';
+	PluginSelectorNodeType['Comment'] = 'comment';
+	PluginSelectorNodeType['Combinator'] = 'combinator';
+	PluginSelectorNodeType['Class'] = 'class';
+	PluginSelectorNodeType['Attribute'] = 'attribute';
+	PluginSelectorNodeType['Universal'] = 'universal';
+})(PluginSelectorNodeType || (PluginSelectorNodeType = {}));
+
+class PluginSelectorHelper {
+	static isPseudoNodeType(type) {
+		return type === PluginSelectorNodeType.Pseudo;
+	}
+	static isCombinatorNodeType(type) {
+		return type === PluginSelectorNodeType.Combinator;
+	}
+	static isSelectorNodeType(type) {
+		return type === PluginSelectorNodeType.Selector;
+	}
+	static isChainingType(type) {
+		return (
+			type === PluginSelectorNodeType.Attribute ||
+			type === PluginSelectorNodeType.Class ||
+			type === PluginSelectorNodeType.ID ||
+			type === PluginSelectorNodeType.Pseudo ||
+			type === PluginSelectorNodeType.Tag ||
+			type === PluginSelectorNodeType.Universal
+		);
+	}
+}
+
+class PluginSelectorCombinatorNesting extends PluginBase {
+	constructor() {
+		super(...arguments);
+		this.ruleName = 'selector-combinator-nesting';
+		this.interpolationRe = /#{.+?}$/;
+		this.isAlwaysMode = true;
+		this.message = name =>
+			this.isAlwaysMode
+				? `Unexpected nesting "${name}" detected. Selectors must be strictly nested and not at the same level as their parent.`
+				: `Unexpected nesting "${name}" detected. Selectors must not be nested but should be at the same level as their parent.`;
+	}
+	initialize({ options: mode, result }) {
+		const mainOptions = { actual: mode, possible: PluginConfigHelper.isExecutionMode };
+		if (this.isValidOptions(mainOptions)) this.checkRule(result, mode);
+	}
+	check({ rule, options: mode }) {
+		const isInvalidSyntaxBlock = PluginHelper.isInvalidSyntaxBlock(rule);
+		const isRule = PluginHelper.isRule(rule);
+		if (isInvalidSyntaxBlock || !isRule) return;
+		const isStringSelector = typeof rule.selector === 'string';
+		const isNestedProperty = rule.selector.slice(-1) === ':';
+		if (isStringSelector && isNestedProperty) return;
+		this.isAlwaysMode = PluginConfigHelper.isAlwaysExecutionMode(mode);
+		parser(selector =>
+			selector.walk(node =>
+				node.value !== '}' && this.isAlwaysMode ? this.checkAlwaysMode(node, rule) : this.checkNeverMode(rule)
+			)
+		).processSync(rule.selector, {
+			lossless: false,
+		});
+	}
+	checkAlwaysMode(node, rule) {
+		const { value, parent, type } = node;
+		const isSelectorNodeType = PluginSelectorHelper.isSelectorNodeType(type);
+		const isChildOfPseudoSelector =
+			parent?.parent &&
+			PluginSelectorHelper.isSelectorNodeType(parent.type) &&
+			PluginSelectorHelper.isPseudoNodeType(parent.parent.type);
+		if (!value || isSelectorNodeType || isChildOfPseudoSelector) return;
+		const nodePrev = node.prev();
+		if (!nodePrev) return;
+		const nodeNext = node.next();
+		if (nodeNext && this.precedesParentSelector(node)) return;
+		const prevType = nodePrev.type;
+		const isNodeTypeCombinator = PluginSelectorHelper.isCombinatorNodeType(type);
+		const isNodeNextPresentAndNotChaining = nodeNext && !PluginSelectorHelper.isChainingType(nodeNext.type);
+		const isNodePrevNotChaining = !PluginSelectorHelper.isChainingType(prevType);
+		if (isNodeTypeCombinator && (isNodeNextPresentAndNotChaining || isNodePrevNotChaining)) return;
+		const isCurrentTypeChainingAndPrevNot =
+			PluginSelectorHelper.isChainingType(type) && !PluginSelectorHelper.isChainingType(prevType);
+		const isTypeNotCombinatorAndNotChaining =
+			!PluginSelectorHelper.isCombinatorNodeType(type) && !PluginSelectorHelper.isChainingType(type);
+		if (isCurrentTypeChainingAndPrevNot || isTypeNotCombinatorAndNotChaining) return;
+		const ruleSelector = rule.selector;
+		const hasInterpolation = this.interpolationRe.test(ruleSelector);
+		if (hasInterpolation) return;
+		const messageArgs = [ruleSelector];
+		this.reportProblem({ node: rule, messageArgs });
+	}
+	checkNeverMode(rule) {
+		if (rule.parent && PluginHelper.isRoot(rule.parent)) return;
+		rule.nodes.forEach(node => {
+			if (!PluginHelper.isRule(node)) return;
+			const messageArgs = [node.selector];
+			this.reportProblem({ node, messageArgs });
+		});
+	}
+	precedesParentSelector(currentNode) {
+		let node;
+		do {
+			node = currentNode.next();
+			if (node?.type === 'nesting') return true;
+		} while (node?.next());
+		return false;
+	}
+}
+
+const pluginSelectorCombinatorNestingProvider = () => {
+	return {
+		provide: PluginSelectorCombinatorNesting,
+		options: 'always',
+	};
+};
+
+const plugins = [
+	pluginMaxNestingDepthProvider(),
+	pluginNoSelfNestingProvider(),
+	pluginNoDuplicateAtRuleProvider(),
+	pluginSelectorCombinatorNestingProvider(),
+];
 
 /**
  * Decorator for enriching a configuration class with additional plugins and rules.

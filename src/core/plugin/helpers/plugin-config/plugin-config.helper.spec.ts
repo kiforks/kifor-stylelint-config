@@ -196,4 +196,35 @@ describe('PluginConfigHelper', () => {
 			expect(PluginConfigHelper.isValidationAtRule(atRule as AtRule, validationRule)).toBeFalsy();
 		});
 	});
+
+	describe('isAlwaysExecutionMode', () => {
+		it('should return true if the mode is "always"', () => {
+			expect(PluginConfigHelper.isAlwaysExecutionMode('always')).toBeTruthy();
+		});
+
+		it('should return false if the mode is not "always"', () => {
+			expect(PluginConfigHelper.isAlwaysExecutionMode('never')).toBeFalsy();
+		});
+	});
+
+	describe('isNeverExecutionMode', () => {
+		it('should return true if the mode is "never"', () => {
+			expect(PluginConfigHelper.isNeverExecutionMode('never')).toBeTruthy();
+		});
+
+		it('should return false if the mode is not "never"', () => {
+			expect(PluginConfigHelper.isNeverExecutionMode('always')).toBeFalsy();
+		});
+	});
+
+	describe('isExecutionMode', () => {
+		it('should return true if the mode is "always" or "never"', () => {
+			expect(PluginConfigHelper.isExecutionMode('always')).toBeTruthy();
+			expect(PluginConfigHelper.isExecutionMode('never')).toBeTruthy();
+		});
+
+		it('should return false if the mode is neither "always" nor "never"', () => {
+			expect(PluginConfigHelper.isExecutionMode('sometimes')).toBeFalsy();
+		});
+	});
 });

@@ -11,12 +11,19 @@ describe('stylelint main config', () => {
 		'customSyntax': 'postcss-scss',
 		'extends': ['stylelint-config-standard'],
 		'ignoreFiles': ['**/*.css'],
-		'plugins': ['stylelint-order'],
+		'plugins': ['stylelint-scss', 'stylelint-order', 'stylelint-declaration-block-no-ignored-properties'],
 		'rules': {
+			'annotation-no-unknown': [
+				true,
+				{
+					'ignoreAnnotations': [/default\b/],
+				},
+			],
+			'at-rule-disallowed-list': ['extend'],
 			'at-rule-no-unknown': [
 				true,
 				{
-					'ignoreAtRules': ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else'],
+					'ignoreAtRules': ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else', 'use'],
 				},
 			],
 			'at-rule-property-required-list': {
@@ -72,6 +79,10 @@ describe('stylelint main config', () => {
 				'transition': ['ms'],
 				'transition-duration': ['ms'],
 				'width': ['px', '%'],
+			},
+			'declaration-property-value-disallowed-list': {
+				'display': ['/none/'],
+				'text-align': ['/justify/'],
 			},
 			'declaration-property-value-no-unknown': true,
 			'font-weight-notation': 'numeric',
@@ -1763,11 +1774,95 @@ describe('stylelint main config', () => {
 					],
 				},
 			],
+			'plugin/declaration-block-no-ignored-properties': true,
 			'rule-selector-property-disallowed-list': {
 				'/^\\.ri-/': ['font-size'],
 				'/ri\\-/': ['font-size'],
 				'i': ['font-size'],
 			},
+			'scss/at-else-closing-brace-newline-after': 'always-last-in-chain',
+			'scss/at-else-closing-brace-space-after': 'always-intermediate',
+			'scss/at-else-empty-line-before': 'never',
+			'scss/at-else-if-parentheses-space-before': 'always',
+			'scss/at-extend-no-missing-placeholder': true,
+			'scss/at-function-parentheses-space-before': 'never',
+			'scss/at-function-pattern': [
+				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
+				{
+					'message': 'Expected function name to be kebab-case',
+				},
+			],
+			'scss/at-if-closing-brace-newline-after': 'always-last-in-chain',
+			'scss/at-if-closing-brace-space-after': 'always-intermediate',
+			'scss/at-if-no-null': true,
+			'scss/at-import-partial-extension': 'never',
+			'scss/at-mixin-argumentless-call-parentheses': 'never',
+			'scss/at-mixin-parentheses-space-before': 'never',
+			'scss/at-mixin-pattern': [
+				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
+				{
+					'message': 'Expected mixin name to be kebab-case',
+				},
+			],
+			'scss/at-rule-conditional-no-parentheses': true,
+			'scss/at-rule-no-unknown': true,
+			'scss/comment-no-empty': true,
+			'scss/declaration-nested-properties': 'never',
+			'scss/declaration-nested-properties-no-divided-groups': true,
+			'scss/dollar-variable-colon-space-after': 'always-single-line',
+			'scss/dollar-variable-colon-space-before': 'never',
+			'scss/dollar-variable-default': [
+				true,
+				{
+					'ignore': 'local',
+				},
+			],
+			'scss/dollar-variable-empty-line-before': [
+				'always',
+				{
+					'except': ['after-dollar-variable', 'first-nested'],
+					'ignore': ['after-comment', 'inside-single-line-block'],
+				},
+			],
+			'scss/dollar-variable-first-in-block': [
+				true,
+				{
+					'ignore': ['comments', 'imports'],
+				},
+			],
+			'scss/dollar-variable-no-missing-interpolation': true,
+			'scss/dollar-variable-no-namespaced-assignment': true,
+			'scss/dollar-variable-pattern': [
+				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
+				{
+					'message': 'Expected variable to be kebab-case',
+				},
+			],
+			'scss/double-slash-comment-empty-line-before': [
+				'always',
+				{
+					'except': ['first-nested'],
+					'ignore': ['between-comments', 'stylelint-commands'],
+				},
+			],
+			'scss/double-slash-comment-whitespace-inside': 'always',
+			'scss/function-quote-no-quoted-strings-inside': true,
+			'scss/function-unquote-no-unquoted-strings-inside': true,
+			'scss/load-no-partial-leading-underscore': true,
+			'scss/no-duplicate-dollar-variables': true,
+			'scss/no-duplicate-mixins': true,
+			'scss/no-global-function-names': true,
+			'scss/operator-no-newline-after': true,
+			'scss/operator-no-newline-before': true,
+			'scss/operator-no-unspaced': true,
+			'scss/percent-placeholder-pattern': [
+				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
+				{
+					'message': 'Expected placeholder to be kebab-case',
+				},
+			],
+			'scss/selector-no-redundant-nesting-selector': true,
+			'scss/selector-no-union-class-name': true,
 			'selector-disallowed-list': [
 				'i',
 				'/^\\.container/',

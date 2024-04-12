@@ -36,7 +36,7 @@ export interface PluginData<O = unknown, S = unknown> {
 }
 
 export interface PluginCheckData<O = unknown, S = unknown, R extends PluginRuleType = PluginRuleType>
-	extends Pick<PluginData<O, S>, 'result' | 'options' | 'secondaryOptions'> {
+	extends Pick<PluginData<O, S>, 'result' | 'options' | 'secondaryOptions' | 'context'> {
 	rule: R;
 }
 

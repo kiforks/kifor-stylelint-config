@@ -12,6 +12,7 @@ describe('RULE_NO_UNKNOWN', () => {
 			'return',
 			'if',
 			'else',
+			'use',
 		]);
 	});
 });

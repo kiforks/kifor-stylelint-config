@@ -34,6 +34,9 @@ class Configuration implements Config {
 
 		/** @see https://github.com/kristerkari/stylelint-declaration-block-no-ignored-properties/blob/master/README.md */
 		'stylelint-declaration-block-no-ignored-properties',
+
+		/** @see https://github.com/AndyOGo/stylelint-declaration-strict-value */
+		'stylelint-declaration-strict-value',
 	];
 	public rules = {
 		'annotation-no-unknown': [true, { ignoreAnnotations: [/default\b/] }],
@@ -191,6 +194,15 @@ class Configuration implements Config {
 			'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
 			{
 				message: 'Expected placeholder to be kebab-case',
+			},
+		],
+
+		/* Other */
+		'scale-unlimited/declaration-strict-value': [
+			['/color/', 'background-color', 'font-family', 'font-size', 'size', 'line-height', 'stroke', 'fill'],
+			{
+				'ignoreValues': ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '/^rem/', '/em$/', '0', '1', '/^url/'],
+				'ignoreFunctions': false,
 			},
 		],
 	};

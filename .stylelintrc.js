@@ -2272,11 +2272,12 @@ class PluginSelectorCombinatorNesting extends PluginBase {
 		});
 	}
 	precedesParentSelector(currentNode) {
-		let node;
 		do {
-			node = currentNode.next();
-			if (node?.type === 'nesting') return true;
-		} while (node?.next());
+			currentNode = currentNode?.next();
+			if (currentNode?.type === 'nesting') {
+				return true;
+			}
+		} while (currentNode?.next());
 		return false;
 	}
 }

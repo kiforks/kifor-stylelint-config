@@ -1759,6 +1759,7 @@ describe('stylelint main config', () => {
 				{
 					'ignoreFunctions': false,
 					'ignoreValues': ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
+					disableFix: true,
 				},
 			],
 			'scss/at-else-closing-brace-newline-after': 'always-last-in-chain',

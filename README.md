@@ -1,7 +1,3 @@
-
-
-
-
 # kifor-stylelint-config
 
 [![npm version](https://img.shields.io/npm/v/kifor-stylelint-config?logo=npm&logoColor=fff)](https://www.npmjs.com/package/kifor-stylelint-config)

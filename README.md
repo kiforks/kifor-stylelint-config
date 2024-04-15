@@ -1,4 +1,12 @@
+
+
+
+
 # kifor-stylelint-config
+
+[![npm version](https://img.shields.io/npm/v/kifor-stylelint-config?logo=npm&logoColor=fff)](https://www.npmjs.com/package/kifor-stylelint-config)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/kiforks/kifor-stylelint-config/deploy.yml?query=workflow%3Adeploys&logo=github)](https://github.com/kiforks/kifor-stylelint-config/actions/workflows/deploy.yml?query=workflow%3Adeploy)
+[![Downloads per month](https://img.shields.io/npm/dm/kifor-stylelint-config)](https://npmcharts.com/compare/kifor-stylelint-config)
 
 Created by [Kifor Kostiantyn][author-url]
 
@@ -85,29 +93,6 @@ _.stylelintrc_
 }
 ```
 
-**ATTENTION!** This config is for media [mixins](https://gist.github.com/kifork/0c449aace117fb4db7695aea34b63925):
-```scss
-// BAD
-@media (min-width: 1200px) {
-  width: 300px;
-}
-
-// GOOD
-$breakpoints: (
-  xs: 0, /* <576px */
-  sm: 576px, /* ≥576px */
-  md: 768px, /* ≥768px */
-  lg: 992px, /* ≥992px */
-  xl: 1200px, /* ≥1200px */
-  xxl: 1400px /* ≥1400px */
-) !default;
-
-@include media-min(xs);
-@include media-max(xxl);
-@include media-only(lg);
-@include media-between(sm, md);
-```
-
 ## Usage in VSCode
 
 1. Install stylelint and config
@@ -118,4 +103,12 @@ $breakpoints: (
 ![Inconsistencies with the config rules are underlined with a red wavy line, hovering over it will bring up a popup with the error description.](vscode-error.png)
 
 [author-url]: https://www.linkedin.com/in/kiforks/
+
+
+
+
+
+
+
+
 

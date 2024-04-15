@@ -299,6 +299,7 @@ class Configuration implements Config {
 			{
 				'ignoreValues': ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
 				'ignoreFunctions': false,
+				disableFix: true,
 			},
 		],
 	};

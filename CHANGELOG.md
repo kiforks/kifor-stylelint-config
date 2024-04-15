@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="0.5.1"></a>
+# 0.5.1
+
+1. [x] Fixed: dependencies ([#16](https://github.com/kiforks/kifor-stylelint-config/pull/16)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="0.5.0"></a>
 # 0.5.0
 

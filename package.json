@@ -1,7 +1,7 @@
 {
 	"name": "kifor-stylelint-config",
 	"description": "Stylelint shareable config",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"exports": "./.stylelintrc.js",
 	"files": [
 		".stylelintrc.js"
@@ -80,7 +80,10 @@
 		"rollup": "^4.14.1",
 		"stylelint": "^16.3.1",
 		"stylelint-config-standard": "^36.0.0",
+		"stylelint-declaration-block-no-ignored-properties": "^2.8.0",
+		"stylelint-declaration-strict-value": "^1.10.4",
 		"stylelint-order": "^6.0.4",
+		"stylelint-scss": "^6.2.1",
 		"ts-jest": "^29.1.2",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.4.5"

@@ -1,5 +1,15 @@
 # Changelog
 
+<a name="0.5.0"></a>
+# 0.5.0
+
+1. [x] Added: new `stylelint-declaration-block-no-ignored-properties` rule ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Added: new `stylelint-declaration-strict-value"` rule ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Added: new `stylelint-scss"` rules ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Added: dependabot ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
+4. [x] Fixed: several rule configs ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
+4. [x] Changed: README.md file ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="0.4.0"></a>
 # 0.4.0
 

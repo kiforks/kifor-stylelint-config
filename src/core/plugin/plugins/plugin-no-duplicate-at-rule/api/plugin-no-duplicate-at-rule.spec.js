@@ -8,7 +8,7 @@ const lint = stylelint.lint;
 describe('PluginNoDuplicateAtRule', () => {
 	const ruleName = 'kifor-stylelint/no-duplicate-at-rule';
 
-	describe('valid', () => {
+	describe('invalid', () => {
 		it('should detect duplicate @include media-max at-rules at the same nesting level', async () => {
 			const result = await lint({
 				code: `
@@ -58,7 +58,7 @@ describe('PluginNoDuplicateAtRule', () => {
 		});
 	});
 
-	describe('invalid', () => {
+	describe('valid', () => {
 		it('should not detect duplicates when @include media-min and media-max are used at the same level', async () => {
 			const result = await lint({
 				code: `

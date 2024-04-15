@@ -132,6 +132,7 @@ export abstract class PluginBase {
 					result,
 					options,
 					secondaryOptions: secondaryOptions || ({} as PluginSecondaryOptions<S>),
+					context,
 				});
 
 		this.checkRule = <Options = O, SecondaryOptions = S>(

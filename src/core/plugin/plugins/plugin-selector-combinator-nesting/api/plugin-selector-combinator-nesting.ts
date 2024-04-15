@@ -110,14 +110,14 @@ export class PluginSelectorCombinatorNesting extends PluginBase {
 		});
 	}
 
-	private precedesParentSelector(currentNode: selectorParser.Node): boolean {
-		let node: Nullable<selectorParser.Node>;
-
+	private precedesParentSelector(currentNode: Nullable<selectorParser.Node>): boolean {
 		do {
-			node = currentNode.next();
+			currentNode = currentNode?.next();
 
-			if (node?.type === 'nesting') return true;
-		} while (node?.next());
+			if (currentNode?.type === 'nesting') {
+				return true;
+			}
+		} while (currentNode?.next());
 
 		return false;
 	}

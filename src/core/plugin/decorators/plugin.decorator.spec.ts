@@ -23,22 +23,12 @@ describe('PluginDecorator', () => {
 		})
 		class Configuration implements Config {
 			public plugins = ['stylelint-order'];
-			public rules = {
-				'color-no-hex': true,
-			};
+			public rules = { 'color-no-hex': true };
 		}
 
 		const decorator = new Configuration();
 
-		expect(decorator.plugins).toEqual([
-			'stylelint-order',
-			{
-				'plugin': 'name',
-			},
-			{
-				'plugin': 'name',
-			},
-		]);
+		expect(decorator.plugins).toEqual(['stylelint-order', { 'plugin': 'name' }, { 'plugin': 'name' }]);
 		expect(decorator.rules).toEqual({
 			'color-no-hex': true,
 			'kifor-stylelint/no-self-nesting': { someOption: 'value' },

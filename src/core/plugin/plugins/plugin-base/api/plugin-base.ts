@@ -75,9 +75,7 @@ export abstract class PluginBase {
 	 * Constructs the rule messages object for this plugin.
 	 */
 	private get messages(): { expected: RuleMessage } {
-		return ruleMessages(this.name, {
-			expected: this.message,
-		});
+		return ruleMessages(this.name, { expected: this.message });
 	}
 
 	/**
@@ -92,7 +90,13 @@ export abstract class PluginBase {
 				context: RuleContext
 			): PluginRuleBaseFn =>
 			(root: PostCSS.Root, result: PostcssResult) =>
-				this.render({ options, secondaryOptions, context, result, root });
+				this.render({
+					options,
+					secondaryOptions,
+					context,
+					result,
+					root,
+				});
 		const config: PluginConfigData = {
 			ruleName: this.name,
 			messages: this.messages,
@@ -142,6 +146,7 @@ export abstract class PluginBase {
 		): void => {
 			root.walkRules(checkStatement(result, options, secondaryOptions));
 		};
+
 		this.checkAtRule = <Options = O, SecondaryOptions = S>(
 			result: PostcssResult,
 			options: Options,
@@ -156,8 +161,19 @@ export abstract class PluginBase {
 				: validateOptions(result, this.name, options);
 
 		this.reportProblem = (problem: PluginProblem) =>
-			report({ ruleName: this.name, result, message: this.messages.expected, ...problem });
+			report({
+				ruleName: this.name,
+				result,
+				message: this.messages.expected,
+				...problem,
+			});
 
-		this.initialize({ options, root, result, secondaryOptions, context });
+		this.initialize({
+			options,
+			root,
+			result,
+			secondaryOptions,
+			context,
+		});
 	}
 }

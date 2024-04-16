@@ -1,1 +1,1 @@
-export type MediaBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+export type MediaBreakpoint = 'lg' | 'md' | 'sm' | 'xl' | 'xs' | 'xxl';

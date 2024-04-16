@@ -1,8 +1,6 @@
 import config from './index';
 
-jest.mock('./core/plugin', () => ({
-	MAX_NESTING_DEPTH: '',
-}));
+jest.mock('./core/plugin', () => ({ MAX_NESTING_DEPTH: '' }));
 
 jest.mock('./core/plugin/decorators/plugin.decorator');
 
@@ -18,12 +16,7 @@ describe('stylelint main config', () => {
 			'stylelint-declaration-strict-value',
 		],
 		'rules': {
-			'annotation-no-unknown': [
-				true,
-				{
-					'ignoreAnnotations': [/default\b/],
-				},
-			],
+			'annotation-no-unknown': [true, { 'ignoreAnnotations': [/default\b/] }],
 			'at-rule-disallowed-list': ['extend'],
 			'at-rule-no-unknown': [
 				true,
@@ -31,15 +24,8 @@ describe('stylelint main config', () => {
 					'ignoreAtRules': ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else', 'use'],
 				},
 			],
-			'at-rule-property-required-list': {
-				'font-face': ['font-display', 'font-family', 'font-style'],
-			},
-			'color-function-notation': [
-				'legacy',
-				{
-					'ignore': ['with-var-inside'],
-				},
-			],
+			'at-rule-property-required-list': { 'font-face': ['font-display', 'font-family', 'font-style'] },
+			'color-function-notation': ['legacy', { 'ignore': ['with-var-inside'] }],
 			'color-hex-length': 'long',
 			'custom-property-empty-line-before': 'never',
 			'declaration-block-no-duplicate-properties': true,
@@ -91,14 +77,7 @@ describe('stylelint main config', () => {
 				'display': ['/none/'],
 				'text-align': ['/justify/'],
 			},
-			'declaration-property-value-no-unknown': [
-				true,
-				{
-					ignoreProperties: {
-						'/^[a-zA-Z].*$/': /.*\$\w+.*/,
-					},
-				},
-			],
+			'declaration-property-value-no-unknown': [true, { ignoreProperties: { '/^[a-zA-Z].*$/': /.*\$\w+.*/ } }],
 			'font-weight-notation': 'numeric',
 			'function-disallowed-list': ['rgb'],
 			'function-url-no-scheme-relative': true,
@@ -1777,9 +1756,7 @@ describe('stylelint main config', () => {
 			'scss/at-function-parentheses-space-before': 'never',
 			'scss/at-function-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					'message': 'Expected function name to be kebab-case',
-				},
+				{ 'message': 'Expected function name to be kebab-case' },
 			],
 			'scss/at-if-closing-brace-newline-after': 'always-last-in-chain',
 			'scss/at-if-closing-brace-space-after': 'always-intermediate',
@@ -1789,9 +1766,7 @@ describe('stylelint main config', () => {
 			'scss/at-mixin-parentheses-space-before': 'never',
 			'scss/at-mixin-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					'message': 'Expected mixin name to be kebab-case',
-				},
+				{ 'message': 'Expected mixin name to be kebab-case' },
 			],
 			'scss/at-rule-conditional-no-parentheses': true,
 			'scss/at-rule-no-unknown': true,
@@ -1800,12 +1775,7 @@ describe('stylelint main config', () => {
 			'scss/declaration-nested-properties-no-divided-groups': true,
 			'scss/dollar-variable-colon-space-after': 'always-single-line',
 			'scss/dollar-variable-colon-space-before': 'never',
-			'scss/dollar-variable-default': [
-				true,
-				{
-					'ignore': 'local',
-				},
-			],
+			'scss/dollar-variable-default': [true, { 'ignore': 'local' }],
 			'scss/dollar-variable-empty-line-before': [
 				'always',
 				{
@@ -1813,19 +1783,12 @@ describe('stylelint main config', () => {
 					'ignore': ['after-comment', 'inside-single-line-block'],
 				},
 			],
-			'scss/dollar-variable-first-in-block': [
-				true,
-				{
-					'ignore': ['comments', 'imports'],
-				},
-			],
+			'scss/dollar-variable-first-in-block': [true, { 'ignore': ['comments', 'imports'] }],
 			'scss/dollar-variable-no-missing-interpolation': true,
 			'scss/dollar-variable-no-namespaced-assignment': true,
 			'scss/dollar-variable-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					'message': 'Expected variable to be kebab-case',
-				},
+				{ 'message': 'Expected variable to be kebab-case' },
 			],
 			'scss/double-slash-comment-empty-line-before': [
 				'always',
@@ -1846,9 +1809,7 @@ describe('stylelint main config', () => {
 			'scss/operator-no-unspaced': true,
 			'scss/percent-placeholder-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					'message': 'Expected placeholder to be kebab-case',
-				},
+				{ 'message': 'Expected placeholder to be kebab-case' },
 			],
 			'scss/selector-no-redundant-nesting-selector': true,
 			'scss/selector-no-union-class-name': true,
@@ -1866,12 +1827,7 @@ describe('stylelint main config', () => {
 			'selector-nested-pattern': '^(?!::?[a-zA-Z0-9-]+)',
 			'selector-no-qualifying-type': true,
 			'selector-not-notation': 'simple',
-			'selector-pseudo-element-no-unknown': [
-				true,
-				{
-					'ignorePseudoElements': ['ng-deep'],
-				},
-			],
+			'selector-pseudo-element-no-unknown': [true, { 'ignorePseudoElements': ['ng-deep'] }],
 			'time-min-milliseconds': 50,
 			'unit-allowed-list': ['px', 'rem', 'deg', 'fr', '%', 'ms', 'vw', 'vh', 'vmin', 'vmax'],
 		},

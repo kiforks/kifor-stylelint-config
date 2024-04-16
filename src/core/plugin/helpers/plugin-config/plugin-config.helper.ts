@@ -179,9 +179,7 @@ export abstract class PluginConfigHelper {
 	 * PluginConfigHelper.createRule('.example'); // returns { selector: '.example' }
 	 */
 	public static createRule(selector: TextPattern): PluginConfigRule {
-		return {
-			selector,
-		};
+		return { selector };
 	}
 
 	/**
@@ -289,7 +287,7 @@ export abstract class PluginConfigHelper {
 	 */
 	public static getValidationData(
 		rule: PluginRuleType,
-		configData: readonly PluginConfigRuleType[] | Readonly<PluginConfigRuleType>
+		configData: Readonly<PluginConfigRuleType> | readonly PluginConfigRuleType[]
 	): Nullable<Readonly<PluginConfigValidationData>> {
 		if (PluginHelper.isRule(rule)) {
 			const ruleConfigData = Array.isArray(configData)
@@ -318,7 +316,7 @@ export abstract class PluginConfigHelper {
 	 */
 	public static getValidationRule(
 		rule: Rule,
-		configData: readonly PluginConfigRule[] | Readonly<PluginConfigRule>
+		configData: Readonly<PluginConfigRule> | readonly PluginConfigRule[]
 	): Nullable<Readonly<PluginConfigValidationRule>> {
 		const { selector } = rule;
 		const validationRule = PluginConfigHelper.isPluginConfigRules(configData)
@@ -346,7 +344,7 @@ export abstract class PluginConfigHelper {
 	 */
 	public static getValidationAtRule(
 		rule: AtRule,
-		configData: readonly PluginConfigAtRule[] | Readonly<PluginConfigAtRule>
+		configData: Readonly<PluginConfigAtRule> | readonly PluginConfigAtRule[]
 	): Nullable<Readonly<PluginConfigValidationAtRule>> {
 		const validationRule = PluginConfigHelper.isPluginConfigAtRules(configData)
 			? configData.find(option => PluginConfigHelper.isValidationAtRule(rule, option))

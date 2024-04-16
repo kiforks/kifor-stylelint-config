@@ -7,24 +7,22 @@ import { PluginProvider } from '../../../interfaces/plugin.interface';
 
 import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
 
-export const pluginNoSelfNestingProvider = (): PluginProvider => {
-	return {
-		provide: PluginNoSelfNesting,
-		options: [
-			PluginConfigHelper.createRule('body'),
-			PluginConfigHelper.createRule('html'),
-			PluginConfigHelper.createRule('main'),
-			PluginConfigHelper.createRule('h1'),
-			PluginConfigHelper.createRule(/^:host/),
-			PluginConfigHelper.createRule(/^&:host/),
-			PluginConfigHelper.createRule(/^::ng-deep/),
-			PluginConfigHelper.createRule(/^&::ng-deep/),
+export const pluginNoSelfNestingProvider = (): PluginProvider => ({
+	provide: PluginNoSelfNesting,
+	options: [
+		PluginConfigHelper.createRule('body'),
+		PluginConfigHelper.createRule('html'),
+		PluginConfigHelper.createRule('main'),
+		PluginConfigHelper.createRule('h1'),
+		PluginConfigHelper.createRule(/^:host/),
+		PluginConfigHelper.createRule(/^&:host/),
+		PluginConfigHelper.createRule(/^::ng-deep/),
+		PluginConfigHelper.createRule(/^&::ng-deep/),
 
-			/**
-			 * SCSS Media at-rules for breakpoints:
-			 * @example @include media-min(md);
-			 */
-			PluginMediaConfig.PREFIX_REGEXP_MIXIN,
-		] as PluginConfigRuleType[],
-	};
-};
+		/**
+		 * SCSS Media at-rules for breakpoints:
+		 * @example @include media-min(md);
+		 */
+		PluginMediaConfig.PREFIX_REGEXP_MIXIN,
+	] as PluginConfigRuleType[],
+});

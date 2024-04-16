@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="1.0.1"></a>
+# 1.0.1
+
+1. [x] Updated: dependencies ([#24](https://github.com/kiforks/kifor-stylelint-config/pull/18)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Updated: eslint config ([#24](https://github.com/kiforks/kifor-stylelint-config/pull/18)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.0"></a>
 # 1.0.0
 

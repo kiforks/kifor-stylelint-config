@@ -2,7 +2,7 @@ import { PluginConfigAtRule } from '../../../plugin/interfaces/plugin-config.int
 import { OrderAtRule } from '../../order/interfaces/order.interface';
 import { MediaBreakpoint } from './media.interface';
 
-export type MediaRuleDevice = 'mobile' | 'desktop';
+export type MediaRuleDevice = 'desktop' | 'mobile';
 export type MediaRulePrefix = '^media-'; // Base prefix for media rules.
 
 // Different types of prefixes for media rules based on breakpoints.
@@ -12,10 +12,10 @@ export type MediaRuleOnlyPrefix = 'only';
 export type MediaRuleBetweenPrefix = 'between';
 
 export type MediaRuleBreakpointPrefix =
-	| MediaRuleMinPrefix
+	| MediaRuleBetweenPrefix
 	| MediaRuleMaxPrefix
-	| MediaRuleOnlyPrefix
-	| MediaRuleBetweenPrefix;
+	| MediaRuleMinPrefix
+	| MediaRuleOnlyPrefix;
 
 // Template literal types to generate full prefixes.
 export type MediaRuleFullBreakpointPrefix<P extends MediaRuleBreakpointPrefix> = `${MediaRulePrefix}${P}`;

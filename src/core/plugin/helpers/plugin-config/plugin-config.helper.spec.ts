@@ -227,4 +227,37 @@ describe('PluginConfigHelper', () => {
 			expect(PluginConfigHelper.isExecutionMode('sometimes')).toBeFalsy();
 		});
 	});
+
+	describe('paramToRegex', () => {
+		it('should transform rule parameters to regex source strings', () => {
+			const rules = [
+				{ name: 'include', params: '^media-min(xs)' },
+				{ name: 'media', params: '(width)' },
+			];
+			const transformed = PluginConfigHelper.atRuleParamsToRegExp(rules);
+
+			expect(transformed).toEqual([
+				{
+					name: 'include',
+					params: '^media-min\\(xs[\\s\\S]*\\)',
+				},
+				{
+					name: 'media',
+					params: '\\(width[\\s\\S]*\\)',
+				},
+			]);
+		});
+
+		it('should not modify rules with a string parameter', () => {
+			const rules = [{ name: 'color', params: 'blue' }];
+			const transformed = PluginConfigHelper.atRuleParamsToRegExp(rules);
+
+			expect(transformed).toEqual([
+				{
+					name: 'color',
+					params: 'blue[\\s\\S]*',
+				},
+			]);
+		});
+	});
 });

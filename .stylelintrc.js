@@ -39,12 +39,12 @@ typeof SuppressedError === 'function'
 const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else', 'use'];
 
 const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
-	'width': ['px', '%'],
-	'min-width': ['px', '%'],
-	'max-width': ['px', '%'],
-	'height': ['px', '%'],
-	'min-height': ['px', '%'],
-	'max-height': ['px', '%'],
+	'width': ['px', '%', 'vw'],
+	'min-width': ['px', '%', 'vw'],
+	'max-width': ['px', '%', 'vw'],
+	'height': ['px', '%', 'vh'],
+	'min-height': ['px', '%', 'vh'],
+	'max-height': ['px', '%', 'vh'],
 	'/^padding/': ['px', '%'],
 	'/^margin/': ['px', '%'],
 	'top': ['px', '%'],
@@ -54,7 +54,7 @@ const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
 	'grid-auto-columns': ['px', '%', 'fr'],
 	'grid-auto-rows': ['px', '%', 'fr'],
 	'grid-template-columns': ['px', '%', 'fr'],
-	'grid-template-rows': ['px', '%'],
+	'grid-template-rows': ['px', '%', 'fr'],
 	'gap': ['px', '%'],
 	'grid-gap': ['px', '%'],
 	'grid-column-gap': ['px', '%'],
@@ -66,8 +66,8 @@ const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
 	'/^border-(top|right|bottom|left)/': ['px'],
 	'/^border-(top|right|bottom|left)-width/': ['px'],
 	'outline-width': ['px'],
-	'box-shadow': ['px'],
-	'text-shadow': ['px'],
+	'box-shadow': ['px', '%'],
+	'text-shadow': ['px', '%'],
 	'background-position': ['px', '%'],
 	'background-size': ['px', '%'],
 	'object-position': ['px', '%'],
@@ -91,13 +91,611 @@ class MediaConfig {
 		this.BREAKPOINTS = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 	}
 	static {
-		this.DEVICES = ['desktop', 'mobile'];
+		this.DEVICES = ['mobile', 'desktop'];
 	}
 	static {
 		this.NAME = 'media';
 	}
 	static {
 		this.PREFIX = `^${MediaConfig.NAME}-`;
+	}
+}
+
+class PluginRegExpHelper {
+	/**
+	 * Creates a RegExp based on the provided string, inserting a wildcard pattern for flexible matching.
+	 * @param parameter - The string to be converted into a RegExp.
+	 * @returns A RegExp object based on the input string, enhanced with wildcard patterns.
+	 * @example For makeRegex('color: (blue)'), returns a RegExp matching /color: \(blue[\s\S]*\)/.
+	 */
+	static createWildcardRegex(parameter) {
+		// Search for the last opening parenthesis
+		const lastOpeningIndex = parameter.lastIndexOf('(');
+		// Find the corresponding closing parenthesis
+		const closingIndex = parameter.indexOf(')', lastOpeningIndex);
+		// Validate existence of both parenthesis
+		const hasValidParenthesis = lastOpeningIndex !== -1 && closingIndex !== -1;
+		// Insert [\s\S]* before the closing parenthesis
+		const modifiedParameter = hasValidParenthesis
+			? `${parameter.substring(0, closingIndex)}[\\s\\S]*${parameter.substring(closingIndex)}`
+			: `${parameter}[\\s\\S]*`;
+		// Escape special characters
+		const escapedParameter = modifiedParameter.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+		return new RegExp(escapedParameter);
+	}
+}
+
+/**
+ * All of these methods are the utilities version of stylelint
+ * @see https://github.com/stylelint/stylelint/tree/main/lib/utils
+ *
+ * Since this is a copied version of the original functions, there are no tests for this helper.
+ * This is done purely to be able to test our .ts files, because .mjs files are not allowed.
+ */
+class PluginHelper {
+	static isInvalidSyntaxBlock(rule) {
+		const hasRuleBlock = PluginHelper.hasBlock(rule);
+		const isNotStandardSyntaxRule = PluginHelper.isRule(rule) && !PluginHelper.isStandardSyntaxRule(rule);
+		return !hasRuleBlock || isNotStandardSyntaxRule;
+	}
+	static isRoot(node) {
+		return node.type === 'root';
+	}
+	static isParentRoot(node) {
+		return !!node?.parent && PluginHelper.isRoot(node.parent);
+	}
+	static isRule(node) {
+		return node.type === 'rule';
+	}
+	static isAtRule(node) {
+		return node.type === 'atrule';
+	}
+	static isComment(node) {
+		return node.type === 'comment';
+	}
+	static isDeclaration(node) {
+		return node.type === 'decl';
+	}
+	static isDocument(node) {
+		return node.type === 'document';
+	}
+	static isValueFunction(node) {
+		return node.type === 'function';
+	}
+	static hasSource(node) {
+		return Boolean(node.source);
+	}
+	static hasBlock(statement) {
+		return statement.nodes !== undefined;
+	}
+	static isStandardSyntaxRule(rule) {
+		if (rule.type !== 'rule') {
+			return false;
+		}
+		if ('extend' in rule && rule.extend) {
+			return false;
+		}
+		return PluginHelper.isStandardSyntaxSelector(rule.selector);
+	}
+	static isChildPluginAtRule(child) {
+		return PluginHelper.isAtRule(child);
+	}
+	static isValidChildPluginRule(child) {
+		return PluginHelper.isRule(child) || PluginHelper.isAtRule(child);
+	}
+	static isStandardSyntaxSelector(selector) {
+		if (PluginHelper.hasInterpolation(selector)) {
+			return false;
+		}
+		return !(
+			selector.startsWith('%') ||
+			selector.endsWith(':') ||
+			/:extend(?:\(.*?\))?/.test(selector) ||
+			/\.[\w-]+\(.*\).+/.test(selector) ||
+			(selector.endsWith(')') && !selector.includes(':')) ||
+			/\(@.*\)$/.test(selector) ||
+			selector.includes('<%') ||
+			selector.includes('%>') ||
+			selector.includes('//')
+		);
+	}
+	static hasInterpolation(string) {
+		return (
+			PluginHelper.hasLessInterpolation(string) ||
+			PluginHelper.hasScssInterpolation(string) ||
+			PluginHelper.hasTplInterpolation(string) ||
+			PluginHelper.hasPsvInterpolation(string)
+		);
+	}
+	static hasLessInterpolation(string) {
+		return /@\{.+?}/.test(string);
+	}
+	static hasPsvInterpolation(string) {
+		return /\$\(.+?\)/.test(string);
+	}
+	static hasScssInterpolation(string) {
+		return /#\{.+?}/s.test(string);
+	}
+	static hasTplInterpolation(string) {
+		return /\{.+?}/s.test(string);
+	}
+	static getName(node) {
+		if (!PluginHelper.isPluginRuleType(node)) {
+			return null;
+		}
+		return PluginHelper.isRule(node) ? node.selector : node.params ? `@${node.name} ${node.params}` : `@${node.name}`;
+	}
+	static isPluginRuleType(node) {
+		return PluginHelper.isRule(node) || PluginHelper.isAtRule(node);
+	}
+	/**
+	 * Compares a string to a second value that, if it fits a certain convention,
+	 * is converted to a regular expression before the comparison.
+	 * If it doesn't fit the convention, then two strings are compared.
+	 *
+	 * Any strings starting and ending with `/` are interpreted
+	 * as regular expressions.
+	 */
+	static matchesStringOrRegExp(input, comparison) {
+		if (!Array.isArray(input)) {
+			return PluginHelper.testAgainstStringOrRegExpOrArray(input, comparison);
+		}
+		for (const inputItem of input) {
+			const testResult = PluginHelper.testAgainstStringOrRegExpOrArray(inputItem, comparison);
+			if (testResult) {
+				return testResult;
+			}
+		}
+		return false;
+	}
+	/**
+	 * Check if an options object's propertyName contains a user-defined string or
+	 * regex that matches the passed-in input.
+	 */
+	static optionsMatches(options, propertyName, input) {
+		if (!options || typeof input !== 'string') {
+			return false;
+		}
+		const propertyValue = options[propertyName];
+		if (propertyValue instanceof RegExp || Array.isArray(propertyValue)) {
+			return !!PluginHelper.matchesStringOrRegExp(input, propertyValue);
+		}
+		return false;
+	}
+	static isBoolean(value) {
+		return typeof value === 'boolean' || value instanceof Boolean;
+	}
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	static isFunction(value) {
+		return typeof value === 'function' || value instanceof Function;
+	}
+	static isNullish(value) {
+		return value == null;
+	}
+	static isNumber(value) {
+		return typeof value === 'number' || value instanceof Number;
+	}
+	static isObject(value) {
+		return value !== null && typeof value === 'object';
+	}
+	static isRegExp(value) {
+		return value instanceof RegExp;
+	}
+	static isString(value) {
+		return typeof value === 'string' || value instanceof String;
+	}
+	static isPlainObject(value) {
+		return PluginHelper._isPlainObject(value);
+	}
+	static assert(value, message) {
+		// eslint-disable-next-line no-console
+		console.assert(value, message);
+	}
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	static assertFunction(value) {
+		// eslint-disable-next-line no-console
+		console.assert(PluginHelper.isFunction(value), `"${value}" must be a function`);
+	}
+	static assertNumber(value) {
+		// eslint-disable-next-line no-console
+		console.assert(PluginHelper.isNumber(value), `"${value}" must be a number`);
+	}
+	static assertString(value) {
+		// eslint-disable-next-line no-console
+		console.assert(PluginHelper.isString(value), `"${value}" must be a string`);
+	}
+	// Internal helper method to check if an object is plain
+	static _isPlainObject(o) {
+		if (!PluginHelper.isObject(o)) return false;
+		const obj = o;
+		const ctor = obj.constructor;
+		if (ctor === undefined) return true;
+		const prot = ctor.prototype;
+		if (!PluginHelper.isObject(prot)) return false;
+		return Object.prototype.hasOwnProperty.call(prot, 'isPrototypeOf');
+	}
+	static testAgainstStringOrRegExpOrArray(value, comparison) {
+		if (!Array.isArray(comparison)) {
+			return PluginHelper.testAgainstStringOrRegExp(value, comparison);
+		}
+		for (const comparisonItem of comparison) {
+			const testResult = PluginHelper.testAgainstStringOrRegExp(value, comparisonItem);
+			if (testResult) {
+				return testResult;
+			}
+		}
+		return false;
+	}
+	static testAgainstStringOrRegExp(value, comparison) {
+		if (comparison instanceof RegExp) {
+			const match = value.match(comparison);
+			return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
+		}
+		const firstComparisonChar = comparison[0];
+		const lastComparisonChar = comparison[comparison.length - 1];
+		const secondToLastComparisonChar = comparison[comparison.length - 2];
+		const comparisonIsRegex =
+			firstComparisonChar === '/' &&
+			(lastComparisonChar === '/' || (secondToLastComparisonChar === '/' && lastComparisonChar === 'i'));
+		const hasCaseInsensitiveFlag = comparisonIsRegex && lastComparisonChar === 'i';
+		if (comparisonIsRegex) {
+			const regexPattern = hasCaseInsensitiveFlag ? comparison.slice(1, -2) : comparison.slice(1, -1);
+			const regexFlags = hasCaseInsensitiveFlag ? 'i' : '';
+			const valueMatch = value.match(new RegExp(regexPattern, regexFlags));
+			return valueMatch ? { match: value, pattern: comparison, substring: valueMatch[0] || '' } : false;
+		}
+		return value === comparison ? { match: value, pattern: comparison, substring: value } : false;
+	}
+}
+
+/**
+ * The PluginConfigHelper class provides static methods to create and validate plugin configuration
+ * rules and at-rules for CSS processing. It offers functionality to work with stylelint rules and
+ * configurations, aiding in the creation and validation of custom plugin configurations.
+ */
+class PluginConfigHelper {
+	/**
+	 * Determines if all elements in the array are AtRule objects.
+	 *
+	 * @param array - The array to be checked.
+	 * @returns True if all elements are AtRule objects, false otherwise.
+	 * @example
+	 * PluginConfigHelper.areAtRules([{ name: 'media', params: '(min-width: 500px)' }, { name: 'charset', params: '"utf-8"' }]); // returns true
+	 */
+	static areAtRules(array) {
+		return Array.isArray(array) && array.every(element => PluginConfigHelper.isAtRule(element));
+	}
+	/**
+	 * Determines if all elements in the array are Rule objects.
+	 *
+	 * @param array - The array to be checked.
+	 * @returns True if all elements are Rule objects, false otherwise.
+	 * @example
+	 * PluginConfigHelper.areRules([{ selector: '.example' }, { selector: '#id' }]); // returns true
+	 */
+	static areRules(array) {
+		return Array.isArray(array) && array.every(element => PluginConfigHelper.isRule(element));
+	}
+	/**
+	 * Checks if the provided object is a Rule.
+	 *
+	 * @param obj - The object to be checked.
+	 * @returns True if the object is a Rule, false otherwise.
+	 * @example
+	 * PluginConfigHelper.isRule({ selector: '.example' }); // returns true
+	 */
+	static isRule(obj) {
+		return typeof obj === 'object' && obj !== null && 'selector' in obj;
+	}
+	/**
+	 * Checks if the provided object is an AtRule.
+	 *
+	 * @param obj - The object to be checked.
+	 * @returns True if the object is an AtRule, false otherwise.
+	 * @example
+	 * PluginConfigHelper.isAtRule({ name: 'media', params: '(min-width: 500px)' }); // returns true
+	 */
+	static isAtRule(obj) {
+		return typeof obj === 'object' && obj !== null && 'name' in obj;
+	}
+	/**
+	 * Validates whether the provided data is a valid rule configuration.
+	 *
+	 * @param array - The data to validate.
+	 * @returns True if the data is a valid rule configuration, false otherwise.
+	 * @example PluginConfigHelper.isValidRuleData([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
+	 * // returns true
+	 */
+	static isValidRuleData(array) {
+		return (
+			Array.isArray(array) &&
+			array.every(element => PluginConfigHelper.isRule(element) || PluginConfigHelper.isAtRule(element))
+		);
+	}
+	/**
+	 * Determines if the provided mode is 'always'.
+	 *
+	 * @param mode - The mode to check.
+	 * @returns True if the mode is 'always', false otherwise.
+	 * @example
+	 * PluginConfigHelper.isAlwaysExecutionMode('always'); // returns true
+	 * PluginConfigHelper.isAlwaysExecutionMode('never'); // returns false
+	 */
+	static isAlwaysExecutionMode(mode) {
+		return mode === 'always';
+	}
+	/**
+	 * Determines if the provided mode is 'never'.
+	 *
+	 * @param mode - The mode to check.
+	 * @returns True if the mode is 'never', false otherwise.
+	 * @example
+	 * PluginConfigHelper.isNeverExecutionMode('never'); // returns true
+	 * PluginConfigHelper.isNeverExecutionMode('always'); // returns false
+	 */
+	static isNeverExecutionMode(mode) {
+		return mode === 'never';
+	}
+	/**
+	 * Determines if the provided value is a valid execution mode.
+	 *
+	 * @param mode - The execution mode to check.
+	 * @returns True if the mode is a valid execution mode, false otherwise.
+	 * @example
+	 * PluginConfigHelper.isExecutionMode('always'); // returns true
+	 * PluginConfigHelper.isExecutionMode('never'); // returns true
+	 * PluginConfigHelper.isExecutionMode('sometimes'); // returns false
+	 */
+	static isExecutionMode(mode) {
+		return (
+			typeof mode === 'string' &&
+			(PluginConfigHelper.isAlwaysExecutionMode(mode) || PluginConfigHelper.isNeverExecutionMode(mode))
+		);
+	}
+	/**
+	 * Checks if the provided data is an array of PluginConfigRule objects.
+	 * Utilizes Array.isArray to determine if the data is array-like.
+	 *
+	 * @param data - The data to check.
+	 * @returns true if the data is an array of PluginConfigRule, false otherwise.
+	 * @example
+	 * const ruleData = [{ selector: 'button' }, { selector: 'input' }];
+	 * PluginConfigHelper.isPluginConfigRules(ruleData); // returns true
+	 */
+	static isPluginConfigRules(data) {
+		return Array.isArray(data);
+	}
+	/**
+	 * Checks if the provided data is an array of PluginConfigAtRule objects.
+	 * Utilizes Array.isArray to determine if the data is array-like.
+	 *
+	 * @param data - The data to check.
+	 * @returns true if the data is an array of PluginConfigAtRule, false otherwise.
+	 * @example
+	 * const atRuleData = [{ name: 'media', params: 'print' }, { name: 'supports', params: 'display-grid' }];
+	 * PluginConfigHelper.isPluginConfigAtRules(atRuleData); // returns true
+	 */
+	static isPluginConfigAtRules(data) {
+		return Array.isArray(data);
+	}
+	/**
+	 * Creates an AtRule include object with specified parameters.
+	 *
+	 * @param params - The parameters for the AtRule.
+	 * @returns An AtRule include object.
+	 * @example
+	 * PluginConfigHelper.createAtRuleInclude('^media-'); // returns { name: 'include', params: '^media-' }
+	 */
+	static createAtRuleInclude(params) {
+		return params
+			? {
+					name: 'include',
+					params,
+				}
+			: { name: 'include' };
+	}
+	/**
+	 * Creates a Rule object with a specified selector.
+	 *
+	 * @param selector - The selector for the rule.
+	 * @returns A Rule object.
+	 * @example
+	 * PluginConfigHelper.createRule('.example'); // returns { selector: '.example' }
+	 */
+	static createRule(selector) {
+		return {
+			selector,
+		};
+	}
+	/**
+	 * Creates an AtRule object with specified name and parameters.
+	 *
+	 * @param name - The name of the AtRule.
+	 * @param params - The parameters of the AtRule.
+	 * @returns An AtRule object.
+	 * @example
+	 * PluginConfigHelper.createAtRule('media', '(min-width: 500px)'); // returns { name: 'media', params: '(min-width: 500px)' }
+	 */
+	static createAtRule(name, params) {
+		return params
+			? {
+					name,
+					params,
+				}
+			: { name };
+	}
+	/**
+	 * Creates an array of Rule objects from an array of selectors.
+	 *
+	 * @param selectors - An array of selectors.
+	 * @returns An array of Rule objects.
+	 * @example
+	 * PluginConfigHelper.createRules(['.example', '#id']); // returns [{ selector: '.example' }, { selector: '#id' }]
+	 */
+	static createRules(selectors) {
+		return selectors.map(selector => PluginConfigHelper.createRule(selector));
+	}
+	/**
+	 * Creates an array of AtRule objects from a name and an array of parameters.
+	 *
+	 * @param name - The name for the AtRules.
+	 * @param params - An array of parameters.
+	 * @returns An array of AtRule objects.
+	 * @example PluginConfigHelper.createAtRulesFromParams('media', ['(min-width: 500px)', '(max-width: 1000px)']);
+	 * // returns [{ name: 'media', params: '(min-width: 500px)' }, { name: 'media', params: '(max-width: 1000px)' }]
+	 */
+	static createAtRulesFromParams(name, params) {
+		return params.map(param => PluginConfigHelper.createAtRule(name, param));
+	}
+	/**
+	 * Creates an array of AtRule include objects from an array of parameters.
+	 *
+	 * @param params - An array of parameters for the include AtRules.
+	 * @returns An array of AtRule include objects.
+	 * @example
+	 * PluginConfigHelper.createAtRuleIncludes(['^media-', '^print-']); // returns [{ name: 'include', params: '^media-' }, { name: 'include', params: '^print-' }]
+	 */
+	static createAtRuleIncludes(params) {
+		return PluginConfigHelper.createAtRulesFromParams('include', params);
+	}
+	/**
+	 * Transforms the 'parameter' field of each rule in the array into a RegExp source string for flexible matching.
+	 * @atRules rules - An array of objects, potentially containing 'parameter' fields.
+	 * @returns The same array of objects with 'parameter' fields converted to RegExp source strings.
+	 * @example For paramToRegex([
+	 *   { type: 'at-rule', name: 'include', parameter: '^media-min(xs)' },
+	 *   { type: 'at-rule', name: 'media', parameter: '(width)' }
+	 * ]),
+	 * output is [
+	 *   { name: 'include', params: ^media-min\(xs[\s\S]*\) },
+	 *   { name: 'media', params: \(width[\s\S]*\) }
+	 * ].
+	 */
+	static atRuleParamsToRegExp(atRules) {
+		return atRules.map(rule => {
+			const isAtRule = PluginConfigHelper.isAtRule(rule);
+			return isAtRule && typeof rule.params === 'string'
+				? {
+						...rule,
+						params: PluginRegExpHelper.createWildcardRegex(rule.params).source,
+					}
+				: rule;
+		});
+	}
+	/**
+	 * Retrieves validation data for a given rule, determining if the rule conforms to the provided configuration.
+	 *
+	 * @param rule - The rule to validate.
+	 * @param configData - The configuration data against which the rule is validated.
+	 * @returns Validation data if the rule is valid, null otherwise.
+	 * @example
+	 * PluginConfigHelper.getValidationData(rule, [{ selector: '.example' }]);
+	 * // returns the validation data for '.example'
+	 */
+	static getValidationData(rule, configData) {
+		if (PluginHelper.isRule(rule)) {
+			const ruleConfigData = Array.isArray(configData) ? PluginConfigHelper.getRuleOptions(configData) : configData;
+			return PluginConfigHelper.getValidationRule(rule, ruleConfigData);
+		}
+		const atRuleConfigData = Array.isArray(configData) ? PluginConfigHelper.getAtRuleOptions(configData) : configData;
+		return PluginConfigHelper.getValidationAtRule(rule, atRuleConfigData);
+	}
+	/**
+	 * Retrieves validation data for a CSS rule based on the plugin configuration.
+	 *
+	 * @param rule - The CSS rule to validate.
+	 * @param configData - The plugin configuration for rules.
+	 * @returns Validation data for the rule, or null if it does not conform to the configuration.
+	 * @example
+	 * PluginConfigHelper.getValidationRule(rule, { selector: '.example' });
+	 * // returns validation data for '.example'
+	 */
+	static getValidationRule(rule, configData) {
+		const { selector } = rule;
+		const validationRule = PluginConfigHelper.isPluginConfigRules(configData)
+			? configData.find(option => PluginHelper.matchesStringOrRegExp(selector, option.selector))
+			: PluginHelper.matchesStringOrRegExp(selector, configData.selector) && configData;
+		return validationRule
+			? {
+					rule: validationRule,
+					messageName: `${validationRule.selector}`,
+					messageFormattedName: `${validationRule.selector}`,
+				}
+			: null;
+	}
+	/**
+	 * Retrieves validation data for an AtRule based on the plugin configuration.
+	 *
+	 * @param rule - The AtRule to validate.
+	 * @param configData - The plugin configuration for at-rules.
+	 * @returns Validation data for the AtRule, or null if it does not conform to the configuration.
+	 * @example
+	 * PluginConfigHelper.getValidationAtRule(atRule, { name: 'media', params: '(min-width: 500px)' });
+	 * // returns validation data for the 'media' AtRule
+	 */
+	static getValidationAtRule(rule, configData) {
+		const validationRule = PluginConfigHelper.isPluginConfigAtRules(configData)
+			? configData.find(option => PluginConfigHelper.isValidationAtRule(rule, option))
+			: PluginConfigHelper.isValidationAtRule(rule, configData) && configData;
+		if (!validationRule) return null;
+		const messageName = validationRule.params
+			? `"${validationRule.name} ${validationRule.params}"`
+			: `"${validationRule.name}"`;
+		const messageFormattedName = validationRule.params ? `"@${rule.name} ${rule.params}"` : `"@${rule.name}"`;
+		return {
+			rule: validationRule,
+			messageName,
+			messageFormattedName,
+		};
+	}
+	/**
+	 * Filters and returns an array of Rule configurations from the given plugin configuration options.
+	 *
+	 * @param options - The array of plugin configuration options.
+	 * @returns An array of Rule configurations.
+	 * @example
+	 * PluginConfigHelper.getRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
+	 * // returns [{ selector: '.example' }]
+	 */
+	static getRuleOptions(options) {
+		return options.filter(option => PluginConfigHelper.isRule(option));
+	}
+	/**
+	 * Filters and returns an array of AtRule configurations from the given plugin configuration options.
+	 *
+	 * @param options - The array of plugin configuration options.
+	 * @returns An array of AtRule configurations.
+	 * @example
+	 * PluginConfigHelper.getAtRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
+	 * // returns [{ name: 'media', params: '(max-width: 600px)' }]
+	 */
+	static getAtRuleOptions(options) {
+		return options.filter(option => PluginConfigHelper.isAtRule(option));
+	}
+	/**
+	 * Determines if a given AtRule object matches a specified validation AtRule configuration.
+	 *
+	 * @param rule - The AtRule object to be checked.
+	 * @param option - The validation AtRule configuration to match against.
+	 * @returns True if the AtRule object matches the validation configuration, false otherwise.
+	 * @example
+	 * // Given a plain AtRule object and a corresponding validation rule
+	 * const atRule = { name: 'media', params: '(max-width: 600px)' };
+	 * const validationRule = { name: 'media', params: '(max-width: 600px)' };
+	 * PluginConfigHelper.isValidationAtRule(atRule, validationRule);
+	 * // returns true
+	 *
+	 * @example
+	 * // If the AtRule object doesn't match the validation rule's parameters
+	 * const atRuleDifferentParams = { name: 'media', params: '(min-width: 300px)' };
+	 * PluginConfigHelper.isValidationAtRule(atRuleDifferentParams, validationRule);
+	 * // returns false
+	 */
+	static isValidationAtRule({ name, params }, option) {
+		const hasParams = !!params && !!option.params;
+		const isMatchedName = !!PluginHelper.matchesStringOrRegExp(name, option.name);
+		const isMatchedParams = hasParams && !!PluginHelper.matchesStringOrRegExp(params, new RegExp(option.params));
+		return hasParams ? isMatchedName && isMatchedParams : isMatchedName;
 	}
 }
 
@@ -243,8 +841,15 @@ class MediaRuleHelper {
 	 * @param device - Type of device.
 	 * @example: For createDeviceRuleOrder('mobile'), the output is: { type: 'at-rule', name: 'include', parameter: '^media-mobile' }.
 	 */
-	static createDeviceRuleOrder(device) {
+	static createDeviceOrderRule(device) {
 		return OrderHelper.createInclude(MediaRuleHelper.getDevicePrefixParameter(device));
+	}
+	/**
+	 * @param device - Type of device.
+	 * @example: For createDeviceRuleOrder('mobile'), the output is: { name: 'include', params: '^media-mobile' }.
+	 */
+	static createDeviceConfigRule(device) {
+		return PluginConfigHelper.createAtRuleInclude(MediaRuleHelper.getDevicePrefixParameter(device));
 	}
 	/**
 	 * @param prefix - Type of breakpoint prefix.
@@ -252,8 +857,17 @@ class MediaRuleHelper {
 	 * @example: For createBreakpointRuleOrder('min', 'sm'), the output is:
 	 * { type: 'at-rule', name: 'include', parameter: '^media-min(sm)' }.
 	 */
-	static createBreakpointRuleOrder(prefix, breakpoint) {
+	static createBreakpointOrderAtRule(prefix, breakpoint) {
 		return OrderHelper.createInclude(MediaRuleHelper.getBreakpointPrefixParameter(prefix, breakpoint));
+	}
+	/**
+	 * @param prefix - Type of breakpoint prefix.
+	 * @param breakpoint - Media breakpoint value.
+	 * @example: For createBreakpointConfigRule('min', 'sm'), the output is:
+	 * { name: 'include', params: '^media-min(sm)' }.
+	 */
+	static createBreakpointConfigAtRule(prefix, breakpoint) {
+		return PluginConfigHelper.createAtRuleInclude(MediaRuleHelper.getBreakpointPrefixParameter(prefix, breakpoint));
 	}
 	/**
 	 * @param breakpointFrom - Media breakpoint value (e.g., 'xs', 'sm').
@@ -261,8 +875,19 @@ class MediaRuleHelper {
 	 * @example: For createBreakpointBetweenRuleOrder('xs', 'sm'), the output is:
 	 * { type: 'at-rule', name: 'include', parameter: '^media-between(xs, sm)' }.
 	 */
-	static createBreakpointBetweenRuleOrder(breakpointFrom, breakpointTo) {
+	static createBreakpointBetweenOrderRule(breakpointFrom, breakpointTo) {
 		return OrderHelper.createInclude(MediaRuleHelper.getBreakpointBetweenPrefixParameter(breakpointFrom, breakpointTo));
+	}
+	/**
+	 * @param breakpointFrom - Media breakpoint value (e.g., 'xs', 'sm').
+	 * @param breakpointTo - Media breakpoint value (e.g., 'xs', 'sm').
+	 * @example: For createBreakpointBetweenRuleOrder('xs', 'sm'), the output is:
+	 * { name: 'include', params: '^media-between(xs, sm)' }.
+	 */
+	static createBreakpointBetweenConfigRule(breakpointFrom, breakpointTo) {
+		return PluginConfigHelper.createAtRuleInclude(
+			MediaRuleHelper.getBreakpointBetweenPrefixParameter(breakpointFrom, breakpointTo)
+		);
 	}
 	/**
 	 * @param devices - Array of devices.
@@ -272,8 +897,19 @@ class MediaRuleHelper {
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-desktop' }
 	 * ].
 	 */
-	static createDeviceRulesOrder(devices) {
-		return devices.map(value => MediaRuleHelper.createDeviceRuleOrder(value));
+	static createDeviceOrderRules(devices) {
+		return devices.map(value => MediaRuleHelper.createDeviceOrderRule(value));
+	}
+	/**
+	 * @param devices - Array of devices.
+	 * @example: For createDeviceRulesOrder(['mobile', 'desktop']), the output is:
+	 * [
+	 *    { name: 'include', params: '^media-mobile' },
+	 *    { name: 'include', params: '^media-desktop' }
+	 * ].
+	 */
+	static createDeviceConfigRules(devices) {
+		return devices.map(value => MediaRuleHelper.createDeviceConfigRule(value));
 	}
 	/**
 	 * @param prefix - Type of breakpoint prefix.
@@ -284,8 +920,20 @@ class MediaRuleHelper {
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-min(md)' }
 	 * ].
 	 */
-	static createBreakpointRulesOrder(prefix, breakpoints) {
-		return breakpoints.map(value => MediaRuleHelper.createBreakpointRuleOrder(prefix, value));
+	static createBreakpointOrderRules(prefix, breakpoints) {
+		return breakpoints.map(value => MediaRuleHelper.createBreakpointOrderAtRule(prefix, value));
+	}
+	/**
+	 * @param prefix - Type of breakpoint prefix.
+	 * @param breakpoints - Array of media breakpoints.
+	 * @example: For createBreakpointRulesOrder('min', ['sm', 'md']), the output is:
+	 * [
+	 *    { name: 'include', params: '^media-min(sm)' },
+	 *    { name: 'include', params: '^media-min(md)' }
+	 * ].
+	 */
+	static createBreakpointConfigRules(prefix, breakpoints) {
+		return breakpoints.map(value => MediaRuleHelper.createBreakpointConfigAtRule(prefix, value));
 	}
 	/**
 	 * @param breakpoints - Array of media breakpoints.
@@ -296,35 +944,28 @@ class MediaRuleHelper {
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-between(sm, md)' },
 	 * ].
 	 */
-	static createBreakpointBetweenRulesOrder(breakpoints) {
+	static createBreakpointBetweenOrderRules(breakpoints) {
 		return breakpoints.flatMap((current, idx, arr) =>
-			arr.slice(idx + 1).map(next => MediaRuleHelper.createBreakpointBetweenRuleOrder(current, next))
+			arr.slice(idx + 1).map(next => MediaRuleHelper.createBreakpointBetweenOrderRule(current, next))
+		);
+	}
+	/**
+	 * @param breakpoints - Array of media breakpoints.
+	 * @example: For createBreakpointBetweenRulesOrder(['xs', 'sm', 'md']), the output is:
+	 * [
+	 *    { name: 'include', params: '^media-between(xs, sm)' },
+	 *    { name: 'include', params: '^media-between(xs, md)' },
+	 *    { name: 'include', params: '^media-between(sm, md)' },
+	 * ].
+	 */
+	static createBreakpointBetweenConfigRules(breakpoints) {
+		return breakpoints.flatMap((current, idx, arr) =>
+			arr.slice(idx + 1).map(next => MediaRuleHelper.createBreakpointBetweenConfigRule(current, next))
 		);
 	}
 }
 
 class OrderRegExpHelper {
-	/**
-	 * Creates a RegExp based on the provided string, inserting a wildcard pattern for flexible matching.
-	 * @param parameter - The string to be converted into a RegExp.
-	 * @returns A RegExp object based on the input string, enhanced with wildcard patterns.
-	 * @example For makeRegex('color: (blue)'), returns a RegExp matching /color: \(blue[\s\S]*\)/.
-	 */
-	static makeRegex(parameter) {
-		// Search for the last opening parenthesis
-		const lastOpeningIndex = parameter.lastIndexOf('(');
-		// Find the corresponding closing parenthesis
-		const closingIndex = parameter.indexOf(')', lastOpeningIndex);
-		// Validate existence of both parenthesis
-		const hasValidParenthesis = lastOpeningIndex !== -1 && closingIndex !== -1;
-		// Insert [\s\S]* before the closing parenthesis
-		const modifiedParameter = hasValidParenthesis
-			? `${parameter.substring(0, closingIndex)}[\\s\\S]*${parameter.substring(closingIndex)}`
-			: `${parameter}[\\s\\S]*`;
-		// Escape special characters
-		const escapedParameter = modifiedParameter.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
-		return new RegExp(escapedParameter);
-	}
 	/**
 	 * Transforms the 'parameter' field of each rule in the array into a RegExp source string for flexible matching.
 	 * @param rules - An array of objects, potentially containing 'parameter' fields.
@@ -338,13 +979,13 @@ class OrderRegExpHelper {
 	 *   { type: 'at-rule', name: 'media', parameter: \(width[\s\S]*\) }
 	 * ].
 	 */
-	static paramToRegex(rules) {
+	static parametersToWildcardRegex(rules) {
 		return rules.map(rule => {
 			const isAtRule = OrderHelper.isAtRule(rule) && rule.type === 'at-rule';
 			return isAtRule && typeof rule.parameter === 'string'
 				? {
 						...rule,
-						parameter: OrderRegExpHelper.makeRegex(rule.parameter).source,
+						parameter: PluginRegExpHelper.createWildcardRegex(rule.parameter).source,
 					}
 				: rule;
 		});
@@ -721,27 +1362,27 @@ const ORDER_CONFIG = [
 	 * SCSS Media includes for specific devices:
 	 * @example @include media-desktop;
 	 */
-	...MediaRuleHelper.createDeviceRulesOrder(MediaConfig.DEVICES),
+	...MediaRuleHelper.createDeviceOrderRules(MediaConfig.DEVICES),
 	/**
 	 * SCSS Media includes for minimum breakpoints:
 	 * @example @include media-min(md);
 	 */
-	...MediaRuleHelper.createBreakpointRulesOrder('min', MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointOrderRules('min', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for maximum breakpoints:
 	 * @example @include media-max(md);
 	 */
-	...MediaRuleHelper.createBreakpointRulesOrder('max', MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointOrderRules('max', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for specific breakpoints:
 	 * @example @include media-only(md);
 	 */
-	...MediaRuleHelper.createBreakpointRulesOrder('only', MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointOrderRules('only', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for range between breakpoints:
 	 * @example @include media-between(md, lg);
 	 */
-	...MediaRuleHelper.createBreakpointBetweenRulesOrder(MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointBetweenOrderRules(MediaConfig.BREAKPOINTS),
 	/**
 	 * Media queries:
 	 * @example @media (min-width: 768px) {}
@@ -763,7 +1404,7 @@ const ORDER_CONFIG = [
 	 */
 	OrderHelper.createAtRule('supports'),
 ];
-const ORDER_CONTENT = OrderRegExpHelper.paramToRegex(ORDER_CONFIG);
+const ORDER_CONTENT = OrderRegExpHelper.parametersToWildcardRegex(ORDER_CONFIG);
 
 const ORDER_PROPERTIES_CONFIG = {
 	position: ['content', 'position', 'top', 'right', 'bottom', 'left', 'z-index'],
@@ -1176,229 +1817,6 @@ const { position, blockModel, typography, decoration, animation, miscellanea } =
  */
 const ORDER_PROPERTIES = [...position, ...blockModel, ...typography, ...decoration, ...animation, ...miscellanea];
 
-/**
- * All of these methods are the utilities version of stylelint
- * @see https://github.com/stylelint/stylelint/tree/main/lib/utils
- *
- * Since this is a copied version of the original functions, there are no tests for this helper.
- * This is done purely to be able to test our .ts files, because .mjs files are not allowed.
- */
-class PluginHelper {
-	static isInvalidSyntaxBlock(rule) {
-		const hasRuleBlock = PluginHelper.hasBlock(rule);
-		const isNotStandardSyntaxRule = PluginHelper.isRule(rule) && !PluginHelper.isStandardSyntaxRule(rule);
-		return !hasRuleBlock || isNotStandardSyntaxRule;
-	}
-	static isRoot(node) {
-		return node.type === 'root';
-	}
-	static isParentRoot(node) {
-		return !!node?.parent && PluginHelper.isRoot(node.parent);
-	}
-	static isRule(node) {
-		return node.type === 'rule';
-	}
-	static isAtRule(node) {
-		return node.type === 'atrule';
-	}
-	static isComment(node) {
-		return node.type === 'comment';
-	}
-	static isDeclaration(node) {
-		return node.type === 'decl';
-	}
-	static isDocument(node) {
-		return node.type === 'document';
-	}
-	static isValueFunction(node) {
-		return node.type === 'function';
-	}
-	static hasSource(node) {
-		return Boolean(node.source);
-	}
-	static hasBlock(statement) {
-		return statement.nodes !== undefined;
-	}
-	static isStandardSyntaxRule(rule) {
-		if (rule.type !== 'rule') {
-			return false;
-		}
-		if ('extend' in rule && rule.extend) {
-			return false;
-		}
-		return PluginHelper.isStandardSyntaxSelector(rule.selector);
-	}
-	static isChildPluginAtRule(child) {
-		return PluginHelper.isAtRule(child);
-	}
-	static isValidChildPluginRule(child) {
-		return PluginHelper.isRule(child) || PluginHelper.isAtRule(child);
-	}
-	static isStandardSyntaxSelector(selector) {
-		if (PluginHelper.hasInterpolation(selector)) {
-			return false;
-		}
-		return !(
-			selector.startsWith('%') ||
-			selector.endsWith(':') ||
-			/:extend(?:\(.*?\))?/.test(selector) ||
-			/\.[\w-]+\(.*\).+/.test(selector) ||
-			(selector.endsWith(')') && !selector.includes(':')) ||
-			/\(@.*\)$/.test(selector) ||
-			selector.includes('<%') ||
-			selector.includes('%>') ||
-			selector.includes('//')
-		);
-	}
-	static hasInterpolation(string) {
-		return (
-			PluginHelper.hasLessInterpolation(string) ||
-			PluginHelper.hasScssInterpolation(string) ||
-			PluginHelper.hasTplInterpolation(string) ||
-			PluginHelper.hasPsvInterpolation(string)
-		);
-	}
-	static hasLessInterpolation(string) {
-		return /@\{.+?}/.test(string);
-	}
-	static hasPsvInterpolation(string) {
-		return /\$\(.+?\)/.test(string);
-	}
-	static hasScssInterpolation(string) {
-		return /#\{.+?}/s.test(string);
-	}
-	static hasTplInterpolation(string) {
-		return /\{.+?}/s.test(string);
-	}
-	static getName(node) {
-		if (!PluginHelper.isPluginRuleType(node)) {
-			return null;
-		}
-		return PluginHelper.isRule(node) ? node.selector : node.params ? `@${node.name} ${node.params}` : `@${node.name}`;
-	}
-	static isPluginRuleType(node) {
-		return PluginHelper.isRule(node) || PluginHelper.isAtRule(node);
-	}
-	/**
-	 * Compares a string to a second value that, if it fits a certain convention,
-	 * is converted to a regular expression before the comparison.
-	 * If it doesn't fit the convention, then two strings are compared.
-	 *
-	 * Any strings starting and ending with `/` are interpreted
-	 * as regular expressions.
-	 */
-	static matchesStringOrRegExp(input, comparison) {
-		if (!Array.isArray(input)) {
-			return PluginHelper.testAgainstStringOrRegExpOrArray(input, comparison);
-		}
-		for (const inputItem of input) {
-			const testResult = PluginHelper.testAgainstStringOrRegExpOrArray(inputItem, comparison);
-			if (testResult) {
-				return testResult;
-			}
-		}
-		return false;
-	}
-	/**
-	 * Check if an options object's propertyName contains a user-defined string or
-	 * regex that matches the passed-in input.
-	 */
-	static optionsMatches(options, propertyName, input) {
-		if (!options || typeof input !== 'string') {
-			return false;
-		}
-		const propertyValue = options[propertyName];
-		if (propertyValue instanceof RegExp || Array.isArray(propertyValue)) {
-			return !!PluginHelper.matchesStringOrRegExp(input, propertyValue);
-		}
-		return false;
-	}
-	static isBoolean(value) {
-		return typeof value === 'boolean' || value instanceof Boolean;
-	}
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	static isFunction(value) {
-		return typeof value === 'function' || value instanceof Function;
-	}
-	static isNullish(value) {
-		return value == null;
-	}
-	static isNumber(value) {
-		return typeof value === 'number' || value instanceof Number;
-	}
-	static isObject(value) {
-		return value !== null && typeof value === 'object';
-	}
-	static isRegExp(value) {
-		return value instanceof RegExp;
-	}
-	static isString(value) {
-		return typeof value === 'string' || value instanceof String;
-	}
-	static isPlainObject(value) {
-		return PluginHelper._isPlainObject(value);
-	}
-	static assert(value, message) {
-		// eslint-disable-next-line no-console
-		console.assert(value, message);
-	}
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	static assertFunction(value) {
-		// eslint-disable-next-line no-console
-		console.assert(PluginHelper.isFunction(value), `"${value}" must be a function`);
-	}
-	static assertNumber(value) {
-		// eslint-disable-next-line no-console
-		console.assert(PluginHelper.isNumber(value), `"${value}" must be a number`);
-	}
-	static assertString(value) {
-		// eslint-disable-next-line no-console
-		console.assert(PluginHelper.isString(value), `"${value}" must be a string`);
-	}
-	// Internal helper method to check if an object is plain
-	static _isPlainObject(o) {
-		if (!PluginHelper.isObject(o)) return false;
-		const obj = o;
-		const ctor = obj.constructor;
-		if (ctor === undefined) return true;
-		const prot = ctor.prototype;
-		if (!PluginHelper.isObject(prot)) return false;
-		return Object.prototype.hasOwnProperty.call(prot, 'isPrototypeOf');
-	}
-	static testAgainstStringOrRegExpOrArray(value, comparison) {
-		if (!Array.isArray(comparison)) {
-			return PluginHelper.testAgainstStringOrRegExp(value, comparison);
-		}
-		for (const comparisonItem of comparison) {
-			const testResult = PluginHelper.testAgainstStringOrRegExp(value, comparisonItem);
-			if (testResult) {
-				return testResult;
-			}
-		}
-		return false;
-	}
-	static testAgainstStringOrRegExp(value, comparison) {
-		if (comparison instanceof RegExp) {
-			const match = value.match(comparison);
-			return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
-		}
-		const firstComparisonChar = comparison[0];
-		const lastComparisonChar = comparison[comparison.length - 1];
-		const secondToLastComparisonChar = comparison[comparison.length - 2];
-		const comparisonIsRegex =
-			firstComparisonChar === '/' &&
-			(lastComparisonChar === '/' || (secondToLastComparisonChar === '/' && lastComparisonChar === 'i'));
-		const hasCaseInsensitiveFlag = comparisonIsRegex && lastComparisonChar === 'i';
-		if (comparisonIsRegex) {
-			const regexPattern = hasCaseInsensitiveFlag ? comparison.slice(1, -2) : comparison.slice(1, -1);
-			const regexFlags = hasCaseInsensitiveFlag ? 'i' : '';
-			const valueMatch = value.match(new RegExp(regexPattern, regexFlags));
-			return valueMatch ? { match: value, pattern: comparison, substring: valueMatch[0] || '' } : false;
-		}
-		return value === comparison ? { match: value, pattern: comparison, substring: value } : false;
-	}
-}
-
 class PluginConfig {
 	static {
 		this.NAMESPACE = 'kifor-stylelint';
@@ -1617,307 +2035,6 @@ const pluginMaxNestingDepthProvider = () => {
 	};
 };
 
-/**
- * The PluginConfigHelper class provides static methods to create and validate plugin configuration
- * rules and at-rules for CSS processing. It offers functionality to work with stylelint rules and
- * configurations, aiding in the creation and validation of custom plugin configurations.
- */
-class PluginConfigHelper {
-	/**
-	 * Determines if all elements in the array are AtRule objects.
-	 *
-	 * @param array - The array to be checked.
-	 * @returns True if all elements are AtRule objects, false otherwise.
-	 * @example
-	 * PluginConfigHelper.areAtRules([{ name: 'media', params: '(min-width: 500px)' }, { name: 'charset', params: '"utf-8"' }]); // returns true
-	 */
-	static areAtRules(array) {
-		return Array.isArray(array) && array.every(element => PluginConfigHelper.isAtRule(element));
-	}
-	/**
-	 * Determines if all elements in the array are Rule objects.
-	 *
-	 * @param array - The array to be checked.
-	 * @returns True if all elements are Rule objects, false otherwise.
-	 * @example
-	 * PluginConfigHelper.areRules([{ selector: '.example' }, { selector: '#id' }]); // returns true
-	 */
-	static areRules(array) {
-		return Array.isArray(array) && array.every(element => PluginConfigHelper.isRule(element));
-	}
-	/**
-	 * Checks if the provided object is a Rule.
-	 *
-	 * @param obj - The object to be checked.
-	 * @returns True if the object is a Rule, false otherwise.
-	 * @example
-	 * PluginConfigHelper.isRule({ selector: '.example' }); // returns true
-	 */
-	static isRule(obj) {
-		return typeof obj === 'object' && obj !== null && 'selector' in obj;
-	}
-	/**
-	 * Checks if the provided object is an AtRule.
-	 *
-	 * @param obj - The object to be checked.
-	 * @returns True if the object is an AtRule, false otherwise.
-	 * @example
-	 * PluginConfigHelper.isAtRule({ name: 'media', params: '(min-width: 500px)' }); // returns true
-	 */
-	static isAtRule(obj) {
-		return typeof obj === 'object' && obj !== null && 'name' in obj;
-	}
-	/**
-	 * Validates whether the provided data is a valid rule configuration.
-	 *
-	 * @param array - The data to validate.
-	 * @returns True if the data is a valid rule configuration, false otherwise.
-	 * @example PluginConfigHelper.isValidRuleData([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
-	 * // returns true
-	 */
-	static isValidRuleData(array) {
-		return (
-			Array.isArray(array) &&
-			array.every(element => PluginConfigHelper.isRule(element) || PluginConfigHelper.isAtRule(element))
-		);
-	}
-	/**
-	 * Determines if the provided mode is 'always'.
-	 *
-	 * @param mode - The mode to check.
-	 * @returns True if the mode is 'always', false otherwise.
-	 * @example
-	 * PluginConfigHelper.isAlwaysExecutionMode('always'); // returns true
-	 * PluginConfigHelper.isAlwaysExecutionMode('never'); // returns false
-	 */
-	static isAlwaysExecutionMode(mode) {
-		return mode === 'always';
-	}
-	/**
-	 * Determines if the provided mode is 'never'.
-	 *
-	 * @param mode - The mode to check.
-	 * @returns True if the mode is 'never', false otherwise.
-	 * @example
-	 * PluginConfigHelper.isNeverExecutionMode('never'); // returns true
-	 * PluginConfigHelper.isNeverExecutionMode('always'); // returns false
-	 */
-	static isNeverExecutionMode(mode) {
-		return mode === 'never';
-	}
-	/**
-	 * Determines if the provided value is a valid execution mode.
-	 *
-	 * @param mode - The execution mode to check.
-	 * @returns True if the mode is a valid execution mode, false otherwise.
-	 * @example
-	 * PluginConfigHelper.isExecutionMode('always'); // returns true
-	 * PluginConfigHelper.isExecutionMode('never'); // returns true
-	 * PluginConfigHelper.isExecutionMode('sometimes'); // returns false
-	 */
-	static isExecutionMode(mode) {
-		return (
-			typeof mode === 'string' &&
-			(PluginConfigHelper.isAlwaysExecutionMode(mode) || PluginConfigHelper.isNeverExecutionMode(mode))
-		);
-	}
-	/**
-	 * Creates an AtRule include object with specified parameters.
-	 *
-	 * @param params - The parameters for the AtRule.
-	 * @returns An AtRule include object.
-	 * @example
-	 * PluginConfigHelper.createAtRuleInclude('^media-'); // returns { name: 'include', params: '^media-' }
-	 */
-	static createAtRuleInclude(params) {
-		return params
-			? {
-					name: 'include',
-					params,
-				}
-			: { name: 'include' };
-	}
-	/**
-	 * Creates a Rule object with a specified selector.
-	 *
-	 * @param selector - The selector for the rule.
-	 * @returns A Rule object.
-	 * @example
-	 * PluginConfigHelper.createRule('.example'); // returns { selector: '.example' }
-	 */
-	static createRule(selector) {
-		return {
-			selector,
-		};
-	}
-	/**
-	 * Creates an AtRule object with specified name and parameters.
-	 *
-	 * @param name - The name of the AtRule.
-	 * @param params - The parameters of the AtRule.
-	 * @returns An AtRule object.
-	 * @example
-	 * PluginConfigHelper.createAtRule('media', '(min-width: 500px)'); // returns { name: 'media', params: '(min-width: 500px)' }
-	 */
-	static createAtRule(name, params) {
-		return params
-			? {
-					name,
-					params,
-				}
-			: { name };
-	}
-	/**
-	 * Creates an array of Rule objects from an array of selectors.
-	 *
-	 * @param selectors - An array of selectors.
-	 * @returns An array of Rule objects.
-	 * @example
-	 * PluginConfigHelper.createRules(['.example', '#id']); // returns [{ selector: '.example' }, { selector: '#id' }]
-	 */
-	static createRules(selector) {
-		return selector.map(selector => PluginConfigHelper.createRule(selector));
-	}
-	/**
-	 * Creates an array of AtRule objects from a name and an array of parameters.
-	 *
-	 * @param name - The name for the AtRules.
-	 * @param params - An array of parameters.
-	 * @returns An array of AtRule objects.
-	 * @example PluginConfigHelper.createAtRulesFromParams('media', ['(min-width: 500px)', '(max-width: 1000px)']);
-	 * // returns [{ name: 'media', params: '(min-width: 500px)' }, { name: 'media', params: '(max-width: 1000px)' }]
-	 */
-	static createAtRulesFromParams(name, params) {
-		return params.map(param => PluginConfigHelper.createAtRule(name, param));
-	}
-	/**
-	 * Creates an array of AtRule include objects from an array of parameters.
-	 *
-	 * @param params - An array of parameters for the include AtRules.
-	 * @returns An array of AtRule include objects.
-	 * @example
-	 * PluginConfigHelper.createAtRuleIncludes(['^media-', '^print-']); // returns [{ name: 'include', params: '^media-' }, { name: 'include', params: '^print-' }]
-	 */
-	static createAtRuleIncludes(params) {
-		return PluginConfigHelper.createAtRulesFromParams('include', params);
-	}
-	/**
-	 * Retrieves validation data for a given rule, determining if the rule conforms to the provided configuration.
-	 *
-	 * @param rule - The rule to validate.
-	 * @param configData - The configuration data against which the rule is validated.
-	 * @returns Validation data if the rule is valid, null otherwise.
-	 * @example
-	 * PluginConfigHelper.getValidationData(rule, [{ selector: '.example' }]);
-	 * // returns the validation data for '.example'
-	 */
-	static getValidationData(rule, configData) {
-		if (PluginHelper.isRule(rule)) {
-			const ruleConfigData = Array.isArray(configData) ? PluginConfigHelper.getRuleOptions(configData) : configData;
-			return PluginConfigHelper.getValidationRule(rule, ruleConfigData);
-		}
-		const atRuleConfigData = Array.isArray(configData) ? PluginConfigHelper.getAtRuleOptions(configData) : configData;
-		return PluginConfigHelper.getValidationAtRule(rule, atRuleConfigData);
-	}
-	/**
-	 * Retrieves validation data for a CSS rule based on the plugin configuration.
-	 *
-	 * @param rule - The CSS rule to validate.
-	 * @param configData - The plugin configuration for rules.
-	 * @returns Validation data for the rule, or null if it does not conform to the configuration.
-	 * @example
-	 * PluginConfigHelper.getValidationRule(rule, { selector: '.example' });
-	 * // returns validation data for '.example'
-	 */
-	static getValidationRule(rule, configData) {
-		const { selector } = rule;
-		const validationRule = Array.isArray(configData)
-			? configData.find(option => PluginHelper.matchesStringOrRegExp(selector, option.selector))
-			: PluginHelper.matchesStringOrRegExp(selector, configData.selector) && configData;
-		return validationRule
-			? {
-					rule: validationRule,
-					messageName: `${validationRule.selector}`,
-					messageFormattedName: `${validationRule.selector}`,
-				}
-			: null;
-	}
-	/**
-	 * Retrieves validation data for an AtRule based on the plugin configuration.
-	 *
-	 * @param rule - The AtRule to validate.
-	 * @param configData - The plugin configuration for at-rules.
-	 * @returns Validation data for the AtRule, or null if it does not conform to the configuration.
-	 * @example
-	 * PluginConfigHelper.getValidationAtRule(atRule, { name: 'media', params: '(min-width: 500px)' });
-	 * // returns validation data for the 'media' AtRule
-	 */
-	static getValidationAtRule(rule, configData) {
-		const validationRule = Array.isArray(configData)
-			? configData.find(option => PluginConfigHelper.isValidationAtRule(rule, option))
-			: PluginConfigHelper.isValidationAtRule(rule, configData) && configData;
-		if (!validationRule) return null;
-		const messageName = validationRule.params
-			? `"${validationRule.name} ${validationRule.params}"`
-			: `"${validationRule.name}"`;
-		const messageFormattedName = validationRule.params ? `"@${rule.name} ${rule.params}"` : `"@${rule.name}"`;
-		return {
-			rule: validationRule,
-			messageName,
-			messageFormattedName,
-		};
-	}
-	/**
-	 * Filters and returns an array of Rule configurations from the given plugin configuration options.
-	 *
-	 * @param options - The array of plugin configuration options.
-	 * @returns An array of Rule configurations.
-	 * @example
-	 * PluginConfigHelper.getRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
-	 * // returns [{ selector: '.example' }]
-	 */
-	static getRuleOptions(options) {
-		return options.filter(option => PluginConfigHelper.isRule(option));
-	}
-	/**
-	 * Filters and returns an array of AtRule configurations from the given plugin configuration options.
-	 *
-	 * @param options - The array of plugin configuration options.
-	 * @returns An array of AtRule configurations.
-	 * @example
-	 * PluginConfigHelper.getAtRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
-	 * // returns [{ name: 'media', params: '(max-width: 600px)' }]
-	 */
-	static getAtRuleOptions(options) {
-		return options.filter(option => PluginConfigHelper.isAtRule(option));
-	}
-	/**
-	 * Determines if a given AtRule object matches a specified validation AtRule configuration.
-	 *
-	 * @param rule - The AtRule object to be checked.
-	 * @param option - The validation AtRule configuration to match against.
-	 * @returns True if the AtRule object matches the validation configuration, false otherwise.
-	 * @example
-	 * // Given a plain AtRule object and a corresponding validation rule
-	 * const atRule = { name: 'media', params: '(max-width: 600px)' };
-	 * const validationRule = { name: 'media', params: '(max-width: 600px)' };
-	 * PluginConfigHelper.isValidationAtRule(atRule, validationRule);
-	 * // returns true
-	 *
-	 * @example
-	 * // If the AtRule object doesn't match the validation rule's parameters
-	 * const atRuleDifferentParams = { name: 'media', params: '(min-width: 300px)' };
-	 * PluginConfigHelper.isValidationAtRule(atRuleDifferentParams, validationRule);
-	 * // returns false
-	 */
-	static isValidationAtRule({ name, params }, option) {
-		const hasParams = !!params && !!option.params;
-		const isMatchedName = !!PluginHelper.matchesStringOrRegExp(name, option.name);
-		const isMatchedParams = hasParams && !!PluginHelper.matchesStringOrRegExp(params, option.params);
-		return hasParams ? isMatchedName && isMatchedParams : isMatchedName;
-	}
-}
-
 class PluginMediaConfig {
 	/**
 	 * Mixin for applying media prefix in CSS rules.
@@ -1925,7 +2042,7 @@ class PluginMediaConfig {
 	 * { name: 'include', params: '^media-' }.
 	 */
 	static {
-		this.MEDIA_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(MediaConfig.PREFIX);
+		this.PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(MediaConfig.PREFIX);
 	}
 	/**
 	 * Regular expression mixin for matching media prefix in CSS rules.
@@ -1933,87 +2050,36 @@ class PluginMediaConfig {
 	 * { name: 'include', params: /^media-/ }.
 	 */
 	static {
-		this.MEDIA_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(new RegExp(MediaConfig.PREFIX));
+		this.PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(new RegExp(MediaConfig.PREFIX));
 	}
-	/**
-	 * Mixin for creating minimum width media queries.
-	 * @example for PluginMediaConfig.MEDIA_MIN_PREFIX_MIXIN output is:
-	 * { name: 'include', params: '^media-min' }.
-	 */
 	static {
-		this.MEDIA_MIN_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			MediaRuleHelper.getRuleFullBreakpointPrefix('min')
-		);
-	}
-	/**
-	 * Mixin for creating maximum width media queries.
-	 * @example for PluginMediaConfig.MEDIA_MAX_PREFIX_MIXIN output is:
-	 * { name: 'include', params: '^media-max' }.
-	 */
-	static {
-		this.MEDIA_MAX_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			MediaRuleHelper.getRuleFullBreakpointPrefix('max')
-		);
-	}
-	/**
-	 * Mixin for media queries targeting a specific breakpoint only.
-	 * @example for PluginMediaConfig.MEDIA_ONLY_PREFIX_MIXIN output is:
-	 * { name: 'include', params: '^media-only' }.
-	 */
-	static {
-		this.MEDIA_ONLY_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			MediaRuleHelper.getRuleFullBreakpointPrefix('only')
-		);
-	}
-	/**
-	 * Mixin for media queries targeting a range of breakpoints.
-	 * @example for PluginMediaConfig.MEDIA_BETWEEN_PREFIX_MIXIN output is:
-	 * { name: 'include', params: '^media-between' }.
-	 */
-	static {
-		this.MEDIA_BETWEEN_PREFIX_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			MediaRuleHelper.getRuleFullBreakpointPrefix('between')
-		);
-	}
-	/**
-	 * Regular expression mixin for creating minimum width media queries.
-	 * @example for PluginMediaConfig.MEDIA_MIN_PREFIX_REGEXP_MIXIN output is:
-	 * { name: 'include', params: /^media-min/ }.
-	 */
-	static {
-		this.MEDIA_MIN_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('min'))
-		);
-	}
-	/**
-	 * Regular expression mixin for creating maximum width media queries.
-	 * @example for PluginMediaConfig.MEDIA_MAX_PREFIX_REGEXP_MIXIN output is:
-	 * { name: 'include', params: /^media-max/ }.
-	 */
-	static {
-		this.MEDIA_MAX_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('max'))
-		);
-	}
-	/**
-	 * Regular expression mixin for media queries targeting a specific breakpoint only.
-	 * @example for PluginMediaConfig.MEDIA_ONLY_PREFIX_REGEXP_MIXIN output is:
-	 * { name: 'include', params: /^media-only/ }.
-	 */
-	static {
-		this.MEDIA_ONLY_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('only'))
-		);
-	}
-	/**
-	 * Regular expression mixin for media queries targeting a range of breakpoints.
-	 * @example for PluginMediaConfig.MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN output is:
-	 * { name: 'include', params: /^media-between/ }.
-	 */
-	static {
-		this.MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN = PluginConfigHelper.createAtRuleInclude(
-			new RegExp(MediaRuleHelper.getRuleFullBreakpointPrefix('between'))
-		);
+		this.AT_RULES = PluginConfigHelper.atRuleParamsToRegExp([
+			/**
+			 * SCSS Media includes for specific devices:
+			 * @example @include media-desktop;
+			 */
+			...MediaRuleHelper.createDeviceConfigRules(MediaConfig.DEVICES),
+			/**
+			 * SCSS Media includes for minimum breakpoints:
+			 * @example @include media-min(md);
+			 */
+			...MediaRuleHelper.createBreakpointConfigRules('min', MediaConfig.BREAKPOINTS),
+			/**
+			 * SCSS Media includes for maximum breakpoints:
+			 * @example @include media-max(md);
+			 */
+			...MediaRuleHelper.createBreakpointConfigRules('max', MediaConfig.BREAKPOINTS),
+			/**
+			 * SCSS Media includes for specific breakpoints:
+			 * @example @include media-only(md);
+			 */
+			...MediaRuleHelper.createBreakpointConfigRules('only', MediaConfig.BREAKPOINTS),
+			/**
+			 * SCSS Media includes for range between breakpoints:
+			 * @example @include media-between(md, lg);
+			 */
+			...MediaRuleHelper.createBreakpointBetweenConfigRules(MediaConfig.BREAKPOINTS),
+		]);
 	}
 }
 
@@ -2052,28 +2118,7 @@ class PluginNoDuplicateAtRule extends PluginBase {
 const pluginNoDuplicateAtRuleProvider = () => {
 	return {
 		provide: PluginNoDuplicateAtRule,
-		options: [
-			/**
-			 * SCSS Media at-rules for minimum breakpoints:
-			 * @example @include media-min(md);
-			 */
-			PluginMediaConfig.MEDIA_MIN_PREFIX_REGEXP_MIXIN,
-			/**
-			 * SCSS Media at-rules for maximum breakpoints:
-			 * @example @include media-max(md);
-			 */
-			PluginMediaConfig.MEDIA_MAX_PREFIX_REGEXP_MIXIN,
-			/**
-			 * SCSS Media at-rules for specific breakpoints:
-			 * @example @include media-only(md);
-			 */
-			PluginMediaConfig.MEDIA_ONLY_PREFIX_REGEXP_MIXIN,
-			/**
-			 * SCSS Media at-rules for range between breakpoints:
-			 * @example @include media-between(md, lg);
-			 */
-			PluginMediaConfig.MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN,
-		],
+		options: PluginMediaConfig.AT_RULES,
 	};
 };
 
@@ -2109,7 +2154,7 @@ const pluginNoFirstLevelNestingProvider = () => {
 			 * SCSS Media at-rules for breakpoints:
 			 * @example @include media-min(md);
 			 */
-			PluginMediaConfig.MEDIA_PREFIX_REGEXP_MIXIN,
+			PluginMediaConfig.PREFIX_REGEXP_MIXIN,
 		],
 	};
 };
@@ -2161,7 +2206,7 @@ const pluginNoSelfNestingProvider = () => {
 			 * SCSS Media at-rules for breakpoints:
 			 * @example @include media-min(md);
 			 */
-			PluginMediaConfig.MEDIA_PREFIX_REGEXP_MIXIN,
+			PluginMediaConfig.PREFIX_REGEXP_MIXIN,
 		],
 	};
 };
@@ -2408,7 +2453,14 @@ let Configuration = class Configuration {
 			'declaration-block-no-redundant-longhand-properties': null,
 			/* Declaration property */
 			'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
-			'declaration-property-value-no-unknown': true,
+			'declaration-property-value-no-unknown': [
+				true,
+				{
+					ignoreProperties: {
+						'/^[a-zA-Z].*$/': /.*\$\w+.*/,
+					},
+				},
+			],
 			'plugin/declaration-block-no-ignored-properties': true,
 			/* Function */
 			'function-disallowed-list': ['rgb'],
@@ -2428,9 +2480,9 @@ let Configuration = class Configuration {
 			'selector-disallowed-list': [
 				'i',
 				'/^\\.container/',
-				'/^\\.g-col/',
-				'/^\\.col/',
-				'/^\\.grid/',
+				'/^\\.g-col-/',
+				'/^\\.col-/',
+				'/^\\.grid+$/',
 				'/\\[data-test.+]/',
 				'/\\[data-po.+]/',
 			],
@@ -2439,7 +2491,7 @@ let Configuration = class Configuration {
 			'selector-no-qualifying-type': true,
 			'selector-not-notation': 'simple',
 			'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['ng-deep'] }],
-			'selector-nested-pattern': '^(?:&:?[^&]+|[^&:]+)$',
+			'selector-nested-pattern': '^(?!::?[a-zA-Z0-9-]+)',
 			'declaration-property-value-disallowed-list': {
 				/** @see https://github.com/YozhikM/stylelint-a11y/blob/master/src/rules/no-display-none/README.md */
 				'display': ['/none/'],

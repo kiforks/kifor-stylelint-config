@@ -1,4 +1,4 @@
-import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
+import { PluginMediaConfig } from '../../../configs/plugin-media/plugin-media.config';
 
 import { stylelintMock } from '../../../../mocks/stylelint.mock';
 import { PluginNoDuplicateAtRule } from '../api/plugin-no-duplicate-at-rule';
@@ -10,24 +10,7 @@ describe('PluginNoDuplicateAtRule', () => {
 	it('should have the following value', () => {
 		const provider = {
 			provide: PluginNoDuplicateAtRule,
-			options: [
-				{
-					'name': 'include',
-					'params': /^media-min/,
-				},
-				{
-					'name': 'include',
-					'params': /^media-max/,
-				},
-				{
-					'name': 'include',
-					'params': /^media-only/,
-				},
-				{
-					'name': 'include',
-					'params': /^media-between/,
-				},
-			] as PluginConfigRuleType[],
+			options: PluginMediaConfig.AT_RULES,
 		};
 
 		expect(pluginNoDuplicateAtRuleProvider()).toEqual(provider);

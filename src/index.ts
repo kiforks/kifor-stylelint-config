@@ -60,7 +60,14 @@ class Configuration implements Config {
 
 		/* Declaration property */
 		'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
-		'declaration-property-value-no-unknown': true,
+		'declaration-property-value-no-unknown': [
+			true,
+			{
+				ignoreProperties: {
+					'/^[a-zA-Z].*$/': /.*\$\w+.*/,
+				},
+			},
+		],
 		'plugin/declaration-block-no-ignored-properties': true,
 
 		/* Function */
@@ -84,9 +91,9 @@ class Configuration implements Config {
 		'selector-disallowed-list': [
 			'i',
 			'/^\\.container/',
-			'/^\\.g-col/',
-			'/^\\.col/',
-			'/^\\.grid/',
+			'/^\\.g-col-/',
+			'/^\\.col-/',
+			'/^\\.grid+$/',
 			'/\\[data-test.+]/',
 			'/\\[data-po.+]/',
 		],
@@ -95,7 +102,7 @@ class Configuration implements Config {
 		'selector-no-qualifying-type': true,
 		'selector-not-notation': 'simple',
 		'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['ng-deep'] }],
-		'selector-nested-pattern': '^(?:&:?[^&]+|[^&:]+)$',
+		'selector-nested-pattern': '^(?!::?[a-zA-Z0-9-]+)',
 		'declaration-property-value-disallowed-list': {
 			/** @see https://github.com/YozhikM/stylelint-a11y/blob/master/src/rules/no-display-none/README.md */
 			'display': ['/none/'],

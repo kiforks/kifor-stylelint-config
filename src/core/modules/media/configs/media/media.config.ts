@@ -6,7 +6,7 @@ import { MediaBreakpoint } from '../../interfaces/media.interface';
  */
 export abstract class MediaConfig {
 	public static readonly BREAKPOINTS: readonly MediaBreakpoint[] = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
-	public static readonly DEVICES: readonly MediaRuleDevice[] = ['desktop', 'mobile'];
+	public static readonly DEVICES: readonly MediaRuleDevice[] = ['mobile', 'desktop'];
 
 	public static readonly NAME = 'media';
 

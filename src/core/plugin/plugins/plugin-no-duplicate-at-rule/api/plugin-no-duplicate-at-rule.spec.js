@@ -16,7 +16,7 @@ describe('PluginNoDuplicateAtRule', () => {
             background-color: red;
           }
           
-          @include media-max(md) {
+          @include media-max(sm) {
             background-color: red;
           }
 	      `,
@@ -26,7 +26,7 @@ describe('PluginNoDuplicateAtRule', () => {
 			const warning = getWarning(result, ruleName);
 
 			expect(warning.text).toBe(
-				`Unexpected duplicate at-rule "include /^media-max/" at the same nesting level (${ruleName})`
+				`Unexpected duplicate at-rule \"include ^media-max\\(sm[\\s\\S]*\\)\" at the same nesting level (${ruleName})`
 			);
 		});
 
@@ -38,7 +38,7 @@ describe('PluginNoDuplicateAtRule', () => {
 	            background-color: red;
 	          }
 	          
-	          @include media-min(lg) {
+	          @include media-min(sm) {
 	            background-color: red;
 	          }
           }
@@ -53,7 +53,7 @@ describe('PluginNoDuplicateAtRule', () => {
 			const warning = getWarning(result, ruleName);
 
 			expect(warning.text).toBe(
-				`Unexpected duplicate at-rule "include /^media-min/" at the same nesting level (${ruleName})`
+				`Unexpected duplicate at-rule \"include ^media-min\\(sm[\\s\\S]*\\)\" at the same nesting level (${ruleName})`
 			);
 		});
 	});

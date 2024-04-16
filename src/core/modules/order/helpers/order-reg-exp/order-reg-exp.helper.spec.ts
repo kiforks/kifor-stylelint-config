@@ -1,27 +1,13 @@
 import { OrderRegExpHelper } from './order-reg-exp.helper';
 
 describe('OrderRegExpHelper', () => {
-	describe('makeRegex', () => {
-		it('should create regex with wildcard for matching parenthesis', () => {
-			const regex = OrderRegExpHelper.makeRegex('color: (blue)');
-
-			expect(regex).toEqual(new RegExp(/color: \(blue[\s\S]*\)/));
-		});
-
-		it('should create regex with wildcard at the end if no matching parenthesis', () => {
-			const regex = OrderRegExpHelper.makeRegex('color: blue');
-
-			expect(regex).toEqual(new RegExp('color: blue[\\s\\S]*'));
-		});
-	});
-
-	describe('paramToRegex', () => {
+	describe('parametersToWildcardRegex', () => {
 		it('should transform rule parameters to regex source strings', () => {
 			const rules = [
 				{ type: 'at-rule', name: 'include', parameter: '^media-min(xs)' },
 				{ type: 'at-rule', name: 'media', parameter: '(width)' },
 			];
-			const transformed = OrderRegExpHelper.paramToRegex(rules);
+			const transformed = OrderRegExpHelper.parametersToWildcardRegex(rules);
 
 			expect(transformed).toEqual([
 				{
@@ -42,7 +28,7 @@ describe('OrderRegExpHelper', () => {
 				{ type: 'at-rule', name: 'include', parameter: 123 },
 				{ type: 'rule', name: 'color', parameter: 'blue' },
 			];
-			const transformed = OrderRegExpHelper.paramToRegex(rules);
+			const transformed = OrderRegExpHelper.parametersToWildcardRegex(rules);
 
 			expect(transformed).toEqual(rules);
 		});

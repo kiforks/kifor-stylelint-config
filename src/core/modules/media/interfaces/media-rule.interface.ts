@@ -1,3 +1,4 @@
+import { PluginConfigAtRule } from '../../../plugin/interfaces/plugin-config.interface';
 import { OrderAtRule } from '../../order/interfaces/order.interface';
 import { MediaBreakpoint } from './media.interface';
 
@@ -32,10 +33,21 @@ export type MediaRuleBreakpointBetweenParameter<
 > = `${MediaRuleFullBreakpointPrefix<MediaRuleBetweenPrefix>}(${FROM}, ${TO})`;
 
 // Types for rule orders based on devices and breakpoints.
-export type MediaAtRuleOrderDevice<D extends MediaRuleDevice> = OrderAtRule<MediaRuleFullDevicePrefix<D>>;
-export type MediaAtRuleOrderBreakpoint<P extends MediaRuleBreakpointPrefix, B extends MediaBreakpoint> = OrderAtRule<
+export type MediaOrderAtRuleDevice<D extends MediaRuleDevice> = OrderAtRule<MediaRuleFullDevicePrefix<D>>;
+export type MediaOrderAtRuleBreakpoint<P extends MediaRuleBreakpointPrefix, B extends MediaBreakpoint> = OrderAtRule<
 	MediaRuleBreakpointParameter<P, B>
 >;
-export type MediaAtRuleOrderBreakpointBetween<FROM extends MediaBreakpoint, TO extends MediaBreakpoint> = OrderAtRule<
+export type MediaOrderAtRuleBreakpointBetween<FROM extends MediaBreakpoint, TO extends MediaBreakpoint> = OrderAtRule<
 	MediaRuleBreakpointBetweenParameter<FROM, TO>
 >;
+
+// Types for rule plugin config based on devices and breakpoints.
+export type MediaConfigAtRuleDevice<D extends MediaRuleDevice> = PluginConfigAtRule<MediaRuleFullDevicePrefix<D>>;
+export type MediaConfigAtRuleBreakpoint<
+	P extends MediaRuleBreakpointPrefix,
+	B extends MediaBreakpoint,
+> = PluginConfigAtRule<MediaRuleBreakpointParameter<P, B>>;
+export type MediaConfigAtRuleBreakpointBetween<
+	FROM extends MediaBreakpoint,
+	TO extends MediaBreakpoint,
+> = PluginConfigAtRule<MediaRuleBreakpointBetweenParameter<FROM, TO>>;

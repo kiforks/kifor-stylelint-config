@@ -3,9 +3,10 @@
 <a name="1.0.0"></a>
 # 1.0.0
 
-1. [x] Fixed: media order config ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Fixed: a cycle in the rule `selector-combinator-nesting` ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Fixed: several settings for general rules ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
+1. [x] Added: final version of config ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Fixed: media order config ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Fixed: a cycle in the rule `selector-combinator-nesting` ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
+4. [x] Fixed: several settings for general rules ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
 
 <a name="0.5.1"></a>
 # 0.5.1

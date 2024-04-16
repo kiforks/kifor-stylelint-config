@@ -70,7 +70,7 @@ export class PluginMaxNestingDepth extends PluginBase {
 	}
 
 	private nestingDepth(node: Node, level: number, secondaryOptions: PluginMaxNestingDepthSecondaryOptions): number {
-		const parent = node.parent;
+		const { parent } = node;
 
 		if (!parent) {
 			return 0;
@@ -171,6 +171,7 @@ export class PluginMaxNestingDepth extends PluginBase {
 			const ignorePseudoClasses = secondaryOptions?.ignorePseudoClasses;
 
 			if (ignoresRules) return true;
+
 			if (!ignorePseudoClasses) return false;
 
 			const pseudoRule = this.extractPseudoRule(selector);

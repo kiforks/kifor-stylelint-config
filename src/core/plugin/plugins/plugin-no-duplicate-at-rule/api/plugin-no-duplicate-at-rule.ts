@@ -34,7 +34,7 @@ export class PluginNoDuplicateAtRule extends PluginBase {
 		if (PluginHelper.isInvalidSyntaxBlock(rule)) return;
 
 		const validationRule = PluginConfigHelper.getValidationAtRule(rule, options);
-		const parent = rule.parent;
+		const { parent } = rule;
 
 		if (!validationRule || !parent) return;
 

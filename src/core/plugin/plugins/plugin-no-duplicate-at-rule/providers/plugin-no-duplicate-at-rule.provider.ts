@@ -4,9 +4,7 @@ import { PluginProvider } from '../../../interfaces/plugin.interface';
 
 import { PluginNoDuplicateAtRule } from '../api/plugin-no-duplicate-at-rule';
 
-export const pluginNoDuplicateAtRuleProvider = (): PluginProvider => {
-	return {
-		provide: PluginNoDuplicateAtRule,
-		options: PluginMediaConfig.AT_RULES,
-	};
-};
+export const pluginNoDuplicateAtRuleProvider = (): PluginProvider => ({
+	provide: PluginNoDuplicateAtRule,
+	options: PluginMediaConfig.AT_RULES,
+});

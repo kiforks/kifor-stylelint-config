@@ -143,8 +143,8 @@ export abstract class PluginHelper {
 	 * as regular expressions.
 	 */
 	public static matchesStringOrRegExp(
-		input: string | string[],
-		comparison: string | RegExp | Array<string | RegExp>
+		input: string[] | string,
+		comparison: Array<RegExp | string> | RegExp | string
 	): PluginRegExpStringMatchedData {
 		if (!Array.isArray(input)) {
 			return PluginHelper.testAgainstStringOrRegExpOrArray(input, comparison);
@@ -244,9 +244,11 @@ export abstract class PluginHelper {
 		const obj = o as object;
 
 		const ctor = obj.constructor;
+
 		if (ctor === undefined) return true;
 
 		const prot = ctor.prototype;
+
 		if (!PluginHelper.isObject(prot)) return false;
 
 		return Object.prototype.hasOwnProperty.call(prot, 'isPrototypeOf');
@@ -254,8 +256,8 @@ export abstract class PluginHelper {
 
 	private static testAgainstStringOrRegExpOrArray(
 		value: string,
-		comparison: string | RegExp | Array<string | RegExp>
-	): false | { match: string; pattern: string | RegExp; substring: string } {
+		comparison: Array<RegExp | string> | RegExp | string
+	): false | { match: string; pattern: RegExp | string; substring: string } {
 		if (!Array.isArray(comparison)) {
 			return PluginHelper.testAgainstStringOrRegExp(value, comparison);
 		}
@@ -273,14 +275,14 @@ export abstract class PluginHelper {
 
 	private static testAgainstStringOrRegExp(
 		value: string,
-		comparison: string | RegExp
-	): false | { match: string; pattern: string | RegExp; substring: string } {
+		comparison: RegExp | string
+	): false | { match: string; pattern: RegExp | string; substring: string } {
 		if (comparison instanceof RegExp) {
 			const match = value.match(comparison);
 			return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
 		}
 
-		const firstComparisonChar = comparison[0];
+		const [firstComparisonChar] = comparison;
 		const lastComparisonChar = comparison[comparison.length - 1];
 		const secondToLastComparisonChar = comparison[comparison.length - 2];
 

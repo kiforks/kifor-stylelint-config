@@ -19,6 +19,7 @@ class Configuration implements Config {
 		/** @see https://github.com/stylelint-scss/stylelint-config-standard-scss */
 		'stylelint-config-standard',
 	];
+
 	public customSyntax = 'postcss-scss';
 	public ignoreFiles = ['**/*.css'];
 	public plugins = [
@@ -38,17 +39,11 @@ class Configuration implements Config {
 		/** @see https://github.com/AndyOGo/stylelint-declaration-strict-value */
 		'stylelint-declaration-strict-value',
 	];
+
 	public rules = {
 		/* At-rule */
-		'at-rule-no-unknown': [
-			true,
-			{
-				'ignoreAtRules': RULE_NO_UNKNOWN,
-			},
-		],
-		'at-rule-property-required-list': {
-			'font-face': ['font-display', 'font-family', 'font-style'],
-		},
+		'at-rule-no-unknown': [true, { 'ignoreAtRules': RULE_NO_UNKNOWN }],
+		'at-rule-property-required-list': { 'font-face': ['font-display', 'font-family', 'font-style'] },
 
 		/* Color */
 		'color-function-notation': ['legacy', { 'ignore': ['with-var-inside'] }],
@@ -60,14 +55,7 @@ class Configuration implements Config {
 
 		/* Declaration property */
 		'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
-		'declaration-property-value-no-unknown': [
-			true,
-			{
-				ignoreProperties: {
-					'/^[a-zA-Z].*$/': /.*\$\w+.*/,
-				},
-			},
-		],
+		'declaration-property-value-no-unknown': [true, { ignoreProperties: { '/^[a-zA-Z].*$/': /.*\$\w+.*/ } }],
 		'plugin/declaration-block-no-ignored-properties': true,
 
 		/* Function */
@@ -120,11 +108,7 @@ class Configuration implements Config {
 
 		/* Plugin */
 		'order/order': ORDER_CONTENT,
-		'order/properties-order': [
-			{
-				properties: ORDER_PROPERTIES,
-			},
-		],
+		'order/properties-order': [{ properties: ORDER_PROPERTIES }],
 
 		/** Empty lines */
 		'rule-empty-line-before': [
@@ -226,9 +210,7 @@ class Configuration implements Config {
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-function-pattern/README.md */
 		'scss/at-function-pattern': [
 			'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-			{
-				message: 'Expected function name to be kebab-case',
-			},
+			{ message: 'Expected function name to be kebab-case' },
 		],
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-if-closing-brace-newline-after/README.md */
@@ -244,12 +226,7 @@ class Configuration implements Config {
 		'scss/at-mixin-parentheses-space-before': 'never',
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-mixin-pattern/README.md */
-		'scss/at-mixin-pattern': [
-			'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-			{
-				message: 'Expected mixin name to be kebab-case',
-			},
-		],
+		'scss/at-mixin-pattern': ['^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$', { message: 'Expected mixin name to be kebab-case' }],
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-rule-conditional-no-parentheses/README.md */
 		'scss/at-rule-conditional-no-parentheses': true,
@@ -275,9 +252,7 @@ class Configuration implements Config {
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/dollar-variable-pattern/README.md */
 		'scss/dollar-variable-pattern': [
 			'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-			{
-				message: 'Expected variable to be kebab-case',
-			},
+			{ message: 'Expected variable to be kebab-case' },
 		],
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/double-slash-comment-empty-line-before/README.md */
@@ -295,9 +270,7 @@ class Configuration implements Config {
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/percent-placeholder-pattern/README.md */
 		'scss/percent-placeholder-pattern': [
 			'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-			{
-				message: 'Expected placeholder to be kebab-case',
-			},
+			{ message: 'Expected placeholder to be kebab-case' },
 		],
 
 		/* Other */

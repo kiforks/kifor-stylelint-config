@@ -7,18 +7,16 @@ import { PluginProvider } from '../../../interfaces/plugin.interface';
 
 import { PluginNoFirstLevelNesting } from '../api/plugin-no-first-level-nesting';
 
-export const pluginNoFirstLevelNestingProvider = (): PluginProvider => {
-	return {
-		provide: PluginNoFirstLevelNesting,
-		options: [
-			PluginConfigHelper.createRule(/^(?![a-zA-Z.#])(?!(?::host|:root)).*$/),
-			PluginConfigHelper.createAtRule(/^media/),
+export const pluginNoFirstLevelNestingProvider = (): PluginProvider => ({
+	provide: PluginNoFirstLevelNesting,
+	options: [
+		PluginConfigHelper.createRule(/^(?![a-zA-Z.#])(?!(?::host|:root)).*$/),
+		PluginConfigHelper.createAtRule(/^media/),
 
-			/**
-			 * SCSS Media at-rules for breakpoints:
-			 * @example @include media-min(md);
-			 */
-			PluginMediaConfig.PREFIX_REGEXP_MIXIN,
-		] as PluginConfigRuleType[],
-	};
-};
+		/**
+		 * SCSS Media at-rules for breakpoints:
+		 * @example @include media-min(md);
+		 */
+		PluginMediaConfig.PREFIX_REGEXP_MIXIN,
+	] as PluginConfigRuleType[],
+});

@@ -45,9 +45,10 @@ import { PluginConstructor, PluginDecoratorConfig, PluginPlugins, PluginRules } 
  *   }
  * }
  */
-export const Plugin = (config: PluginDecoratorConfig): (<T extends PluginConstructor>(constructor: T) => T) => {
-	return <T extends PluginConstructor>(constructor: T): T => {
-		return class extends constructor {
+export const Plugin =
+	(config: PluginDecoratorConfig): (<T extends PluginConstructor>(constructor: T) => T) =>
+	<T extends PluginConstructor>(constructor: T): T =>
+		class extends constructor {
 			constructor(...args: any[]) {
 				super(...args);
 
@@ -67,5 +68,3 @@ export const Plugin = (config: PluginDecoratorConfig): (<T extends PluginConstru
 				);
 			}
 		};
-	};
-};

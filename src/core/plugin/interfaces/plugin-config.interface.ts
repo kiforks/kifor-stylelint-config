@@ -1,8 +1,8 @@
 import { Rule } from 'stylelint';
 
 export type PluginConfigExecutionMode = 'always' | 'never';
-export type PluginConfigData = Pick<Rule, 'primaryOptionArray' | 'messages' | 'meta' | 'ruleName'>;
-export type PluginConfigRuleType<P extends TextPattern = TextPattern> = PluginConfigRule | PluginConfigAtRule<P>;
+export type PluginConfigData = Pick<Rule, 'messages' | 'meta' | 'primaryOptionArray' | 'ruleName'>;
+export type PluginConfigRuleType<P extends TextPattern = TextPattern> = PluginConfigAtRule<P> | PluginConfigRule;
 export type PluginConfigValidationRule = PluginConfigValidationData<PluginConfigRule>;
 export type PluginConfigValidationAtRule = PluginConfigValidationData<PluginConfigAtRule>;
 

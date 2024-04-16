@@ -5,21 +5,21 @@ import stylelint, { Config, PostcssResult, Problem, RuleContext, RuleOptions } f
 
 import { PluginBase } from '../plugins/plugin-base/api/plugin-base';
 
-export type PluginRuleType = Rule | AtRule;
+export type PluginRuleType = AtRule | Rule;
 export type PluginRules = Config['rules'];
-export type PluginPlugins = Array<string | stylelint.Plugin>;
+export type PluginPlugins = Array<stylelint.Plugin | string>;
 export type PluginProvide = new () => PluginBase;
 export type PluginConstructor = new (...args: any[]) => Config;
-export type PluginRegExp = string | RegExp;
+export type PluginRegExp = RegExp | string;
 export type PluginRegExpArray = PluginRegExp[];
 export type PluginRuleBaseFn = (root: PostCSS.Root, result: PostcssResult) => Promise<void> | void;
 export type PluginCheckStatementFn = (rule: PluginRuleType) => false | void;
 export type PluginOptions<O = unknown> = O;
 export type PluginSecondaryOptions<S = unknown> = Record<string, S>;
 export type PluginRuleOptions = RuleOptions;
-export type PluginProblem = Omit<Problem, 'ruleName' | 'result' | 'message'>;
-export type PluginRegExpStringMatchedElement = { match: string; pattern: string | RegExp; substring: string };
-export type PluginRegExpStringMatchedData = false | PluginRegExpStringMatchedElement;
+export type PluginProblem = Omit<Problem, 'message' | 'result' | 'ruleName'>;
+export type PluginRegExpStringMatchedElement = { match: string; pattern: RegExp | string; substring: string };
+export type PluginRegExpStringMatchedData = PluginRegExpStringMatchedElement | false;
 
 export type PluginCheckFn = <O = unknown, S = unknown>(
 	result: PostcssResult,
@@ -36,7 +36,7 @@ export interface PluginData<O = unknown, S = unknown> {
 }
 
 export interface PluginCheckData<O = unknown, S = unknown, R extends PluginRuleType = PluginRuleType>
-	extends Pick<PluginData<O, S>, 'result' | 'options' | 'secondaryOptions' | 'context'> {
+	extends Pick<PluginData<O, S>, 'context' | 'options' | 'result' | 'secondaryOptions'> {
 	rule: R;
 }
 

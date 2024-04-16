@@ -49,9 +49,7 @@ export class PluginSelectorCombinatorNesting extends PluginBase {
 			selector.walk(node =>
 				node.value !== '}' && this.isAlwaysMode ? this.checkAlwaysMode(node, rule) : this.checkNeverMode(rule)
 			)
-		).processSync(rule.selector, {
-			lossless: false,
-		});
+		).processSync(rule.selector, { lossless: false });
 	}
 
 	private checkAlwaysMode(node: selectorParser.Node, rule: Rule): void {
@@ -112,6 +110,7 @@ export class PluginSelectorCombinatorNesting extends PluginBase {
 
 	private precedesParentSelector(currentNode: Nullable<selectorParser.Node>): boolean {
 		do {
+			// eslint-disable-next-line no-param-reassign
 			currentNode = currentNode?.next();
 
 			if (currentNode?.type === 'nesting') {

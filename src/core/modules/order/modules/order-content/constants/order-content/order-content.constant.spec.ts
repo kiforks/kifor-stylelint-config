@@ -797,12 +797,12 @@ describe('ORDER_CONTENT', () => {
 			},
 			{
 				'name': 'include',
-				'parameter': '^media-desktop[\\s\\S]*',
+				'parameter': '^media-mobile[\\s\\S]*',
 				'type': 'at-rule',
 			},
 			{
 				'name': 'include',
-				'parameter': '^media-mobile[\\s\\S]*',
+				'parameter': '^media-desktop[\\s\\S]*',
 				'type': 'at-rule',
 			},
 			{

@@ -1,5 +1,6 @@
 import { AtRule, Rule } from 'postcss';
 
+import { PluginRegExpHelper } from '../plugin-reg-exp/plugin-reg-exp.helper';
 import { PluginHelper } from '../plugin/plugin.helper';
 
 import {
@@ -50,7 +51,7 @@ export abstract class PluginConfigHelper {
 	 * @example
 	 * PluginConfigHelper.isRule({ selector: '.example' }); // returns true
 	 */
-	public static isRule(obj: unknown): obj is PluginConfigRule {
+	public static isRule(obj: unknown): obj is Readonly<PluginConfigRule> {
 		return typeof obj === 'object' && obj !== null && 'selector' in obj;
 	}
 
@@ -62,7 +63,7 @@ export abstract class PluginConfigHelper {
 	 * @example
 	 * PluginConfigHelper.isAtRule({ name: 'media', params: '(min-width: 500px)' }); // returns true
 	 */
-	public static isAtRule(obj: unknown): obj is PluginConfigAtRule {
+	public static isAtRule(obj: unknown): obj is Readonly<PluginConfigAtRule> {
 		return typeof obj === 'object' && obj !== null && 'name' in obj;
 	}
 
@@ -125,6 +126,34 @@ export abstract class PluginConfigHelper {
 	}
 
 	/**
+	 * Checks if the provided data is an array of PluginConfigRule objects.
+	 * Utilizes Array.isArray to determine if the data is array-like.
+	 *
+	 * @param data - The data to check.
+	 * @returns true if the data is an array of PluginConfigRule, false otherwise.
+	 * @example
+	 * const ruleData = [{ selector: 'button' }, { selector: 'input' }];
+	 * PluginConfigHelper.isPluginConfigRules(ruleData); // returns true
+	 */
+	public static isPluginConfigRules(data: Readonly<unknown>): data is readonly PluginConfigRule[] {
+		return Array.isArray(data);
+	}
+
+	/**
+	 * Checks if the provided data is an array of PluginConfigAtRule objects.
+	 * Utilizes Array.isArray to determine if the data is array-like.
+	 *
+	 * @param data - The data to check.
+	 * @returns true if the data is an array of PluginConfigAtRule, false otherwise.
+	 * @example
+	 * const atRuleData = [{ name: 'media', params: 'print' }, { name: 'supports', params: 'display-grid' }];
+	 * PluginConfigHelper.isPluginConfigAtRules(atRuleData); // returns true
+	 */
+	public static isPluginConfigAtRules(data: Readonly<unknown>): data is readonly PluginConfigAtRule[] {
+		return Array.isArray(data);
+	}
+
+	/**
 	 * Creates an AtRule include object with specified parameters.
 	 *
 	 * @param params - The parameters for the AtRule.
@@ -132,7 +161,7 @@ export abstract class PluginConfigHelper {
 	 * @example
 	 * PluginConfigHelper.createAtRuleInclude('^media-'); // returns { name: 'include', params: '^media-' }
 	 */
-	public static createAtRuleInclude(params?: TextPattern): PluginConfigAtRule {
+	public static createAtRuleInclude<P extends TextPattern = TextPattern>(params?: P): Readonly<PluginConfigAtRule<P>> {
 		return params
 			? {
 					name: 'include',
@@ -164,7 +193,10 @@ export abstract class PluginConfigHelper {
 	 * @example
 	 * PluginConfigHelper.createAtRule('media', '(min-width: 500px)'); // returns { name: 'media', params: '(min-width: 500px)' }
 	 */
-	public static createAtRule(name: TextPattern, params?: TextPattern): PluginConfigAtRule {
+	public static createAtRule<P extends TextPattern = TextPattern>(
+		name: TextPattern,
+		params?: P
+	): PluginConfigAtRule<P> {
 		return params
 			? {
 					name,
@@ -181,8 +213,8 @@ export abstract class PluginConfigHelper {
 	 * @example
 	 * PluginConfigHelper.createRules(['.example', '#id']); // returns [{ selector: '.example' }, { selector: '#id' }]
 	 */
-	public static createRules(selector: TextPattern[]): PluginConfigRule[] {
-		return selector.map(selector => PluginConfigHelper.createRule(selector));
+	public static createRules(selectors: TextPattern[]): readonly PluginConfigRule[] {
+		return selectors.map(selector => PluginConfigHelper.createRule(selector));
 	}
 
 	/**
@@ -194,7 +226,10 @@ export abstract class PluginConfigHelper {
 	 * @example PluginConfigHelper.createAtRulesFromParams('media', ['(min-width: 500px)', '(max-width: 1000px)']);
 	 * // returns [{ name: 'media', params: '(min-width: 500px)' }, { name: 'media', params: '(max-width: 1000px)' }]
 	 */
-	public static createAtRulesFromParams(name: TextPattern, params: TextPattern[]): PluginConfigAtRule[] {
+	public static createAtRulesFromParams<P extends TextPattern = TextPattern>(
+		name: TextPattern,
+		params: readonly P[]
+	): ReadonlyArray<PluginConfigAtRule<P>> {
 		return params.map(param => PluginConfigHelper.createAtRule(name, param));
 	}
 
@@ -206,8 +241,40 @@ export abstract class PluginConfigHelper {
 	 * @example
 	 * PluginConfigHelper.createAtRuleIncludes(['^media-', '^print-']); // returns [{ name: 'include', params: '^media-' }, { name: 'include', params: '^print-' }]
 	 */
-	public static createAtRuleIncludes(params: TextPattern[]): PluginConfigAtRule[] {
+	public static createAtRuleIncludes<P extends TextPattern = TextPattern>(
+		params: readonly P[]
+	): ReadonlyArray<PluginConfigAtRule<P>> {
 		return PluginConfigHelper.createAtRulesFromParams('include', params);
+	}
+
+	/**
+	 * Transforms the 'parameter' field of each rule in the array into a RegExp source string for flexible matching.
+	 * @atRules rules - An array of objects, potentially containing 'parameter' fields.
+	 * @returns The same array of objects with 'parameter' fields converted to RegExp source strings.
+	 * @example For paramToRegex([
+	 *   { type: 'at-rule', name: 'include', parameter: '^media-min(xs)' },
+	 *   { type: 'at-rule', name: 'media', parameter: '(width)' }
+	 * ]),
+	 * output is [
+	 *   { name: 'include', params: ^media-min\(xs[\s\S]*\) },
+	 *   { name: 'media', params: \(width[\s\S]*\) }
+	 * ].
+	 */
+	public static atRuleParamsToRegExp<P extends TextPattern = TextPattern>(
+		atRules: ReadonlyArray<PluginConfigAtRule<P>>
+	): ReadonlyArray<PluginConfigAtRule<P>> {
+		return atRules.map(rule => {
+			const isAtRule = PluginConfigHelper.isAtRule(rule);
+
+			return (
+				isAtRule && typeof rule.params === 'string'
+					? {
+							...rule,
+							params: PluginRegExpHelper.createWildcardRegex(rule.params).source,
+						}
+					: rule
+			) as Readonly<PluginConfigAtRule<P>>;
+		});
 	}
 
 	/**
@@ -222,12 +289,12 @@ export abstract class PluginConfigHelper {
 	 */
 	public static getValidationData(
 		rule: PluginRuleType,
-		configData: PluginConfigRuleType[] | PluginConfigRuleType
-	): Nullable<PluginConfigValidationData> {
+		configData: readonly PluginConfigRuleType[] | Readonly<PluginConfigRuleType>
+	): Nullable<Readonly<PluginConfigValidationData>> {
 		if (PluginHelper.isRule(rule)) {
 			const ruleConfigData = Array.isArray(configData)
 				? PluginConfigHelper.getRuleOptions(configData)
-				: (configData as PluginConfigRule);
+				: (configData as Readonly<PluginConfigRule>);
 
 			return PluginConfigHelper.getValidationRule(rule, ruleConfigData);
 		}
@@ -251,10 +318,10 @@ export abstract class PluginConfigHelper {
 	 */
 	public static getValidationRule(
 		rule: Rule,
-		configData: PluginConfigRule[] | PluginConfigRule
-	): Nullable<PluginConfigValidationRule> {
+		configData: readonly PluginConfigRule[] | Readonly<PluginConfigRule>
+	): Nullable<Readonly<PluginConfigValidationRule>> {
 		const { selector } = rule;
-		const validationRule = Array.isArray(configData)
+		const validationRule = PluginConfigHelper.isPluginConfigRules(configData)
 			? configData.find(option => PluginHelper.matchesStringOrRegExp(selector, option.selector))
 			: PluginHelper.matchesStringOrRegExp(selector, configData.selector) && configData;
 
@@ -279,9 +346,9 @@ export abstract class PluginConfigHelper {
 	 */
 	public static getValidationAtRule(
 		rule: AtRule,
-		configData: PluginConfigAtRule[] | PluginConfigAtRule
-	): Nullable<PluginConfigValidationAtRule> {
-		const validationRule = Array.isArray(configData)
+		configData: readonly PluginConfigAtRule[] | Readonly<PluginConfigAtRule>
+	): Nullable<Readonly<PluginConfigValidationAtRule>> {
+		const validationRule = PluginConfigHelper.isPluginConfigAtRules(configData)
 			? configData.find(option => PluginConfigHelper.isValidationAtRule(rule, option))
 			: PluginConfigHelper.isValidationAtRule(rule, configData) && configData;
 
@@ -308,7 +375,7 @@ export abstract class PluginConfigHelper {
 	 * PluginConfigHelper.getRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
 	 * // returns [{ selector: '.example' }]
 	 */
-	public static getRuleOptions(options: PluginConfigRuleType[]): PluginConfigRule[] {
+	public static getRuleOptions(options: readonly PluginConfigRuleType[]): readonly PluginConfigRule[] {
 		return options.filter(option => PluginConfigHelper.isRule(option)) as PluginConfigRule[];
 	}
 
@@ -321,8 +388,12 @@ export abstract class PluginConfigHelper {
 	 * PluginConfigHelper.getAtRuleOptions([{ selector: '.example' }, { name: 'media', params: '(max-width: 600px)' }]);
 	 * // returns [{ name: 'media', params: '(max-width: 600px)' }]
 	 */
-	public static getAtRuleOptions(options: PluginConfigRuleType[]): PluginConfigAtRule[] {
-		return options.filter(option => PluginConfigHelper.isAtRule(option)) as PluginConfigAtRule[];
+	public static getAtRuleOptions<P extends TextPattern = TextPattern>(
+		options: ReadonlyArray<PluginConfigRuleType<P>>
+	): ReadonlyArray<PluginConfigAtRule<P>> {
+		return options.filter((option: Readonly<PluginConfigRuleType>) =>
+			PluginConfigHelper.isAtRule(option)
+		) as ReadonlyArray<PluginConfigAtRule<P>>;
 	}
 
 	/**
@@ -347,7 +418,7 @@ export abstract class PluginConfigHelper {
 	public static isValidationAtRule({ name, params }: AtRule, option: PluginConfigAtRule): boolean {
 		const hasParams = !!params && !!option.params;
 		const isMatchedName = !!PluginHelper.matchesStringOrRegExp(name, option.name);
-		const isMatchedParams = hasParams && !!PluginHelper.matchesStringOrRegExp(params, option.params!);
+		const isMatchedParams = hasParams && !!PluginHelper.matchesStringOrRegExp(params, new RegExp(option.params!));
 
 		return hasParams ? isMatchedName && isMatchedParams : isMatchedName;
 	}

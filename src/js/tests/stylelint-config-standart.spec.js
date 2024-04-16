@@ -772,7 +772,7 @@ describe('stylelint-config-standart', () => {
 				const nestedPatternWarning = warnings.find(warning => warning.rule === 'selector-nested-pattern');
 
 				expect(nestedPatternWarning.text).toContain(
-					'Expected ":hover" to match pattern "^(?:&:?[^&]+|[^&:]+)$" (selector-nested-pattern)'
+					'Expected ":hover" to match pattern "^(?!::?[a-zA-Z0-9-]+)" (selector-nested-pattern)'
 				);
 			});
 
@@ -792,7 +792,7 @@ describe('stylelint-config-standart', () => {
 				const nestedPatternWarning = warnings.find(warning => warning.rule === 'selector-nested-pattern');
 
 				expect(nestedPatternWarning.text).toContain(
-					'Expected "::before" to match pattern "^(?:&:?[^&]+|[^&:]+)$" (selector-nested-pattern)'
+					'Expected "::before" to match pattern "^(?!::?[a-zA-Z0-9-]+)" (selector-nested-pattern)'
 				);
 			});
 

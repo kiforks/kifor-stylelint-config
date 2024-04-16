@@ -6,7 +6,7 @@ describe('MediaConfig', () => {
 	});
 
 	it('should have the correct devices', () => {
-		expect(MediaConfig.DEVICES).toEqual(['desktop', 'mobile']);
+		expect(MediaConfig.DEVICES).toEqual(['mobile', 'desktop']);
 	});
 
 	it('should have the correct prefix', () => {

@@ -1,31 +1,7 @@
+import { PluginRegExpHelper } from '../../../../plugin/helpers/plugin-reg-exp/plugin-reg-exp.helper';
 import { OrderHelper } from '../order/order.helper';
 
 export abstract class OrderRegExpHelper {
-	/**
-	 * Creates a RegExp based on the provided string, inserting a wildcard pattern for flexible matching.
-	 * @param parameter - The string to be converted into a RegExp.
-	 * @returns A RegExp object based on the input string, enhanced with wildcard patterns.
-	 * @example For makeRegex('color: (blue)'), returns a RegExp matching /color: \(blue[\s\S]*\)/.
-	 */
-	public static makeRegex(parameter: string): RegExp {
-		// Search for the last opening parenthesis
-		const lastOpeningIndex = parameter.lastIndexOf('(');
-		// Find the corresponding closing parenthesis
-		const closingIndex = parameter.indexOf(')', lastOpeningIndex);
-		// Validate existence of both parenthesis
-		const hasValidParenthesis = lastOpeningIndex !== -1 && closingIndex !== -1;
-
-		// Insert [\s\S]* before the closing parenthesis
-		const modifiedParameter = hasValidParenthesis
-			? `${parameter.substring(0, closingIndex)}[\\s\\S]*${parameter.substring(closingIndex)}`
-			: `${parameter}[\\s\\S]*`;
-
-		// Escape special characters
-		const escapedParameter = modifiedParameter.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
-
-		return new RegExp(escapedParameter);
-	}
-
 	/**
 	 * Transforms the 'parameter' field of each rule in the array into a RegExp source string for flexible matching.
 	 * @param rules - An array of objects, potentially containing 'parameter' fields.
@@ -39,14 +15,14 @@ export abstract class OrderRegExpHelper {
 	 *   { type: 'at-rule', name: 'media', parameter: \(width[\s\S]*\) }
 	 * ].
 	 */
-	public static paramToRegex<T>(rules: T[]): T[] {
+	public static parametersToWildcardRegex<T>(rules: T[]): T[] {
 		return rules.map(rule => {
 			const isAtRule = OrderHelper.isAtRule(rule) && rule.type === 'at-rule';
 
 			return isAtRule && typeof rule.parameter === 'string'
 				? {
 						...rule,
-						parameter: OrderRegExpHelper.makeRegex(rule.parameter).source,
+						parameter: PluginRegExpHelper.createWildcardRegex(rule.parameter).source,
 					}
 				: rule;
 		});

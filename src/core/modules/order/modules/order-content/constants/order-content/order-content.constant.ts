@@ -131,27 +131,27 @@ export const ORDER_CONFIG = [
 	 * SCSS Media includes for specific devices:
 	 * @example @include media-desktop;
 	 */
-	...MediaRuleHelper.createDeviceRulesOrder(MediaConfig.DEVICES),
+	...MediaRuleHelper.createDeviceOrderRules(MediaConfig.DEVICES),
 	/**
 	 * SCSS Media includes for minimum breakpoints:
 	 * @example @include media-min(md);
 	 */
-	...MediaRuleHelper.createBreakpointRulesOrder('min', MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointOrderRules('min', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for maximum breakpoints:
 	 * @example @include media-max(md);
 	 */
-	...MediaRuleHelper.createBreakpointRulesOrder('max', MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointOrderRules('max', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for specific breakpoints:
 	 * @example @include media-only(md);
 	 */
-	...MediaRuleHelper.createBreakpointRulesOrder('only', MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointOrderRules('only', MediaConfig.BREAKPOINTS),
 	/**
 	 * SCSS Media includes for range between breakpoints:
 	 * @example @include media-between(md, lg);
 	 */
-	...MediaRuleHelper.createBreakpointBetweenRulesOrder(MediaConfig.BREAKPOINTS),
+	...MediaRuleHelper.createBreakpointBetweenOrderRules(MediaConfig.BREAKPOINTS),
 	/**
 	 * Media queries:
 	 * @example @media (min-width: 768px) {}
@@ -174,4 +174,4 @@ export const ORDER_CONFIG = [
 	OrderHelper.createAtRule('supports'),
 ];
 
-export const ORDER_CONTENT = OrderRegExpHelper.paramToRegex(ORDER_CONFIG);
+export const ORDER_CONTENT = OrderRegExpHelper.parametersToWildcardRegex(ORDER_CONFIG);

@@ -1,9 +1,15 @@
+import { MediaConfig } from '../../../modules/media/configs/media/media.config';
 import { PluginMediaConfig } from './plugin-media.config';
+
+import { MediaRuleHelper } from '../../../modules/media/helpers/media-rule-helper/media-rule.helper';
+import { PluginConfigHelper } from '../../helpers/plugin-config/plugin-config.helper';
+
+import { PluginConfigAtRule } from '../../interfaces/plugin-config.interface';
 
 describe('PluginMediaConfig', () => {
 	describe('MEDIA_PREFIX_MIXIN', () => {
 		it('should define the correct MEDIA_PREFIX_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_PREFIX_MIXIN).toEqual({
+			expect(PluginMediaConfig.PREFIX_MIXIN).toEqual({
 				name: 'include',
 				params: '^media-',
 			});
@@ -12,82 +18,44 @@ describe('PluginMediaConfig', () => {
 
 	describe('MEDIA_PREFIX_REGEXP_MIXIN', () => {
 		it('should define the correct MEDIA_PREFIX_REGEXP_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_PREFIX_REGEXP_MIXIN).toEqual({
+			expect(PluginMediaConfig.PREFIX_REGEXP_MIXIN).toEqual({
 				name: 'include',
 				params: /^media-/,
 			});
 		});
 	});
 
-	describe('MEDIA_MIN_PREFIX_MIXIN', () => {
-		it('should define the correct MEDIA_MIN_PREFIX_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_MIN_PREFIX_MIXIN).toEqual({
-				name: 'include',
-				params: '^media-min',
-			});
-		});
-	});
+	describe('AT_RULES', () => {
+		it('should define the correct AT_RULES', () => {
+			const data: readonly PluginConfigAtRule[] = PluginConfigHelper.atRuleParamsToRegExp([
+				/**
+				 * SCSS Media includes for specific devices:
+				 * @example @include media-desktop;
+				 */
+				...MediaRuleHelper.createDeviceConfigRules(MediaConfig.DEVICES),
+				/**
+				 * SCSS Media includes for minimum breakpoints:
+				 * @example @include media-min(md);
+				 */
+				...MediaRuleHelper.createBreakpointConfigRules('min', MediaConfig.BREAKPOINTS),
+				/**
+				 * SCSS Media includes for maximum breakpoints:
+				 * @example @include media-max(md);
+				 */
+				...MediaRuleHelper.createBreakpointConfigRules('max', MediaConfig.BREAKPOINTS),
+				/**
+				 * SCSS Media includes for specific breakpoints:
+				 * @example @include media-only(md);
+				 */
+				...MediaRuleHelper.createBreakpointConfigRules('only', MediaConfig.BREAKPOINTS),
+				/**
+				 * SCSS Media includes for range between breakpoints:
+				 * @example @include media-between(md, lg);
+				 */
+				...MediaRuleHelper.createBreakpointBetweenConfigRules(MediaConfig.BREAKPOINTS),
+			]);
 
-	describe('MEDIA_MAX_PREFIX_MIXIN', () => {
-		it('should define the correct MEDIA_MAX_PREFIX_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_MAX_PREFIX_MIXIN).toEqual({
-				name: 'include',
-				params: '^media-max',
-			});
-		});
-	});
-
-	describe('MEDIA_ONLY_PREFIX_MIXIN', () => {
-		it('should define the correct MEDIA_ONLY_PREFIX_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_ONLY_PREFIX_MIXIN).toEqual({
-				name: 'include',
-				params: '^media-only',
-			});
-		});
-	});
-
-	describe('MEDIA_BETWEEN_PREFIX_MIXIN', () => {
-		it('should define the correct MEDIA_BETWEEN_PREFIX_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_BETWEEN_PREFIX_MIXIN).toEqual({
-				name: 'include',
-				params: '^media-between',
-			});
-		});
-	});
-
-	describe('MEDIA_MIN_PREFIX_REGEXP_MIXIN', () => {
-		it('should define the correct MEDIA_MIN_PREFIX_REGEXP_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_MIN_PREFIX_REGEXP_MIXIN).toEqual({
-				name: 'include',
-				params: /^media-min/,
-			});
-		});
-	});
-
-	describe('MEDIA_MAX_PREFIX_REGEXP_MIXIN', () => {
-		it('should define the correct MEDIA_MAX_PREFIX_REGEXP_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_MAX_PREFIX_REGEXP_MIXIN).toEqual({
-				name: 'include',
-				params: /^media-max/,
-			});
-		});
-	});
-
-	describe('MEDIA_ONLY_PREFIX_REGEXP_MIXIN', () => {
-		it('should define the correct MEDIA_ONLY_PREFIX_REGEXP_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_ONLY_PREFIX_REGEXP_MIXIN).toEqual({
-				name: 'include',
-				params: /^media-only/,
-			});
-		});
-	});
-
-	describe('MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN', () => {
-		it('should define the correct MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN', () => {
-			expect(PluginMediaConfig.MEDIA_BETWEEN_PREFIX_REGEXP_MIXIN).toEqual({
-				name: 'include',
-				params: /^media-between/,
-			});
+			expect(PluginMediaConfig.AT_RULES).toEqual(data);
 		});
 	});
 });

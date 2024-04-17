@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="1.0.2"></a>
+# 1.0.2
+
+1. [x] Updated: prettier config ([#24](https://github.com/kiforks/kifor-stylelint-config/pull/24)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.1"></a>
 # 1.0.1
 

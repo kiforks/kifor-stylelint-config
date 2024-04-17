@@ -1,7 +1,10 @@
+/* prettier-ignore */
+import { stylelintMock } from '../../../../mocks/stylelint.mock';
+
+import { PluginMaxNestingDepth } from '../api/plugin-max-nesting-depth';
+
 import { PluginMaxNestingDepthOptions } from '../interfaces/plugin-max-nesting-depth.interface';
 
-import { stylelintMock } from '../../../../mocks/stylelint.mock';
-import { PluginMaxNestingDepth } from '../api/plugin-max-nesting-depth';
 import { pluginMaxNestingDepthProvider } from './plugin-max-nesting-depth.provider';
 
 jest.mock('stylelint', () => stylelintMock());

@@ -1,6 +1,8 @@
 import { Node } from 'postcss';
 import parser from 'postcss-selector-parser';
 
+import { PluginBase } from '../../plugin-base/api/plugin-base';
+
 import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
 
 import { PluginCheckData, PluginData, PluginRuleOptions } from '../../../interfaces/plugin.interface';
@@ -8,8 +10,6 @@ import {
 	PluginMaxNestingDepthPossibleOptions,
 	PluginMaxNestingDepthSecondaryOptions,
 } from '../interfaces/plugin-max-nesting-depth.interface';
-
-import { PluginBase } from '../../plugin-base/api/plugin-base';
 
 /**
  * Source was taken from:
@@ -35,7 +35,10 @@ export class PluginMaxNestingDepth extends PluginBase {
 			ignorePseudoClasses: possibleValues,
 			ignoreHostSelectors: possibleValues,
 		};
-		const mainOptions: PluginRuleOptions = { actual: maxDepth, possible: [PluginHelper.isNumber] };
+		const mainOptions: PluginRuleOptions = {
+			actual: maxDepth,
+			possible: [PluginHelper.isNumber],
+		};
 		const optionalOptions: PluginRuleOptions = {
 			optional: true,
 			actual: secondaryOptions,

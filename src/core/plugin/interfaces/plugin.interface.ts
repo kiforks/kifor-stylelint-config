@@ -18,7 +18,11 @@ export type PluginOptions<O = unknown> = O;
 export type PluginSecondaryOptions<S = unknown> = Record<string, S>;
 export type PluginRuleOptions = RuleOptions;
 export type PluginProblem = Omit<Problem, 'message' | 'result' | 'ruleName'>;
-export type PluginRegExpStringMatchedElement = { match: string; pattern: RegExp | string; substring: string };
+export type PluginRegExpStringMatchedElement = {
+	match: string;
+	pattern: RegExp | string;
+	substring: string;
+};
 export type PluginRegExpStringMatchedData = PluginRegExpStringMatchedElement | false;
 
 export type PluginCheckFn = <O = unknown, S = unknown>(

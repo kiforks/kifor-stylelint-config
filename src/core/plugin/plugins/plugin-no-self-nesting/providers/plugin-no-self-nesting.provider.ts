@@ -1,11 +1,11 @@
 import { PluginMediaConfig } from '../../../configs/plugin-media/plugin-media.config';
 
+import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
+
 import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
 
 import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
 import { PluginProvider } from '../../../interfaces/plugin.interface';
-
-import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
 
 export const pluginNoSelfNestingProvider = (): PluginProvider => ({
 	provide: PluginNoSelfNesting,

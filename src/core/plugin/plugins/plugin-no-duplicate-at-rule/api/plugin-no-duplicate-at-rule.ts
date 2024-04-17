@@ -1,5 +1,7 @@
 import { AtRule, Node } from 'postcss';
 
+import { PluginBase } from '../../plugin-base/api/plugin-base';
+
 import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
 import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
 
@@ -9,8 +11,6 @@ import {
 	PluginNoDuplicateAtRuleMessageArgs,
 	PluginNoDuplicateAtRuleMessageName,
 } from '../interfaces/plugin-no-duplicate-at-rule.interface';
-
-import { PluginBase } from '../../plugin-base/api/plugin-base';
 
 export class PluginNoDuplicateAtRule extends PluginBase {
 	protected override readonly isArrayOptions = true;
@@ -23,7 +23,10 @@ export class PluginNoDuplicateAtRule extends PluginBase {
 		`Unexpected duplicate at-rule ${name} at the same nesting level`;
 
 	protected initialize({ options, result }: PluginData<PluginConfigAtRule[]>): void {
-		const mainOptions: PluginRuleOptions = { actual: options, possible: PluginConfigHelper.areAtRules };
+		const mainOptions: PluginRuleOptions = {
+			actual: options,
+			possible: PluginConfigHelper.areAtRules,
+		};
 
 		if (!this.isValidOptions(mainOptions)) return;
 

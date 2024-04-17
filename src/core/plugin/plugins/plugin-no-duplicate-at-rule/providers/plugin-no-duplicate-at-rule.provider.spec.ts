@@ -1,7 +1,10 @@
+/* prettier-ignore */
+import { stylelintMock } from '../../../../mocks/stylelint.mock';
+
 import { PluginMediaConfig } from '../../../configs/plugin-media/plugin-media.config';
 
-import { stylelintMock } from '../../../../mocks/stylelint.mock';
 import { PluginNoDuplicateAtRule } from '../api/plugin-no-duplicate-at-rule';
+
 import { pluginNoDuplicateAtRuleProvider } from './plugin-no-duplicate-at-rule.provider';
 
 jest.mock('stylelint', () => stylelintMock());

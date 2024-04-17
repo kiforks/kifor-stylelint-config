@@ -1,8 +1,11 @@
+/* prettier-ignore */
+import { stylelintMock } from '../../mocks/stylelint.mock';
+
 import { Config } from 'stylelint';
 
-import { stylelintMock } from '../../mocks/stylelint.mock';
 import { PluginMaxNestingDepth } from '../plugins/plugin-max-nesting-depth/api/plugin-max-nesting-depth';
 import { PluginNoSelfNesting } from '../plugins/plugin-no-self-nesting/api/plugin-no-self-nesting';
+
 import { Plugin } from './plugin.decorator';
 
 jest.mock('stylelint', () => stylelintMock({ plugin: 'name' }));
@@ -28,7 +31,7 @@ describe('PluginDecorator', () => {
 
 		const decorator = new Configuration();
 
-		expect(decorator.plugins).toEqual(['stylelint-order', { 'plugin': 'name' }, { 'plugin': 'name' }]);
+		expect(decorator.plugins).toEqual(['stylelint-order', { plugin: 'name' }, { plugin: 'name' }]);
 		expect(decorator.rules).toEqual({
 			'color-no-hex': true,
 			'kifor-stylelint/no-self-nesting': { someOption: 'value' },

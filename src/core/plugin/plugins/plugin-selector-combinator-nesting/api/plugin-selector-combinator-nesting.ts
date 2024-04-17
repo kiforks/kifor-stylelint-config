@@ -1,6 +1,8 @@
 import selectorParser from 'postcss-selector-parser';
 import Rule from 'postcss/lib/rule';
 
+import { PluginBase } from '../../plugin-base/api/plugin-base';
+
 import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
 import { PluginSelectorHelper } from '../../../helpers/plugin-selector/plugin-selector.helper';
 import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
@@ -11,8 +13,6 @@ import {
 	PluginSelectorCombinatorNestingMessageArgs,
 	PluginSelectorCombinatorNestingName,
 } from '../interfaces/plugin-selector-combinator-nesting.interface';
-
-import { PluginBase } from '../../plugin-base/api/plugin-base';
 
 export class PluginSelectorCombinatorNesting extends PluginBase {
 	protected readonly ruleName = 'selector-combinator-nesting';
@@ -27,7 +27,10 @@ export class PluginSelectorCombinatorNesting extends PluginBase {
 			: `Unexpected nesting "${name}" detected. Selectors must not be nested but should be at the same level as their parent.`;
 
 	protected initialize({ options: mode, result }: PluginData<PluginConfigExecutionMode>): void {
-		const mainOptions: PluginRuleOptions = { actual: mode, possible: PluginConfigHelper.isExecutionMode };
+		const mainOptions: PluginRuleOptions = {
+			actual: mode,
+			possible: PluginConfigHelper.isExecutionMode,
+		};
 
 		if (this.isValidOptions(mainOptions)) this.checkRule(result, mode);
 	}

@@ -32,7 +32,11 @@ describe('MediaRuleHelper', () => {
 	describe('createDeviceOrderRule', () => {
 		it('should return correct at-rule object', () => {
 			const atRule = MediaRuleHelper.createDeviceOrderRule('mobile');
-			expect(atRule).toEqual({ type: 'at-rule', name: 'include', parameter: '^media-mobile' });
+			expect(atRule).toEqual({
+				type: 'at-rule',
+				name: 'include',
+				parameter: '^media-mobile',
+			});
 		});
 	});
 
@@ -46,7 +50,11 @@ describe('MediaRuleHelper', () => {
 	describe('createBreakpointOrderAtRule', () => {
 		it('should return correct at-rule object', () => {
 			const atRule = MediaRuleHelper.createBreakpointOrderAtRule('min', 'sm');
-			expect(atRule).toEqual({ type: 'at-rule', name: 'include', parameter: '^media-min(sm)' });
+			expect(atRule).toEqual({
+				type: 'at-rule',
+				name: 'include',
+				parameter: '^media-min(sm)',
+			});
 		});
 	});
 
@@ -60,14 +68,21 @@ describe('MediaRuleHelper', () => {
 	describe('createBreakpointBetweenOrderRule', () => {
 		it('should return correct at-rule object', () => {
 			const atRule = MediaRuleHelper.createBreakpointBetweenOrderRule('xs', 'sm');
-			expect(atRule).toEqual({ type: 'at-rule', name: 'include', parameter: '^media-between(xs, sm)' });
+			expect(atRule).toEqual({
+				type: 'at-rule',
+				name: 'include',
+				parameter: '^media-between(xs, sm)',
+			});
 		});
 	});
 
 	describe('createBreakpointBetweenConfigRule', () => {
 		it('should return correct config at-rule object', () => {
 			const atRule = MediaRuleHelper.createBreakpointBetweenConfigRule('xs', 'sm');
-			expect(atRule).toEqual({ name: 'include', params: '^media-between(xs, sm)' });
+			expect(atRule).toEqual({
+				name: 'include',
+				params: '^media-between(xs, sm)',
+			});
 		});
 	});
 
@@ -115,12 +130,36 @@ describe('MediaRuleHelper', () => {
 		it('should return an array of at-rule objects for each unique pair of breakpoints', () => {
 			const data = MediaRuleHelper.createBreakpointBetweenOrderRules(['xs', 'sm', 'md', 'lg']);
 			expect(data).toEqual([
-				{ type: 'at-rule', name: 'include', parameter: '^media-between(xs, sm)' },
-				{ type: 'at-rule', name: 'include', parameter: '^media-between(xs, md)' },
-				{ type: 'at-rule', name: 'include', parameter: '^media-between(xs, lg)' },
-				{ type: 'at-rule', name: 'include', parameter: '^media-between(sm, md)' },
-				{ type: 'at-rule', name: 'include', parameter: '^media-between(sm, lg)' },
-				{ type: 'at-rule', name: 'include', parameter: '^media-between(md, lg)' },
+				{
+					type: 'at-rule',
+					name: 'include',
+					parameter: '^media-between(xs, sm)',
+				},
+				{
+					type: 'at-rule',
+					name: 'include',
+					parameter: '^media-between(xs, md)',
+				},
+				{
+					type: 'at-rule',
+					name: 'include',
+					parameter: '^media-between(xs, lg)',
+				},
+				{
+					type: 'at-rule',
+					name: 'include',
+					parameter: '^media-between(sm, md)',
+				},
+				{
+					type: 'at-rule',
+					name: 'include',
+					parameter: '^media-between(sm, lg)',
+				},
+				{
+					type: 'at-rule',
+					name: 'include',
+					parameter: '^media-between(md, lg)',
+				},
 			]);
 		});
 	});

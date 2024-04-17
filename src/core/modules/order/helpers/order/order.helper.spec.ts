@@ -84,7 +84,11 @@ describe('OrderHelper', () => {
 			const result = OrderHelper.createAtRules('media', ['screen and (max-width: 768px)', 'print']);
 
 			expect(result).toEqual([
-				{ type: 'at-rule', name: 'media', parameter: 'screen and (max-width: 768px)' },
+				{
+					type: 'at-rule',
+					name: 'media',
+					parameter: 'screen and (max-width: 768px)',
+				},
 				{ type: 'at-rule', name: 'media', parameter: 'print' },
 			]);
 		});

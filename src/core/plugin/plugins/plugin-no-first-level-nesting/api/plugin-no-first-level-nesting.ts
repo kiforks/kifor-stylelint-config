@@ -1,3 +1,5 @@
+import { PluginBase } from '../../plugin-base/api/plugin-base';
+
 import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
 import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
 
@@ -9,8 +11,6 @@ import {
 	PluginNoFirstLevelNestingPattern,
 } from '../interfaces/plugin-no-self-nesting.interface';
 
-import { PluginBase } from '../../plugin-base/api/plugin-base';
-
 export class PluginNoFirstLevelNesting extends PluginBase {
 	protected override readonly isArrayOptions = true;
 
@@ -21,7 +21,10 @@ export class PluginNoFirstLevelNesting extends PluginBase {
 	): string => `First level nesting of "${name}" is not allowed for the given ${pattern} rule pattern.`;
 
 	protected initialize({ options, result }: PluginData<PluginConfigRuleType[]>): void {
-		const mainOptions: PluginRuleOptions = { actual: options, possible: PluginConfigHelper.isValidRuleData };
+		const mainOptions: PluginRuleOptions = {
+			actual: options,
+			possible: PluginConfigHelper.isValidRuleData,
+		};
 
 		if (!this.isValidOptions(mainOptions)) return;
 

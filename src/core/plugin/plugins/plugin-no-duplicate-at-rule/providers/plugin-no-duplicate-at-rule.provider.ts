@@ -1,8 +1,8 @@
 import { PluginMediaConfig } from '../../../configs/plugin-media/plugin-media.config';
 
-import { PluginProvider } from '../../../interfaces/plugin.interface';
-
 import { PluginNoDuplicateAtRule } from '../api/plugin-no-duplicate-at-rule';
+
+import { PluginProvider } from '../../../interfaces/plugin.interface';
 
 export const pluginNoDuplicateAtRuleProvider = (): PluginProvider => ({
 	provide: PluginNoDuplicateAtRule,

@@ -8,7 +8,11 @@ describe('OrderContentHelper', () => {
 
 			expect(mediaFeatures).toEqual([
 				{ type: 'at-rule', name: 'media', parameter: '(max-width: 768px)' },
-				{ type: 'at-rule', name: 'media', parameter: '(min-resolution: 2dppx)' },
+				{
+					type: 'at-rule',
+					name: 'media',
+					parameter: '(min-resolution: 2dppx)',
+				},
 			]);
 		});
 	});
@@ -20,20 +24,20 @@ describe('OrderContentHelper', () => {
 
 			expect(pseudoClassRules).toEqual([
 				{
-					'selector': '^:hover',
-					'type': 'rule',
+					selector: '^:hover',
+					type: 'rule',
 				},
 				{
-					'selector': '^:active',
-					'type': 'rule',
+					selector: '^:active',
+					type: 'rule',
 				},
 				{
-					'selector': '^&:hover',
-					'type': 'rule',
+					selector: '^&:hover',
+					type: 'rule',
 				},
 				{
-					'selector': '^&:active',
-					'type': 'rule',
+					selector: '^&:active',
+					type: 'rule',
 				},
 			]);
 		});
@@ -46,20 +50,20 @@ describe('OrderContentHelper', () => {
 
 			expect(pseudoElementRules).toEqual([
 				{
-					'selector': '^::before',
-					'type': 'rule',
+					selector: '^::before',
+					type: 'rule',
 				},
 				{
-					'selector': '^::after',
-					'type': 'rule',
+					selector: '^::after',
+					type: 'rule',
 				},
 				{
-					'selector': '^&::before',
-					'type': 'rule',
+					selector: '^&::before',
+					type: 'rule',
 				},
 				{
-					'selector': '^&::after',
-					'type': 'rule',
+					selector: '^&::after',
+					type: 'rule',
 				},
 			]);
 		});

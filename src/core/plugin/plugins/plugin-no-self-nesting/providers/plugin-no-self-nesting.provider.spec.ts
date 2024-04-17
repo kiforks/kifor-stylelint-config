@@ -1,7 +1,10 @@
+/* prettier-ignore */
+import { stylelintMock } from '../../../../mocks/stylelint.mock';
+
+import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
+
 import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
 
-import { stylelintMock } from '../../../../mocks/stylelint.mock';
-import { PluginNoSelfNesting } from '../api/plugin-no-self-nesting';
 import { pluginNoSelfNestingProvider } from './plugin-no-self-nesting.provider';
 
 jest.mock('stylelint', () => stylelintMock());

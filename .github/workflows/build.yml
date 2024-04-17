@@ -68,6 +68,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
       - run: npm ci
+      - name: Build
+        run: npm run build
       - name: Check formatting
         run: npm run format:check
       - name: Lint check

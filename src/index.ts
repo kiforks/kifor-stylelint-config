@@ -42,11 +42,13 @@ class Configuration implements Config {
 
 	public rules = {
 		/* At-rule */
-		'at-rule-no-unknown': [true, { 'ignoreAtRules': RULE_NO_UNKNOWN }],
-		'at-rule-property-required-list': { 'font-face': ['font-display', 'font-family', 'font-style'] },
+		'at-rule-no-unknown': [true, { ignoreAtRules: RULE_NO_UNKNOWN }],
+		'at-rule-property-required-list': {
+			'font-face': ['font-display', 'font-family', 'font-style'],
+		},
 
 		/* Color */
-		'color-function-notation': ['legacy', { 'ignore': ['with-var-inside'] }],
+		'color-function-notation': ['legacy', { ignore: ['with-var-inside'] }],
 		'color-hex-length': 'long',
 
 		/* Declaration block */
@@ -71,7 +73,7 @@ class Configuration implements Config {
 		'rule-selector-property-disallowed-list': {
 			'/ri\\-/': ['font-size'],
 			'/^\\.ri-/': ['font-size'],
-			'i': ['font-size'],
+			i: ['font-size'],
 		},
 		'at-rule-disallowed-list': ['extend'],
 
@@ -93,11 +95,11 @@ class Configuration implements Config {
 		'selector-nested-pattern': '^(?!::?[a-zA-Z0-9-]+)',
 		'declaration-property-value-disallowed-list': {
 			/** @see https://github.com/YozhikM/stylelint-a11y/blob/master/src/rules/no-display-none/README.md */
-			'display': ['/none/'],
+			display: ['/none/'],
 			/** @see https://github.com/YozhikM/stylelint-a11y/blob/master/src/rules/no-text-align-justify/README.md */
 			'text-align': ['/justify/'],
 
-			'border': ['/none/'],
+			border: ['/none/'],
 		},
 
 		/* Time */
@@ -114,8 +116,8 @@ class Configuration implements Config {
 		'rule-empty-line-before': [
 			'always',
 			{
-				'except': ['first-nested'],
-				'ignore': ['after-comment'],
+				except: ['first-nested'],
+				ignore: ['after-comment'],
 			},
 		],
 		'custom-property-empty-line-before': 'never',
@@ -277,8 +279,8 @@ class Configuration implements Config {
 		'scale-unlimited/declaration-strict-value': [
 			['/color/', 'background-color', 'font-family', 'font-size', 'size', 'line-height', 'stroke', 'fill'],
 			{
-				'ignoreValues': ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
-				'ignoreFunctions': false,
+				ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
+				ignoreFunctions: false,
 				disableFix: true,
 			},
 		],

@@ -39,29 +39,29 @@ typeof SuppressedError === 'function'
 const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else', 'use'];
 
 const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
-	'width': ['px', '%', 'vw'],
+	width: ['px', '%', 'vw'],
 	'min-width': ['px', '%', 'vw'],
 	'max-width': ['px', '%', 'vw'],
-	'height': ['px', '%', 'vh'],
+	height: ['px', '%', 'vh'],
 	'min-height': ['px', '%', 'vh'],
 	'max-height': ['px', '%', 'vh'],
 	'/^padding/': ['px', '%'],
 	'/^margin/': ['px', '%'],
-	'top': ['px', '%'],
-	'right': ['px', '%'],
-	'bottom': ['px', '%'],
-	'left': ['px', '%'],
+	top: ['px', '%'],
+	right: ['px', '%'],
+	bottom: ['px', '%'],
+	left: ['px', '%'],
 	'grid-auto-columns': ['px', '%', 'fr'],
 	'grid-auto-rows': ['px', '%', 'fr'],
 	'grid-template-columns': ['px', '%', 'fr'],
 	'grid-template-rows': ['px', '%', 'fr'],
-	'gap': ['px', '%'],
+	gap: ['px', '%'],
 	'grid-gap': ['px', '%'],
 	'grid-column-gap': ['px', '%'],
 	'grid-row-gap': ['px', '%'],
 	'column-gap': ['px', '%'],
 	'flex-basis': ['px', '%'],
-	'border': ['px'],
+	border: ['px'],
 	'border-width': ['px'],
 	'/^border-(top|right|bottom|left)/': ['px'],
 	'/^border-(top|right|bottom|left)-width/': ['px'],
@@ -75,10 +75,10 @@ const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
 	'/^border-(top|bottom)-(left|right)-radius/': ['px', '%'],
 	'font-size': [],
 	'line-height': [],
-	'animation': ['ms'],
+	animation: ['ms'],
 	'animation-duration': ['ms'],
 	'transition-duration': ['ms'],
-	'transition': ['ms'],
+	transition: ['ms'],
 };
 
 const RULE_UNIT_ALLOWED_LIST = ['px', 'rem', 'deg', 'fr', '%', 'ms', 'vw', 'vh', 'vmin', 'vmax'];
@@ -1898,7 +1898,12 @@ class PluginBase {
 				? validateOptions(result, this.name, options, secondaryOptions)
 				: validateOptions(result, this.name, options);
 		this.reportProblem = problem =>
-			report({ ruleName: this.name, result, message: this.messages.expected, ...problem });
+			report({
+				ruleName: this.name,
+				result,
+				message: this.messages.expected,
+				...problem,
+			});
 		this.initialize({ options, root, result, secondaryOptions, context });
 	}
 }
@@ -2092,7 +2097,10 @@ class PluginNoDuplicateAtRule extends PluginBase {
 		this.message = name => `Unexpected duplicate at-rule ${name} at the same nesting level`;
 	}
 	initialize({ options, result }) {
-		const mainOptions = { actual: options, possible: PluginConfigHelper.areAtRules };
+		const mainOptions = {
+			actual: options,
+			possible: PluginConfigHelper.areAtRules,
+		};
 		if (!this.isValidOptions(mainOptions)) return;
 		this.checkAtRule(result, options);
 	}
@@ -2131,7 +2139,10 @@ class PluginNoFirstLevelNesting extends PluginBase {
 			`First level nesting of "${name}" is not allowed for the given ${pattern} rule pattern.`;
 	}
 	initialize({ options, result }) {
-		const mainOptions = { actual: options, possible: PluginConfigHelper.isValidRuleData };
+		const mainOptions = {
+			actual: options,
+			possible: PluginConfigHelper.isValidRuleData,
+		};
 		if (!this.isValidOptions(mainOptions)) return;
 		this.checkRule(result, options);
 		this.checkAtRule(result, options);
@@ -2168,7 +2179,10 @@ class PluginNoSelfNesting extends PluginBase {
 			`Nesting is not allowed for child selector '${nestedName}' under parent selector '${scopeName}' when they match the specified pattern.`;
 	}
 	initialize({ options, result }) {
-		const mainOptions = { actual: options, possible: PluginConfigHelper.isValidRuleData };
+		const mainOptions = {
+			actual: options,
+			possible: PluginConfigHelper.isValidRuleData,
+		};
 		if (!this.isValidOptions(mainOptions)) return;
 		this.checkRule(result, options);
 		this.checkAtRule(result, options);
@@ -2261,7 +2275,10 @@ class PluginSelectorCombinatorNesting extends PluginBase {
 				: `Unexpected nesting "${name}" detected. Selectors must not be nested but should be at the same level as their parent.`;
 	}
 	initialize({ options: mode, result }) {
-		const mainOptions = { actual: mode, possible: PluginConfigHelper.isExecutionMode };
+		const mainOptions = {
+			actual: mode,
+			possible: PluginConfigHelper.isExecutionMode,
+		};
 		if (this.isValidOptions(mainOptions)) this.checkRule(result, mode);
 	}
 	check({ rule, options: mode }) {
@@ -2439,14 +2456,14 @@ let Configuration = class Configuration {
 			'at-rule-no-unknown': [
 				true,
 				{
-					'ignoreAtRules': RULE_NO_UNKNOWN,
+					ignoreAtRules: RULE_NO_UNKNOWN,
 				},
 			],
 			'at-rule-property-required-list': {
 				'font-face': ['font-display', 'font-family', 'font-style'],
 			},
 			/* Color */
-			'color-function-notation': ['legacy', { 'ignore': ['with-var-inside'] }],
+			'color-function-notation': ['legacy', { ignore: ['with-var-inside'] }],
 			'color-hex-length': 'long',
 			/* Declaration block */
 			'declaration-block-no-duplicate-properties': true,
@@ -2473,7 +2490,7 @@ let Configuration = class Configuration {
 			'rule-selector-property-disallowed-list': {
 				'/ri\\-/': ['font-size'],
 				'/^\\.ri-/': ['font-size'],
-				'i': ['font-size'],
+				i: ['font-size'],
 			},
 			'at-rule-disallowed-list': ['extend'],
 			/* Selector */
@@ -2494,10 +2511,10 @@ let Configuration = class Configuration {
 			'selector-nested-pattern': '^(?!::?[a-zA-Z0-9-]+)',
 			'declaration-property-value-disallowed-list': {
 				/** @see https://github.com/YozhikM/stylelint-a11y/blob/master/src/rules/no-display-none/README.md */
-				'display': ['/none/'],
+				display: ['/none/'],
 				/** @see https://github.com/YozhikM/stylelint-a11y/blob/master/src/rules/no-text-align-justify/README.md */
 				'text-align': ['/justify/'],
-				'border': ['/none/'],
+				border: ['/none/'],
 			},
 			/* Time */
 			'time-min-milliseconds': 50,
@@ -2514,8 +2531,8 @@ let Configuration = class Configuration {
 			'rule-empty-line-before': [
 				'always',
 				{
-					'except': ['first-nested'],
-					'ignore': ['after-comment'],
+					except: ['first-nested'],
+					ignore: ['after-comment'],
 				},
 			],
 			'custom-property-empty-line-before': 'never',
@@ -2645,8 +2662,8 @@ let Configuration = class Configuration {
 			'scale-unlimited/declaration-strict-value': [
 				['/color/', 'background-color', 'font-family', 'font-size', 'size', 'line-height', 'stroke', 'fill'],
 				{
-					'ignoreValues': ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
-					'ignoreFunctions': false,
+					ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
+					ignoreFunctions: false,
 					disableFix: true,
 				},
 			],

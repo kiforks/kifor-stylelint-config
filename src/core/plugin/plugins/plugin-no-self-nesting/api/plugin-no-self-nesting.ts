@@ -1,3 +1,5 @@
+import { PluginBase } from '../../plugin-base/api/plugin-base';
+
 import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
 import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
 
@@ -9,8 +11,6 @@ import {
 	PluginNoSelfNestingScopeName,
 } from '../interfaces/plugin-no-self-nesting.interface';
 
-import { PluginBase } from '../../plugin-base/api/plugin-base';
-
 export class PluginNoSelfNesting extends PluginBase {
 	protected override readonly isArrayOptions = true;
 
@@ -19,7 +19,10 @@ export class PluginNoSelfNesting extends PluginBase {
 		`Nesting is not allowed for child selector '${nestedName}' under parent selector '${scopeName}' when they match the specified pattern.`;
 
 	protected initialize({ options, result }: PluginData<PluginConfigRuleType[], PluginConfigRuleType[]>): void {
-		const mainOptions: PluginRuleOptions = { actual: options, possible: PluginConfigHelper.isValidRuleData };
+		const mainOptions: PluginRuleOptions = {
+			actual: options,
+			possible: PluginConfigHelper.isValidRuleData,
+		};
 
 		if (!this.isValidOptions(mainOptions)) return;
 

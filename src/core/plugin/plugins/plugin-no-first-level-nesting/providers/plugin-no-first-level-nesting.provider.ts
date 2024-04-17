@@ -1,11 +1,11 @@
 import { PluginMediaConfig } from '../../../configs/plugin-media/plugin-media.config';
 
+import { PluginNoFirstLevelNesting } from '../api/plugin-no-first-level-nesting';
+
 import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
 
 import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
 import { PluginProvider } from '../../../interfaces/plugin.interface';
-
-import { PluginNoFirstLevelNesting } from '../api/plugin-no-first-level-nesting';
 
 export const pluginNoFirstLevelNestingProvider = (): PluginProvider => ({
 	provide: PluginNoFirstLevelNesting,

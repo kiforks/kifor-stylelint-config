@@ -11,14 +11,14 @@ describe('OrderRegExpHelper', () => {
 
 			expect(transformed).toEqual([
 				{
-					'name': 'include',
-					'parameter': '^media-min\\(xs[\\s\\S]*\\)',
-					'type': 'at-rule',
+					name: 'include',
+					parameter: '^media-min\\(xs[\\s\\S]*\\)',
+					type: 'at-rule',
 				},
 				{
-					'name': 'media',
-					'parameter': '\\(width[\\s\\S]*\\)',
-					'type': 'at-rule',
+					name: 'media',
+					parameter: '\\(width[\\s\\S]*\\)',
+					type: 'at-rule',
 				},
 			]);
 		});

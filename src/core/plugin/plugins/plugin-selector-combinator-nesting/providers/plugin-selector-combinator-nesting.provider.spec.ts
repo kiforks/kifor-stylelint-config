@@ -1,7 +1,10 @@
+/* prettier-ignore */
+import { stylelintMock } from '../../../../mocks/stylelint.mock';
+
+import { PluginSelectorCombinatorNesting } from '../api/plugin-selector-combinator-nesting';
+
 import { PluginConfigExecutionMode } from '../../../interfaces/plugin-config.interface';
 
-import { stylelintMock } from '../../../../mocks/stylelint.mock';
-import { PluginSelectorCombinatorNesting } from '../api/plugin-selector-combinator-nesting';
 import { pluginSelectorCombinatorNestingProvider } from './plugin-selector-combinator-nesting.provider';
 
 jest.mock('stylelint', () => stylelintMock());

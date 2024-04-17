@@ -3,7 +3,7 @@ import { ORDER_PROPERTIES_CONFIG } from './order-property-config.constant';
 describe('OrderPropertyConfig', () => {
 	it('should have the following value', () => {
 		const data = {
-			'animation': [
+			animation: [
 				'-webkit-transition',
 				'-moz-transition',
 				'-ms-transition',
@@ -75,7 +75,7 @@ describe('OrderPropertyConfig', () => {
 				'-o-animation-fill-mode',
 				'animation-fill-mode',
 			],
-			'blockModel': [
+			blockModel: [
 				'display',
 				'-webkit-flex',
 				'-ms-flex',
@@ -171,7 +171,7 @@ describe('OrderPropertyConfig', () => {
 				'empty-cells',
 				'caption-side',
 			],
-			'decoration': [
+			decoration: [
 				'overflow-wrap',
 				'tab-size',
 				'-webkit-hyphens',
@@ -310,7 +310,7 @@ describe('OrderPropertyConfig', () => {
 				'filter',
 				'backdrop-filter',
 			],
-			'miscellanea': [
+			miscellanea: [
 				'contain',
 				'appearance',
 				'clip',
@@ -340,8 +340,8 @@ describe('OrderPropertyConfig', () => {
 				'aspect-ratio',
 				'accent-color',
 			],
-			'position': ['content', 'position', 'top', 'right', 'bottom', 'left', 'z-index'],
-			'typography': [
+			position: ['content', 'position', 'top', 'right', 'bottom', 'left', 'z-index'],
+			typography: [
 				'font',
 				'font-weight',
 				'font-size',

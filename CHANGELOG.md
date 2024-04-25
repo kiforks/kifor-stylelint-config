@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="1.0.3"></a>
+# 1.0.3
+
+1. [x] Updated: eslint config ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Updated: new configuration files for pre-commit ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Updated: validation for pre-commit message ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.2"></a>
 # 1.0.2
 

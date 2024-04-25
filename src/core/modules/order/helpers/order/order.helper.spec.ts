@@ -4,11 +4,13 @@ describe('OrderHelper', () => {
 	describe('isAtRule', () => {
 		it('should return true for valid AtRule object', () => {
 			const obj = { type: 'at-rule', parameter: 'example' };
+
 			expect(OrderHelper.isAtRule(obj)).toBeTruthy();
 		});
 
 		it('should return false for invalid object', () => {
 			const obj = { type: 'rule', value: 'example' };
+
 			expect(OrderHelper.isAtRule(obj)).toBeFalsy();
 		});
 	});

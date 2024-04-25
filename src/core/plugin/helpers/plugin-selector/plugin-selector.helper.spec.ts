@@ -44,6 +44,7 @@ describe('PluginSelectorHelper', () => {
 				PluginSelectorNodeType.Tag,
 				PluginSelectorNodeType.Universal,
 			] as PluginSelectorValueType[];
+
 			chainingTypes.forEach(type => expect(PluginSelectorHelper.isChainingType(type)).toBe(true));
 		});
 
@@ -52,6 +53,7 @@ describe('PluginSelectorHelper', () => {
 				PluginSelectorNodeType.Combinator,
 				PluginSelectorNodeType.Selector,
 			] as PluginSelectorValueType[];
+
 			nonChainingTypes.forEach(type => expect(PluginSelectorHelper.isChainingType(type)).toBe(false));
 		});
 	});

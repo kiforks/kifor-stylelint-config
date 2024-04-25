@@ -14,10 +14,8 @@
 		},
 		{
 			"files": ["*.spec.ts", "*.host.ts", "*.po.ts"],
-			"env": {
-				"jasmine": true
-			},
-			"extends": ["kifor/tests"]
+			"env": { "jest/globals": true },
+			"extends": ["kifor/tests", "kifor/tests-jest"]
 		}
 	]
 }

@@ -279,6 +279,7 @@ export abstract class PluginHelper {
 	): false | { match: string; pattern: RegExp | string; substring: string } {
 		if (comparison instanceof RegExp) {
 			const match = value.match(comparison);
+
 			return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
 		}
 
@@ -295,6 +296,7 @@ export abstract class PluginHelper {
 			const regexPattern = hasCaseInsensitiveFlag ? comparison.slice(1, -2) : comparison.slice(1, -1);
 			const regexFlags = hasCaseInsensitiveFlag ? 'i' : '';
 			const valueMatch = value.match(new RegExp(regexPattern, regexFlags));
+
 			return valueMatch ? { match: value, pattern: comparison, substring: valueMatch[0] || '' } : false;
 		}
 

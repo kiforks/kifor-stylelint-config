@@ -1,7 +1,7 @@
 {
 	"name": "kifor-stylelint-config",
 	"description": "Stylelint shareable config",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"exports": "./.stylelintrc.js",
 	"files": [
 		".stylelintrc.js"
@@ -81,7 +81,7 @@
 		"@commitlint/config-conventional": "^19.2.2"
 	},
 	"peerDependencies": {
-		"stylelint": "~16.3.1"
+		"stylelint": "^16.5.0"
 	},
 	"dependencies": {
 		"postcss-scss": "^4.0.9",

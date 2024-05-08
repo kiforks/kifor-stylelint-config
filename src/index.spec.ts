@@ -18,10 +18,32 @@ describe('stylelint main config', () => {
 		rules: {
 			'annotation-no-unknown': [true, { ignoreAnnotations: [/default\b/] }],
 			'at-rule-disallowed-list': ['extend'],
+			'at-rule-empty-line-before': [
+				'always',
+				{
+					except: ['blockless-after-same-name-blockless', 'first-nested'],
+					ignore: ['after-comment'],
+					ignoreAtRules: ['else'],
+				},
+			],
 			'at-rule-no-unknown': [
 				true,
 				{
-					ignoreAtRules: ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else', 'use'],
+					ignoreAtRules: [
+						'mixin',
+						'include',
+						'extend',
+						'content',
+						'each',
+						'function',
+						'return',
+						'if',
+						'else',
+						'use',
+						'forward',
+						'error',
+						'for',
+					],
 				},
 			],
 			'at-rule-property-required-list': {
@@ -1752,7 +1774,6 @@ describe('stylelint main config', () => {
 			],
 			'scss/at-else-closing-brace-newline-after': 'always-last-in-chain',
 			'scss/at-else-closing-brace-space-after': 'always-intermediate',
-			'scss/at-else-empty-line-before': 'never',
 			'scss/at-else-if-parentheses-space-before': 'always',
 			'scss/at-extend-no-missing-placeholder': true,
 			'scss/at-function-parentheses-space-before': 'never',
@@ -1821,6 +1842,7 @@ describe('stylelint main config', () => {
 				'/^\\.g-col-/',
 				'/^\\.col-/',
 				'/^\\.grid+$/',
+				'/^\\.row+$/',
 				'/\\[data-test.+]/',
 				'/\\[data-po.+]/',
 			],

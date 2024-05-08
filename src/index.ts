@@ -76,6 +76,14 @@ class Configuration implements Config {
 			i: ['font-size'],
 		},
 		'at-rule-disallowed-list': ['extend'],
+		'at-rule-empty-line-before': [
+			'always',
+			{
+				except: ['blockless-after-same-name-blockless', 'first-nested'],
+				ignore: ['after-comment'],
+				ignoreAtRules: ['else'],
+			},
+		],
 
 		/* Selector */
 		'selector-disallowed-list': [
@@ -84,6 +92,7 @@ class Configuration implements Config {
 			'/^\\.g-col-/',
 			'/^\\.col-/',
 			'/^\\.grid+$/',
+			'/^\\.row+$/',
 			'/\\[data-test.+]/',
 			'/\\[data-po.+]/',
 		],
@@ -199,9 +208,6 @@ class Configuration implements Config {
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-else-closing-brace-space-after/README.md */
 		'scss/at-else-closing-brace-space-after': 'always-intermediate',
-
-		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-else-empty-line-before/README.md */
-		'scss/at-else-empty-line-before': 'never',
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-else-if-parentheses-space-before/README.md */
 		'scss/at-else-if-parentheses-space-before': 'always',

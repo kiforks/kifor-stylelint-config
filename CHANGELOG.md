@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="1.0.5"></a>
+# 1.0.5
+
+1. [x] Fixed: peer stylelint package version ([#29](https://github.com/kiforks/kifor-stylelint-config/pull/29)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.4"></a>
 # 1.0.4
 

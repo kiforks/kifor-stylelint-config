@@ -9,4 +9,7 @@ export const RULE_NO_UNKNOWN = [
 	'if',
 	'else',
 	'use',
+	'forward',
+	'error',
+	'for',
 ];

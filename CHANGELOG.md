@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="1.0.4"></a>
+# 1.0.4
+
+1. [x] Updated: package version ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Removed: `scss/at-else-empty-line-before` rule ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Updated: `at-rule-no-unknown`, `at-rule-empty-line-before`, `selector-disallowed-list` rule configurations ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.3"></a>
 # 1.0.3
 

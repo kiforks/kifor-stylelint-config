@@ -36,7 +36,21 @@ typeof SuppressedError === 'function'
 			return (e.name = 'SuppressedError'), (e.error = error), (e.suppressed = suppressed), e;
 		};
 
-const RULE_NO_UNKNOWN = ['mixin', 'include', 'extend', 'content', 'each', 'function', 'return', 'if', 'else', 'use'];
+const RULE_NO_UNKNOWN = [
+	'mixin',
+	'include',
+	'extend',
+	'content',
+	'each',
+	'function',
+	'return',
+	'if',
+	'else',
+	'use',
+	'forward',
+	'error',
+	'for',
+];
 
 const RULE_PROPERTY_UNIT_ALLOWED_LIST = {
 	width: ['px', '%', 'vw'],
@@ -331,7 +345,7 @@ class PluginHelper {
 			const match = value.match(comparison);
 			return match ? { match: value, pattern: comparison, substring: match[0] || '' } : false;
 		}
-		const firstComparisonChar = comparison[0];
+		const [firstComparisonChar] = comparison;
 		const lastComparisonChar = comparison[comparison.length - 1];
 		const secondToLastComparisonChar = comparison[comparison.length - 2];
 		const comparisonIsRegex =
@@ -503,9 +517,7 @@ class PluginConfigHelper {
 	 * PluginConfigHelper.createRule('.example'); // returns { selector: '.example' }
 	 */
 	static createRule(selector) {
-		return {
-			selector,
-		};
+		return { selector };
 	}
 	/**
 	 * Creates an AtRule object with specified name and parameters.
@@ -1855,9 +1867,7 @@ class PluginBase {
 	 * Constructs the rule messages object for this plugin.
 	 */
 	get messages() {
-		return ruleMessages(this.name, {
-			expected: this.message,
-		});
+		return ruleMessages(this.name, { expected: this.message });
 	}
 	/**
 	 * Creates a rule plugin that can be used within the stylelint configuration.
@@ -1865,7 +1875,13 @@ class PluginBase {
 	 */
 	createRule() {
 		const ruleBase = (options, secondaryOptions, context) => (root, result) =>
-			this.render({ options, secondaryOptions, context, result, root });
+			this.render({
+				options,
+				secondaryOptions,
+				context,
+				result,
+				root,
+			});
 		const config = {
 			ruleName: this.name,
 			messages: this.messages,
@@ -1904,7 +1920,13 @@ class PluginBase {
 				message: this.messages.expected,
 				...problem,
 			});
-		this.initialize({ options, root, result, secondaryOptions, context });
+		this.initialize({
+			options,
+			root,
+			result,
+			secondaryOptions,
+			context,
+		});
 	}
 }
 
@@ -1928,7 +1950,10 @@ class PluginMaxNestingDepth extends PluginBase {
 			ignorePseudoClasses: possibleValues,
 			ignoreHostSelectors: possibleValues,
 		};
-		const mainOptions = { actual: maxDepth, possible: [PluginHelper.isNumber] };
+		const mainOptions = {
+			actual: maxDepth,
+			possible: [PluginHelper.isNumber],
+		};
 		const optionalOptions = {
 			optional: true,
 			actual: secondaryOptions,
@@ -1949,7 +1974,7 @@ class PluginMaxNestingDepth extends PluginBase {
 		this.reportProblem({ node: rule, messageArgs: [maxDepth] });
 	}
 	nestingDepth(node, level, secondaryOptions) {
-		const parent = node.parent;
+		const { parent } = node;
 		if (!parent) {
 			return 0;
 		}
@@ -2025,20 +2050,18 @@ class PluginMaxNestingDepth extends PluginBase {
 	}
 }
 
-const pluginMaxNestingDepthProvider = () => {
-	return {
-		provide: PluginMaxNestingDepth,
-		options: [
-			3,
-			{
-				ignore: ['pseudo-classes'],
-				ignoreRules: ['/^&::/', '/^::/'],
-				ignoreAtRules: ['/^\\include/', '/^\\media/'],
-				ignoreHostSelectors: [/:host/],
-			},
-		],
-	};
-};
+const pluginMaxNestingDepthProvider = () => ({
+	provide: PluginMaxNestingDepth,
+	options: [
+		3,
+		{
+			ignore: ['pseudo-classes'],
+			ignoreRules: ['/^&::/', '/^::/'],
+			ignoreAtRules: ['/^\\include/', '/^\\media/'],
+			ignoreHostSelectors: [/:host/],
+		},
+	],
+});
 
 class PluginMediaConfig {
 	/**
@@ -2107,7 +2130,7 @@ class PluginNoDuplicateAtRule extends PluginBase {
 	check({ rule, options }) {
 		if (PluginHelper.isInvalidSyntaxBlock(rule)) return;
 		const validationRule = PluginConfigHelper.getValidationAtRule(rule, options);
-		const parent = rule.parent;
+		const { parent } = rule;
 		if (!validationRule || !parent) return;
 		parent.walk(child => {
 			const isInvalidChild = !PluginHelper.isChildPluginAtRule(child) || child === rule || child.parent !== parent;
@@ -2123,12 +2146,10 @@ class PluginNoDuplicateAtRule extends PluginBase {
 	}
 }
 
-const pluginNoDuplicateAtRuleProvider = () => {
-	return {
-		provide: PluginNoDuplicateAtRule,
-		options: PluginMediaConfig.AT_RULES,
-	};
-};
+const pluginNoDuplicateAtRuleProvider = () => ({
+	provide: PluginNoDuplicateAtRule,
+	options: PluginMediaConfig.AT_RULES,
+});
 
 class PluginNoFirstLevelNesting extends PluginBase {
 	constructor() {
@@ -2155,20 +2176,18 @@ class PluginNoFirstLevelNesting extends PluginBase {
 	}
 }
 
-const pluginNoFirstLevelNestingProvider = () => {
-	return {
-		provide: PluginNoFirstLevelNesting,
-		options: [
-			PluginConfigHelper.createRule(/^(?![a-zA-Z.#])(?!(?::host|:root)).*$/),
-			PluginConfigHelper.createAtRule(/^media/),
-			/**
-			 * SCSS Media at-rules for breakpoints:
-			 * @example @include media-min(md);
-			 */
-			PluginMediaConfig.PREFIX_REGEXP_MIXIN,
-		],
-	};
-};
+const pluginNoFirstLevelNestingProvider = () => ({
+	provide: PluginNoFirstLevelNesting,
+	options: [
+		PluginConfigHelper.createRule(/^(?![a-zA-Z.#])(?!(?::host|:root)).*$/),
+		PluginConfigHelper.createAtRule(/^media/),
+		/**
+		 * SCSS Media at-rules for breakpoints:
+		 * @example @include media-min(md);
+		 */
+		PluginMediaConfig.PREFIX_REGEXP_MIXIN,
+	],
+});
 
 class PluginNoSelfNesting extends PluginBase {
 	constructor() {
@@ -2204,26 +2223,24 @@ class PluginNoSelfNesting extends PluginBase {
 	}
 }
 
-const pluginNoSelfNestingProvider = () => {
-	return {
-		provide: PluginNoSelfNesting,
-		options: [
-			PluginConfigHelper.createRule('body'),
-			PluginConfigHelper.createRule('html'),
-			PluginConfigHelper.createRule('main'),
-			PluginConfigHelper.createRule('h1'),
-			PluginConfigHelper.createRule(/^:host/),
-			PluginConfigHelper.createRule(/^&:host/),
-			PluginConfigHelper.createRule(/^::ng-deep/),
-			PluginConfigHelper.createRule(/^&::ng-deep/),
-			/**
-			 * SCSS Media at-rules for breakpoints:
-			 * @example @include media-min(md);
-			 */
-			PluginMediaConfig.PREFIX_REGEXP_MIXIN,
-		],
-	};
-};
+const pluginNoSelfNestingProvider = () => ({
+	provide: PluginNoSelfNesting,
+	options: [
+		PluginConfigHelper.createRule('body'),
+		PluginConfigHelper.createRule('html'),
+		PluginConfigHelper.createRule('main'),
+		PluginConfigHelper.createRule('h1'),
+		PluginConfigHelper.createRule(/^:host/),
+		PluginConfigHelper.createRule(/^&:host/),
+		PluginConfigHelper.createRule(/^::ng-deep/),
+		PluginConfigHelper.createRule(/^&::ng-deep/),
+		/**
+		 * SCSS Media at-rules for breakpoints:
+		 * @example @include media-min(md);
+		 */
+		PluginMediaConfig.PREFIX_REGEXP_MIXIN,
+	],
+});
 
 var PluginSelectorNodeType;
 (function (PluginSelectorNodeType) {
@@ -2293,9 +2310,7 @@ class PluginSelectorCombinatorNesting extends PluginBase {
 			selector.walk(node =>
 				node.value !== '}' && this.isAlwaysMode ? this.checkAlwaysMode(node, rule) : this.checkNeverMode(rule)
 			)
-		).processSync(rule.selector, {
-			lossless: false,
-		});
+		).processSync(rule.selector, { lossless: false });
 	}
 	checkAlwaysMode(node, rule) {
 		const { value, parent, type } = node;
@@ -2335,6 +2350,7 @@ class PluginSelectorCombinatorNesting extends PluginBase {
 	}
 	precedesParentSelector(currentNode) {
 		do {
+			// eslint-disable-next-line no-param-reassign
 			currentNode = currentNode?.next();
 			if (currentNode?.type === 'nesting') {
 				return true;
@@ -2344,12 +2360,10 @@ class PluginSelectorCombinatorNesting extends PluginBase {
 	}
 }
 
-const pluginSelectorCombinatorNestingProvider = () => {
-	return {
-		provide: PluginSelectorCombinatorNesting,
-		options: 'always',
-	};
-};
+const pluginSelectorCombinatorNestingProvider = () => ({
+	provide: PluginSelectorCombinatorNesting,
+	options: 'always',
+});
 
 const plugins = [
 	pluginMaxNestingDepthProvider(),
@@ -2404,26 +2418,23 @@ const plugins = [
  *   }
  * }
  */
-const Plugin = config => {
-	return constructor => {
-		return class extends constructor {
-			constructor(...args) {
-				super(...args);
-				const currentPlugins = this.plugins || [];
-				const currentRules = this.rules;
-				this.plugins = [...currentPlugins, ...config.providers.map(({ provide }) => new provide().createRule())];
-				this.rules = Object.assign(
-					{},
-					currentRules,
-					...config.providers.map(({ options }, index) => {
-						const ruleName = new config.providers[index].provide().name;
-						return { [ruleName]: options };
-					})
-				);
-			}
-		};
+const Plugin = config => constructor =>
+	class extends constructor {
+		constructor(...args) {
+			super(...args);
+			const currentPlugins = this.plugins || [];
+			const currentRules = this.rules;
+			this.plugins = [...currentPlugins, ...config.providers.map(({ provide }) => new provide().createRule())];
+			this.rules = Object.assign(
+				{},
+				currentRules,
+				...config.providers.map(({ options }, index) => {
+					const ruleName = new config.providers[index].provide().name;
+					return { [ruleName]: options };
+				})
+			);
+		}
 	};
-};
 
 /**
  * Docs:
@@ -2453,12 +2464,7 @@ let Configuration = class Configuration {
 		];
 		this.rules = {
 			/* At-rule */
-			'at-rule-no-unknown': [
-				true,
-				{
-					ignoreAtRules: RULE_NO_UNKNOWN,
-				},
-			],
+			'at-rule-no-unknown': [true, { ignoreAtRules: RULE_NO_UNKNOWN }],
 			'at-rule-property-required-list': {
 				'font-face': ['font-display', 'font-family', 'font-style'],
 			},
@@ -2470,14 +2476,7 @@ let Configuration = class Configuration {
 			'declaration-block-no-redundant-longhand-properties': null,
 			/* Declaration property */
 			'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
-			'declaration-property-value-no-unknown': [
-				true,
-				{
-					ignoreProperties: {
-						'/^[a-zA-Z].*$/': /.*\$\w+.*/,
-					},
-				},
-			],
+			'declaration-property-value-no-unknown': [true, { ignoreProperties: { '/^[a-zA-Z].*$/': /.*\$\w+.*/ } }],
 			'plugin/declaration-block-no-ignored-properties': true,
 			/* Function */
 			'function-disallowed-list': ['rgb'],
@@ -2493,6 +2492,14 @@ let Configuration = class Configuration {
 				i: ['font-size'],
 			},
 			'at-rule-disallowed-list': ['extend'],
+			'at-rule-empty-line-before': [
+				'always',
+				{
+					except: ['blockless-after-same-name-blockless', 'first-nested'],
+					ignore: ['after-comment'],
+					ignoreAtRules: ['else'],
+				},
+			],
 			/* Selector */
 			'selector-disallowed-list': [
 				'i',
@@ -2500,6 +2507,7 @@ let Configuration = class Configuration {
 				'/^\\.g-col-/',
 				'/^\\.col-/',
 				'/^\\.grid+$/',
+				'/^\\.row+$/',
 				'/\\[data-test.+]/',
 				'/\\[data-po.+]/',
 			],
@@ -2522,11 +2530,7 @@ let Configuration = class Configuration {
 			'unit-allowed-list': RULE_UNIT_ALLOWED_LIST,
 			/* Plugin */
 			'order/order': ORDER_CONTENT,
-			'order/properties-order': [
-				{
-					properties: ORDER_PROPERTIES,
-				},
-			],
+			'order/properties-order': [{ properties: ORDER_PROPERTIES }],
 			/** Empty lines */
 			'rule-empty-line-before': [
 				'always',
@@ -2590,8 +2594,6 @@ let Configuration = class Configuration {
 			'scss/at-else-closing-brace-newline-after': 'always-last-in-chain',
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-else-closing-brace-space-after/README.md */
 			'scss/at-else-closing-brace-space-after': 'always-intermediate',
-			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-else-empty-line-before/README.md */
-			'scss/at-else-empty-line-before': 'never',
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-else-if-parentheses-space-before/README.md */
 			'scss/at-else-if-parentheses-space-before': 'always',
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-function-parentheses-space-before/README.md */
@@ -2599,9 +2601,7 @@ let Configuration = class Configuration {
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-function-pattern/README.md */
 			'scss/at-function-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					message: 'Expected function name to be kebab-case',
-				},
+				{ message: 'Expected function name to be kebab-case' },
 			],
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-if-closing-brace-newline-after/README.md */
 			'scss/at-if-closing-brace-newline-after': 'always-last-in-chain',
@@ -2614,9 +2614,7 @@ let Configuration = class Configuration {
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-mixin-pattern/README.md */
 			'scss/at-mixin-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					message: 'Expected mixin name to be kebab-case',
-				},
+				{ message: 'Expected mixin name to be kebab-case' },
 			],
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-rule-conditional-no-parentheses/README.md */
 			'scss/at-rule-conditional-no-parentheses': true,
@@ -2637,9 +2635,7 @@ let Configuration = class Configuration {
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/dollar-variable-pattern/README.md */
 			'scss/dollar-variable-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					message: 'Expected variable to be kebab-case',
-				},
+				{ message: 'Expected variable to be kebab-case' },
 			],
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/double-slash-comment-empty-line-before/README.md */
 			'scss/double-slash-comment-empty-line-before': [
@@ -2654,9 +2650,7 @@ let Configuration = class Configuration {
 			/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/percent-placeholder-pattern/README.md */
 			'scss/percent-placeholder-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{
-					message: 'Expected placeholder to be kebab-case',
-				},
+				{ message: 'Expected placeholder to be kebab-case' },
 			],
 			/* Other */
 			'scale-unlimited/declaration-strict-value': [

@@ -1,6 +1,7 @@
 import stylelint from 'stylelint';
 
 import config from '../../../.stylelintrc.js';
+import { getWarning } from './spec-helpers.js';
 
 const lint = stylelint.lint;
 
@@ -967,7 +968,7 @@ describe('stylelint-config-standart', () => {
 				});
 			});
 
-			/** @see https://stylelint.io/user-guide/rules/at-rule-disallowed-list/  */
+			/** @see https://stylelint.io/user-guide/rules/at-rule-empty-line-before  */
 			describe('at-rule-disallowed-list', () => {
 				it('should report an error for "@extend" at-rule', async () => {
 					const result = await lint({
@@ -981,6 +982,43 @@ describe('stylelint-config-standart', () => {
 					const atRuleNoVendorPrefixWarning = warnings.find(warning => warning.rule === 'at-rule-disallowed-list');
 
 					expect(atRuleNoVendorPrefixWarning.text).toContain('Unexpected at-rule "extend" (at-rule-disallowed-list)');
+				});
+			});
+
+			/** @see https://stylelint.io/user-guide/rules/at-rule-empty-line-before  */
+			describe('at-rule-empty-line-before', () => {
+				const ruleName = 'at-rule-empty-line-before';
+
+				describe('invalid', () => {
+					it('should report when there is an empty line before @media', async () => {
+						const result = await lint({
+							code: `
+			          a {} @media {}
+		          `,
+							config,
+						});
+
+						const warning = getWarning(result, ruleName);
+
+						expect(warning.text).toBe('Expected empty line before at-rule (at-rule-empty-line-before)');
+					});
+				});
+
+				describe('valid', () => {
+					it('should not report when there is not an empty line before @media', async () => {
+						const result = await lint({
+							code: `
+			          a {} 
+			          
+			          @media {}
+		          `,
+							config,
+						});
+
+						const warning = getWarning(result, ruleName);
+
+						expect(warning).toBeFalsy();
+					});
 				});
 			});
 		});

@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="1.0.8"></a>
+# 1.0.8
+
+1. [x] Fixed: "deploy" workflow creating tag ([#33](https://github.com/kiforks/kifor-stylelint-config/pull/33)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.7"></a>
 # 1.0.7
 

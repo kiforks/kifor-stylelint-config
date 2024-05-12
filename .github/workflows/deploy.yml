@@ -37,17 +37,15 @@ jobs:
       - name: Publish to npm
         run: npm publish
 
-      - name: Extract version and release notes from CHANGELOG
-        id: changelog_reader
+      - name: Extract latest version and description from changelog
+        shell: bash
         run: |
-          VERSION=$(grep -oP '(?<=<a name=")\d+\.\d+\.\d+' CHANGELOG.md | head -1)
-          RELEASE_NOTES=$(awk '/<a name="'$VERSION'/,/<a name="/{print}' CHANGELOG.md | sed -n '3p' | sed 's/^[ ]*//;s/[ ]*$//')
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=release_notes::$RELEASE_NOTES"
+          echo "VERSION=$(grep -oP "^## \K[\d.]+" CHANGELOG.md | head -n 1)" >> $GITHUB_ENV
+          echo "DESCRIPTION=$(awk '/^## \${{ env.VERSION }}/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md | sed 's/#//g' | tr -d '\n')" >> $GITHUB_ENV
 
       - name: Create Git Tag
         run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          git tag -a "${{ steps.changelog_reader.outputs.version }}" -m "${{ steps.changelog_reader.outputs.release_notes }}"
-          git push origin "${{ steps.changelog_reader.outputs.version }}"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag -a ${{ env.VERSION }} -m "${{ env.DESCRIPTION }}"
+          git push origin ${{ env.VERSION }}

@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="1.0.7"></a>
+# 1.0.7
+
+1. [x] Fixed: permissions for deploy workflow ([#31](https://github.com/kiforks/kifor-stylelint-config/pull/31), [#32](https://github.com/kiforks/kifor-stylelint-config/pull/32)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.6"></a>
 # 1.0.6
 

@@ -1,7 +1,7 @@
 # Changelog
 
-<a name="1.0.1"></a>
-# 1.0.1
+<a name="1.1.0"></a>
+# 1.1.0
 
 1. [x] Removed: creating tag job from "deploy" workflow ([#35](https://github.com/kiforks/kifor-stylelint-config/pull/35)) ([@kiforks](https://github.com/kiforks)).
 

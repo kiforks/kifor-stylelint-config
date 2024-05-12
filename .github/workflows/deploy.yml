@@ -10,6 +10,10 @@ on:
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+permissions:
+  actions: write
+  contents: write
+
 jobs:
   publish:
     name: 'Deploy and Tag'

@@ -36,3 +36,14 @@ jobs:
 
       - name: Publish to npm
         run: npm publish
+
+      - name: Extract latest version and description from changelog
+        shell: bash
+        run: |
+          echo "VERSION=$(grep -oP "^## \K[\d.]+" CHANGELOG.md | head -n 1)" >> $GITHUB_ENV
+          echo "DESCRIPTION=$(awk '/^## \${{ env.VERSION }}/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md | sed 's/#//g' | tr -d '\n')" >> $GITHUB_ENV
+
+      - name: Create Git Tag
+        run: |
+          git tag -a ${{ env.VERSION }} -m "${{ env.DESCRIPTION }}"
+          git push origin ${{ env.VERSION }}

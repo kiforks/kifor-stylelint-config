@@ -8,6 +8,7 @@ on:
 
 jobs:
   check-version:
+    name: 'Check Version Increment'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +39,7 @@ jobs:
             fi
 
   check-changelog:
+    name: 'Check CHANGELOG Update'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,6 +55,7 @@ jobs:
           fi
 
   validation:
+    name: 'Code Quality and Tests'
     runs-on: ubuntu-latest
     strategy:
       matrix:

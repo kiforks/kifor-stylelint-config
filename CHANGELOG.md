@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="1.0.6"></a>
+# 1.0.6
+
+1. [x] Added: automatic creation of git tags to "deploy" workflow ([#30](https://github.com/kiforks/kifor-stylelint-config/pull/30)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Removed: dependencies between "build" workflows ([#30](https://github.com/kiforks/kifor-stylelint-config/pull/30)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.0.5"></a>
 # 1.0.5
 

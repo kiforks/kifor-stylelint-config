@@ -1,4 +1,4 @@
-name: build
+name: Build
 
 on:
   pull_request:
@@ -8,6 +8,7 @@ on:
 
 jobs:
   check-version:
+    name: 'Check Version Increment'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,8 +39,8 @@ jobs:
             fi
 
   check-changelog:
+    name: 'Check CHANGELOG Update'
     runs-on: ubuntu-latest
-    needs: check-version
     steps:
       - uses: actions/checkout@v4
       - name: Check if CHANGELOG.md has been updated
@@ -54,8 +55,8 @@ jobs:
           fi
 
   validation:
+    name: 'Code Quality and Tests'
     runs-on: ubuntu-latest
-    needs: [check-version, check-changelog]
     strategy:
       matrix:
         node-version: ['20.x']

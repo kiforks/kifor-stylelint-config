@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="1.1.1"></a>
+# 1.1.1
+
+1. [x] Upgraded: package versions ([#36](https://github.com/kiforks/kifor-stylelint-config/pull/36)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Added: .gitattributes configuration file ([#36](https://github.com/kiforks/kifor-stylelint-config/pull/36)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.1.0"></a>
 # 1.1.0
 

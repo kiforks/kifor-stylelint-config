@@ -10,10 +10,6 @@ on:
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-permissions:
-  actions: write
-  contents: write
-
 jobs:
   publish:
     name: 'Deploy and Tag'
@@ -36,18 +32,3 @@ jobs:
 
       - name: Publish to npm
         run: npm publish
-
-      - name: Extract version and release notes from CHANGELOG
-        id: changelog_reader
-        run: |
-          VERSION=$(grep -oP '(?<=<a name=")\d+\.\d+\.\d+' CHANGELOG.md | head -1)
-          RELEASE_NOTES=$(awk '/<a name="'$VERSION'/,/<a name="/{print}' CHANGELOG.md | sed -n '3p' | sed 's/^[ ]*//;s/[ ]*$//')
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=release_notes::$RELEASE_NOTES"
-
-      - name: Create Git Tag
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          git tag -a "${{ steps.changelog_reader.outputs.version }}" -m "${{ steps.changelog_reader.outputs.release_notes }}"
-          git push origin "${{ steps.changelog_reader.outputs.version }}"

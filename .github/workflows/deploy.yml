@@ -1,4 +1,4 @@
-name: Deploy and Tag
+name: Deploy
 
 on:
   pull_request:

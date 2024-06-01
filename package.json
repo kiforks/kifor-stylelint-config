@@ -73,7 +73,7 @@
 		"prettier": "^3.2.5",
 		"remark-cli": "^12.0.1",
 		"rollup": "^4.18.0",
-		"stylelint": "^16.5.0",
+		"stylelint": "^16.6.1",
 		"ts-jest": "^29.1.3",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.4.5",
@@ -81,7 +81,7 @@
 		"@commitlint/config-conventional": "^19.2.2"
 	},
 	"peerDependencies": {
-		"stylelint": "^16.5.0"
+		"stylelint": "^16.6.1"
 	},
 	"dependencies": {
 		"postcss-scss": "^4.0.9",

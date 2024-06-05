@@ -53,7 +53,7 @@
 		]
 	},
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^26.0.0",
+		"@rollup/plugin-commonjs": "^25.0.0",
 		"@rollup/plugin-node-resolve": "^15.2.3",
 		"@rollup/plugin-typescript": "^11.1.6",
 		"@stylelint/remark-preset": "^5.1.0",

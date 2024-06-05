@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="1.1.2"></a>
+# 1.1.2
+
+1. [x] Updated: package versions ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)) ([@kiforks](https://github.com/kiforks)).
+2. [x] Removed: dependabot ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)) ([@kiforks](https://github.com/kiforks)).
+3. [x] Updated: ignoring linter files ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.1.1"></a>
 # 1.1.1
 

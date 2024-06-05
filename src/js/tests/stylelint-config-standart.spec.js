@@ -266,7 +266,7 @@ describe('stylelint-config-standart', () => {
 				const unspacedOperatorWarning = warnings.find(warning => warning.rule === 'function-calc-no-unspaced-operator');
 
 				expect(unspacedOperatorWarning.text).toContain(
-					'Expected an operator before sign "-" (function-calc-no-unspaced-operator)'
+					'Expected single space after "-" operator (function-calc-no-unspaced-operator)'
 				);
 			});
 		});

@@ -2531,7 +2531,9 @@ let Configuration = class Configuration {
 			/* Plugin */
 			'order/order': ORDER_CONTENT,
 			'order/properties-order': [{ properties: ORDER_PROPERTIES }],
-			/** Empty lines */
+			/* Case */
+			'value-keyword-case': ['lower', { camelCaseSvgKeywords: true }],
+			/* Empty lines */
 			'rule-empty-line-before': [
 				'always',
 				{
@@ -2656,7 +2658,7 @@ let Configuration = class Configuration {
 			'scale-unlimited/declaration-strict-value': [
 				['/color/', 'background-color', 'font-family', 'font-size', 'size', 'line-height', 'stroke', 'fill'],
 				{
-					ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
+					ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/', 'currentColor'],
 					ignoreFunctions: false,
 					disableFix: true,
 				},

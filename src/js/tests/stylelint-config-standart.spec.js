@@ -1193,6 +1193,22 @@ describe('stylelint-config-standart', () => {
 
 					expect(valueKeywordCaseWarning.text).toContain('Expected "BLOCK" to be "block" (value-keyword-case)');
 				});
+
+				it('should not report an error for camelCase svg keywords', async () => {
+					const result = await lint({
+						code: `
+								.example {
+									fill: currentColor;
+								}
+							`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const valueKeywordCaseWarning = warnings.find(warning => warning.rule === 'value-keyword-case');
+
+					expect(valueKeywordCaseWarning).toBeFalsy();
+				});
 			});
 		});
 

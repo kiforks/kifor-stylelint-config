@@ -1752,6 +1752,7 @@ describe('stylelint main config', () => {
 				},
 			],
 			'plugin/declaration-block-no-ignored-properties': true,
+			'value-keyword-case': ['lower', { camelCaseSvgKeywords: true }],
 			'rule-empty-line-before': [
 				'always',
 				{
@@ -1768,7 +1769,7 @@ describe('stylelint main config', () => {
 				['/color/', 'background-color', 'font-family', 'font-size', 'size', 'line-height', 'stroke', 'fill'],
 				{
 					ignoreFunctions: false,
-					ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/'],
+					ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/', 'currentColor'],
 					disableFix: true,
 				},
 			],

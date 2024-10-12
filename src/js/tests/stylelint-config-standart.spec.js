@@ -14,16 +14,19 @@ describe('stylelint-config-standart', () => {
 			it('should report an error for selectors with descending specificity', async () => {
 				const result = await lint({
 					code: `
-					        #id .class {}
-					        .class {}
-					    `,
+				    b a { top: 10px; }
+						h1 { top: 10px; }
+						h2 { top: 10px; }
+						h3 { top: 10px; }
+						a { top: 10px; }
+			    `,
 					config,
 				});
 
 				const { warnings } = result.results[0];
 
 				expect(warnings.find(warning => warning.rule === 'no-descending-specificity').text).toContain(
-					'Expected selector ".class" to come before selector "#id .class"'
+					'Expected selector "a" to come before selector "b a" (no-descending-specificity)'
 				);
 			});
 		});
@@ -563,7 +566,7 @@ describe('stylelint-config-standart', () => {
 				const unmatchableSelectorWarning = warnings.find(warning => warning.rule === 'selector-anb-no-unmatchable');
 
 				expect(unmatchableSelectorWarning.text).toContain(
-					'Unexpected unmatchable An+B selector ":nth-of-type" (selector-anb-no-unmatchable'
+					'Unexpected unmatchable An+B selector ":nth-of-type(0n+0)" (selector-anb-no-unmatchable)'
 				);
 			});
 		});
@@ -1192,6 +1195,22 @@ describe('stylelint-config-standart', () => {
 					const valueKeywordCaseWarning = warnings.find(warning => warning.rule === 'value-keyword-case');
 
 					expect(valueKeywordCaseWarning.text).toContain('Expected "BLOCK" to be "block" (value-keyword-case)');
+				});
+
+				it('should not report an error for camelCase svg keywords', async () => {
+					const result = await lint({
+						code: `
+								.example {
+									fill: currentColor;
+								}
+							`,
+						config,
+					});
+
+					const { warnings } = result.results[0];
+					const valueKeywordCaseWarning = warnings.find(warning => warning.rule === 'value-keyword-case');
+
+					expect(valueKeywordCaseWarning).toBeFalsy();
 				});
 			});
 		});

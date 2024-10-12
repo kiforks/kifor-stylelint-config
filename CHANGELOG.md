@@ -1,5 +1,10 @@
 # Changelog
 
+<a name="1.1.3"></a>
+# 1.1.3
+
+1. [x] Updated: restrict package version ([#43](https://github.com/kiforks/kifor-stylelint-config/pull/43)) ([@kiforks](https://github.com/kiforks)).
+
 <a name="1.1.2"></a>
 # 1.1.2
 

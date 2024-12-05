@@ -1,12 +1,37 @@
-name: Build
+name: CI
 
 on:
   pull_request:
     branches:
       - main
       - '!dependabot/**'
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+      - converted_to_draft
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
+  labeler:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Automatic label creation for PR
+        uses: actions/labeler@v5
+        with:
+          sync-labels: true
+
   check-version:
     name: 'Check Version Increment'
     runs-on: ubuntu-latest
@@ -72,8 +97,8 @@ jobs:
       - name: Build
         run: npm run build
       - name: Check formatting
-        run: npm run format:check
+        run: npm run format
       - name: Lint check
-        run: npm run lint:check
+        run: npm run lint
       - name: Run tests with coverage
         run: npm test -- --coverage

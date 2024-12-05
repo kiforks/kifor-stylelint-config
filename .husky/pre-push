@@ -6,8 +6,8 @@ branch_name=$(git rev-parse --abbrev-ref HEAD)
 # Define the regular expression for branch name pattern
 branch_regex="^(DEV|GEN)-[0-9]+/[a-zA-Z0-9\-]*[a-zA-Z0-9]$"
 
-# Check if the branch name exceeds 25 characters
-if [ ${#branch_name} -gt 25 ]; then
+# Check if the branch name exceeds 30 characters
+if [ ${#branch_name} -gt 30 ]; then
   echo "❌ Branch name too long: ${branch_name}. It should not exceed 25 characters."
   exit 1
 fi

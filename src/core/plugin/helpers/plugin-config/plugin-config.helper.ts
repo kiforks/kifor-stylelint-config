@@ -1,8 +1,5 @@
 import { AtRule, Rule } from 'postcss';
 
-import { PluginRegExpHelper } from '../plugin-reg-exp/plugin-reg-exp.helper';
-import { PluginHelper } from '../plugin/plugin.helper';
-
 import {
 	PluginConfigAtRule,
 	PluginConfigRule,
@@ -10,8 +7,11 @@ import {
 	PluginConfigValidationAtRule,
 	PluginConfigValidationData,
 	PluginConfigValidationRule,
-} from '../../interfaces/plugin-config.interface';
-import { PluginRuleType } from '../../interfaces/plugin.interface';
+	PluginRuleType,
+} from '../../interfaces';
+
+import { PluginHelper } from '../plugin';
+import { PluginRegExpHelper } from '../plugin-reg-exp';
 
 /**
  * The PluginConfigHelper class provides static methods to create and validate plugin configuration
@@ -256,7 +256,7 @@ export abstract class PluginConfigHelper {
 	 * output is [
 	 *   { name: 'include', params: ^media-min\(xs[\s\S]*\) },
 	 *   { name: 'media', params: \(width[\s\S]*\) }
-	 * ].
+	 * ]
 	 */
 	public static atRuleParamsToRegExp<P extends TextPattern = TextPattern>(
 		atRules: ReadonlyArray<PluginConfigAtRule<P>>

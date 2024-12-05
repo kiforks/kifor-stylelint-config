@@ -1,5 +1,5 @@
-import { PluginSelectorNodeType } from '../../enums/plugin-selector-node-type.enum';
-import { PluginSelectorValueType } from '../../interfaces/plugin-selector.interface';
+import { PluginSelectorNodeType } from '../../enums';
+import { PluginSelectorValueType } from '../../interfaces';
 
 export abstract class PluginSelectorHelper {
 	public static isPseudoNodeType(type: PluginSelectorValueType): type is PluginSelectorNodeType.Pseudo {

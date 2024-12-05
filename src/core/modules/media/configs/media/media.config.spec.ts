@@ -12,4 +12,8 @@ describe('MediaConfig', () => {
 	it('should have the correct prefix', () => {
 		expect(MediaConfig.PREFIX).toBe('^media-');
 	});
+
+	it('should have the correct name', () => {
+		expect(MediaConfig.NAME).toBe('media');
+	});
 });

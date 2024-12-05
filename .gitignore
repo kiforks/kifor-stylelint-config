@@ -44,3 +44,4 @@ Thumbs.db
 # Styles
 /**/*.scss
 /**/*.html
+.stylelintrc.js

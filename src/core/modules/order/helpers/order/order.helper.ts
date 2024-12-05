@@ -1,4 +1,4 @@
-import { OrderAtRule, OrderRule } from '../../interfaces/order.interface';
+import { OrderAtRule, OrderRule } from '../../interfaces';
 
 export abstract class OrderHelper {
 	/**
@@ -79,7 +79,7 @@ export abstract class OrderHelper {
 	 * [
 	 *    { type: 'rule', selector: '.class1' },
 	 *    { type: 'rule', selector: '.class2' }
-	 * ].
+	 * ]
 	 */
 	public static createSelectors(selectors: TextPattern[]): OrderRule[] {
 		return selectors.map(selector => OrderHelper.createSelector(selector));
@@ -92,7 +92,7 @@ export abstract class OrderHelper {
 	 * [
 	 *    { type: 'at-rule', name: 'include', parameter: 'mixin1' },
 	 *    { type: 'at-rule', name: 'include', parameter: 'mixin2' }
-	 * ].
+	 * ]
 	 */
 	public static createIncludes<P extends TextPattern = TextPattern>(mixins: P[]): Array<OrderAtRule<P>> {
 		return mixins.map(mixin => OrderHelper.createInclude(mixin));
@@ -106,7 +106,7 @@ export abstract class OrderHelper {
 	 * [
 	 *    { type: 'at-rule', name: 'media', parameter: 'screen and (max-width: 768px)' },
 	 *    { type: 'at-rule', name: 'media', parameter: 'print' }
-	 * ].
+	 * ]
 	 */
 	public static createAtRules(name: TextPattern, parameters: TextPattern[]): OrderAtRule[] {
 		return parameters.map(parameter => OrderHelper.createAtRule(name, parameter));

@@ -1,15 +1,13 @@
-import { PluginBase } from '../../plugin-base/api/plugin-base';
+import { PluginConfigHelper, PluginHelper } from '@plugin/helpers';
 
-import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
-import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
-
-import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
-import { PluginCheckData, PluginData, PluginRuleOptions } from '../../../interfaces/plugin.interface';
 import {
 	PluginNoFirstLevelNestingMessageArgs,
 	PluginNoFirstLevelNestingName,
 	PluginNoFirstLevelNestingPattern,
-} from '../interfaces/plugin-no-self-nesting.interface';
+} from '../interfaces';
+import { PluginCheckData, PluginConfigRuleType, PluginData, PluginRuleOptions } from '@plugin/interfaces';
+
+import { PluginBase } from '../../plugin-base';
 
 export class PluginNoFirstLevelNesting extends PluginBase {
 	protected override readonly isArrayOptions = true;

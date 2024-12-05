@@ -1,6 +1,6 @@
 import { RuleOptionsPossible } from 'stylelint';
 
-import { PluginRegExpArray } from '../../../interfaces/plugin.interface';
+import { PluginRegExpArray } from '@plugin/interfaces';
 
 export type PluginMaxNestingDepthIgnore = 'blockless-at-rules' | 'pseudo-classes';
 export type PluginMaxNestingDepthMainOptions = number;

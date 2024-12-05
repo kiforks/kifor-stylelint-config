@@ -1,7 +1,7 @@
 # kifor-stylelint-config
 
 [![npm version](https://img.shields.io/npm/v/kifor-stylelint-config?logo=npm&logoColor=fff)](https://www.npmjs.com/package/kifor-stylelint-config)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/kiforks/kifor-stylelint-config/deploy.yml?query=workflow%3Adeploys&logo=github)](https://github.com/kiforks/kifor-stylelint-config/actions/workflows/deploy.yml?query=workflow%3Adeploy)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/kiforks/kifor-stylelint-config/cd.yml?query=workflow%3Adeploys&logo=github)](https://github.com/kiforks/kifor-stylelint-config/actions/workflows/cd.yml?query=workflow%3Adeploy)
 [![Downloads per month](https://img.shields.io/npm/dm/kifor-stylelint-config)](https://npmcharts.com/compare/kifor-stylelint-config)
 
 Created by [Kifor Kostiantyn][author-url]

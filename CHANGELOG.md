@@ -1,135 +1,80 @@
 # Changelog
 
-<a name="1.1.2"></a>
-# 1.1.2
+# [2.0.0] - 2024-12-05
 
-1. [x] Updated: package versions ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Removed: dependabot ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Updated: ignoring linter files ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)) ([@kiforks](https://github.com/kiforks)).
+| **Category**      | **Description**                                                                                                                                                                                                                                                                               |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Major Changes** | - Completely revamped CI/CD workflows.<br>- Removed `.stylelintrc.js` from the core project; now builds exclusively on CD workflows.<br>- Updated **Stylelint** peer dependency to `16.11.0`.                                                                                                 |
+| **Improvements**  | - Refactored project architecture for scalability.<br>- Removed outdated and conflicting rules.<br>- Added new ESLint rules for enhanced code quality.<br>- Introduced custom Git rules: <br> • Commit linting rules for standardized messages. <br> • Branch naming pattern for consistency. |
+| **Testing**       | - Updated test cases to align with the refactored architecture.<br>- Removed legacy mocks for Stylelint testing.                                                                                                                                                                              |
+| **Cleanup**       | - Removed unnecessary dependencies and outdated rules, improving compatibility with the latest Stylelint version.                                                                                                                                                                             |
 
-<a name="1.1.1"></a>
-# 1.1.1
+**Summary**:  
+This release introduces significant upgrades to the project's architecture, workflows, and configurations. With enhanced compatibility, streamlined CI/CD processes, and improved linting rules, this version sets a robust foundation for future scalability and maintainability.
 
-1. [x] Upgraded: package versions ([#36](https://github.com/kiforks/kifor-stylelint-config/pull/36)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Added: .gitattributes configuration file ([#36](https://github.com/kiforks/kifor-stylelint-config/pull/36)) ([@kiforks](https://github.com/kiforks)).
+[#44](https://github.com/kiforks/kifor-stylelint-config/pull/44) by [@kiforks](https://github.com/kiforks).
 
-<a name="1.1.0"></a>
-# 1.1.0
+## [1.1.3] - 2024-10-12
 
-1. [x] Removed: creating tag job from "deploy" workflow ([#35](https://github.com/kiforks/kifor-stylelint-config/pull/35)) ([@kiforks](https://github.com/kiforks)).
+- 🔧 **Enhanced**: Restricted package versions to improve dependency stability ([#43](https://github.com/kiforks/kifor-stylelint-config/pull/43)) by [@kiforks](https://github.com/kiforks).
 
-<a name="1.0.9"></a>
-# 1.0.9
+## [1.1.2] - 2024-06-05
 
-1. [x] Changed: creating tag job from "deploy" workflow ([#34](https://github.com/kiforks/kifor-stylelint-config/pull/34)) ([@kiforks](https://github.com/kiforks)).
+- 🔄 **Updated**: Dependencies to latest stable versions ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)) by [@kiforks](https://github.com/kiforks).
+- 🗑️ **Removed**: Dependabot due to misaligned update workflows ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)).
+- ⚙️ **Improved**: Ignored unnecessary linter files for cleaner logs ([#42](https://github.com/kiforks/kifor-stylelint-config/pull/42)).
 
-<a name="1.0.8"></a>
-# 1.0.8
+## [1.1.1] - 2024-05-24
 
-1. [x] Fixed: "deploy" workflow creating tag ([#33](https://github.com/kiforks/kifor-stylelint-config/pull/33)) ([@kiforks](https://github.com/kiforks)).
+- 🚀 **Upgraded**: Dependencies to ensure compatibility with new features ([#36](https://github.com/kiforks/kifor-stylelint-config/pull/36)).
+- ➕ **Added**: `.gitattributes` file to normalize line endings ([#36](https://github.com/kiforks/kifor-stylelint-config/pull/36)).
 
-<a name="1.0.7"></a>
-# 1.0.7
+## [1.1.0] - 2024-05-12
 
-1. [x] Fixed: permissions for deploy workflow ([#31](https://github.com/kiforks/kifor-stylelint-config/pull/31), [#32](https://github.com/kiforks/kifor-stylelint-config/pull/32)) ([@kiforks](https://github.com/kiforks)).
+- 🗑️ **Removed**: Tag creation job from the "deploy" workflow to simplify CI/CD ([#35](https://github.com/kiforks/kifor-stylelint-config/pull/35)).
 
-<a name="1.0.6"></a>
-# 1.0.6
+## [1.0.9] - 2024-05-12
 
-1. [x] Added: automatic creation of git tags to "deploy" workflow ([#30](https://github.com/kiforks/kifor-stylelint-config/pull/30)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Removed: dependencies between "build" workflows ([#30](https://github.com/kiforks/kifor-stylelint-config/pull/30)) ([@kiforks](https://github.com/kiforks)).
+- 🔄 **Modified**: Adjusted tag creation logic in "deploy" workflow for better versioning ([#34](https://github.com/kiforks/kifor-stylelint-config/pull/34)).
 
-<a name="1.0.5"></a>
-# 1.0.5
+## [1.0.8] - 2024-05-12
 
-1. [x] Fixed: peer stylelint package version ([#29](https://github.com/kiforks/kifor-stylelint-config/pull/29)) ([@kiforks](https://github.com/kiforks)).
+- 🐛 **Fixed**: Resolved tag creation issues in "deploy" workflow ([#33](https://github.com/kiforks/kifor-stylelint-config/pull/33)).
 
-<a name="1.0.4"></a>
-# 1.0.4
+## [1.0.7] - 2024-05-12
 
-1. [x] Updated: package version ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Removed: `scss/at-else-empty-line-before` rule ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Updated: `at-rule-no-unknown`, `at-rule-empty-line-before`, `selector-disallowed-list` rule configurations ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)) ([@kiforks](https://github.com/kiforks)).
+- 🛠️ **Fixed**: Permissions for "deploy" workflow ([#31](https://github.com/kiforks/kifor-stylelint-config/pull/31), [#32](https://github.com/kiforks/kifor-stylelint-config/pull/32)).
 
-<a name="1.0.3"></a>
-# 1.0.3
+## [1.0.6] - 2024-05-12
 
-1. [x] Updated: eslint config ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Updated: new configuration files for pre-commit ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Updated: validation for pre-commit message ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)) ([@kiforks](https://github.com/kiforks)).
+- 🚀 **Added**: Automatic creation of Git tags in "deploy" workflow ([#30](https://github.com/kiforks/kifor-stylelint-config/pull/30)).
+- 🗑️ **Removed**: Dependencies between "build" workflows for faster CI ([#30](https://github.com/kiforks/kifor-stylelint-config/pull/30)).
 
-<a name="1.0.2"></a>
-# 1.0.2
+## [1.0.5] - 2024-05-08
 
-1. [x] Updated: prettier config ([#24](https://github.com/kiforks/kifor-stylelint-config/pull/24)) ([@kiforks](https://github.com/kiforks)).
+- 🐛 **Fixed**: Peer dependency for Stylelint to align with new versions ([#29](https://github.com/kiforks/kifor-stylelint-config/pull/29)).
 
-<a name="1.0.1"></a>
-# 1.0.1
+## [1.0.4] - 2024-05-08
 
-1. [x] Updated: dependencies ([#23](https://github.com/kiforks/kifor-stylelint-config/pull/23)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Updated: eslint config ([#23](https://github.com/kiforks/kifor-stylelint-config/pull/23)) ([@kiforks](https://github.com/kiforks)).
+- 🔄 **Updated**: Dependency versions for better compatibility ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)).
+- 🗑️ **Removed**: Deprecated `scss/at-else-empty-line-before` rule ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)).
+- ⚙️ **Improved**: Configurations for rules like `at-rule-no-unknown`, `at-rule-empty-line-before`, and `selector-disallowed-list` ([#28](https://github.com/kiforks/kifor-stylelint-config/pull/28)).
 
-<a name="1.0.0"></a>
-# 1.0.0
+## [1.0.3] - 2024-04-25
 
-1. [x] Added: final version of config ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Fixed: media order config ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Fixed: a cycle in the rule `selector-combinator-nesting` ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
-4. [x] Fixed: several settings for general rules ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)) ([@kiforks](https://github.com/kiforks)).
+- 🔄 **Updated**: ESLint configuration for better linting compatibility ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)).
+- ➕ **Added**: Pre-commit validation configuration ([#25](https://github.com/kiforks/kifor-stylelint-config/pull/25)).
 
-<a name="0.5.1"></a>
-# 0.5.1
+## [1.0.2] - 2024-04-17
 
-1. [x] Fixed: dependencies ([#16](https://github.com/kiforks/kifor-stylelint-config/pull/16)) ([@kiforks](https://github.com/kiforks)).
+- 🔄 **Updated**: Prettier configurations to enforce consistent styling ([#24](https://github.com/kiforks/kifor-stylelint-config/pull/24)).
 
-<a name="0.5.0"></a>
-# 0.5.0
+## [1.0.1] - 2024-04-16
 
-1. [x] Added: new `stylelint-declaration-block-no-ignored-properties` rule ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Added: new `stylelint-declaration-strict-value"` rule ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Added: new `stylelint-scss"` rules ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Added: dependabot ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
-4. [x] Fixed: several rule configs ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
-4. [x] Changed: README.md file ([#15](https://github.com/kiforks/kifor-stylelint-config/pull/15)) ([@kiforks](https://github.com/kiforks)).
+- 🔄 **Updated**: Dependencies to latest stable versions ([#23](https://github.com/kiforks/kifor-stylelint-config/pull/23)).
+- 🔄 **Updated**: ESLint configuration for improved integration ([#23](https://github.com/kiforks/kifor-stylelint-config/pull/23)).
 
-<a name="0.4.0"></a>
-# 0.4.0
+## [1.0.0] - 2024-04-15
 
-1. [x] Added: new `kifor-stylelint/no-first-level-nesting` rule ([#14](https://github.com/kiforks/kifor-stylelint-config/pull/14)) ([@kiforks](https://github.com/kiforks)).
-
-<a name="0.3.0"></a>
-# 0.3.0
-
-1. [x] Added: new `kifor-stylelint/selector-combinator-nesting` rule ([#13](https://github.com/kiforks/kifor-stylelint-config/pull/13)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Added: configuration for `selector-nested-pattern` rule ([#13](https://github.com/kiforks/kifor-stylelint-config/pull/13)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Added: lodash package ([#13](https://github.com/kiforks/kifor-stylelint-config/pull/13)) ([@kiforks](https://github.com/kiforks)).
-
-<a name="0.2.0"></a>
-# 0.2.0
-
-1. [x] Added: new `kifor-stylelint/no-duplicate-at-rule` plugin ([#12](https://github.com/kiforks/kifor-stylelint-config/pull/12)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Fixed: `kifor-stylelint/no-self-nesting` plugin ([#12](https://github.com/kiforks/kifor-stylelint-config/pull/12)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Fixed: changed architecture and interfaces of plugins and rules ([#12](https://github.com/kiforks/kifor-stylelint-config/pull/12)) ([@kiforks](https://github.com/kiforks)).
-
-<a name="0.1.0"></a>
-# 0.1.0
-
-1. [x] Added: new `kifor-stylelint/no-self-nesting` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Fixed: `kifor-stylelint/max-nesting-depth` plugin ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
-3. [x] Fixed: the main logic of plugins ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
-4. [x] Fixed: changed architecture and interfaces of plugins and rules ([#11](https://github.com/kiforks/kifor-stylelint-config/pull/11)) ([@kiforks](https://github.com/kiforks)).
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="0.0.25"></a>
-# 0.0.25
-
-1. [x] Added: new `kifor-stylelint/max-nesting-depth` rule ([#10](https://github.com/kiforks/kifor-stylelint-config/pull/10)) ([@kiforks](https://github.com/kiforks)).
-2. [x] Added: ordering and some config rules ([#10](https://github.com/kiforks/kifor-stylelint-config/pull/10)) ([@kiforks](https://github.com/kiforks)).
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="0.0.1"></a>
-# 0.0.1
-
-1. [x] Added: `.stylelintrc.js` config file ([@kiforks](https://github.com/kiforks)).
+- 🎉 **Initial Release**: Finalized Stylelint configuration with polished rules ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)).
+- 🐛 **Fixed**: Media query ordering and rule cycles ([#17](https://github.com/kiforks/kifor-stylelint-config/pull/17)).

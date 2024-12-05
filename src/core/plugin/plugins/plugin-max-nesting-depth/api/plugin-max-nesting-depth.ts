@@ -1,15 +1,12 @@
 import { Node } from 'postcss';
 import parser from 'postcss-selector-parser';
 
-import { PluginBase } from '../../plugin-base/api/plugin-base';
+import { PluginHelper } from '@plugin/helpers';
 
-import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
+import { PluginMaxNestingDepthPossibleOptions, PluginMaxNestingDepthSecondaryOptions } from '../interfaces';
+import { PluginCheckData, PluginData, PluginRuleOptions } from '@plugin/interfaces';
 
-import { PluginCheckData, PluginData, PluginRuleOptions } from '../../../interfaces/plugin.interface';
-import {
-	PluginMaxNestingDepthPossibleOptions,
-	PluginMaxNestingDepthSecondaryOptions,
-} from '../interfaces/plugin-max-nesting-depth.interface';
+import { PluginBase } from '../../plugin-base';
 
 /**
  * Source was taken from:

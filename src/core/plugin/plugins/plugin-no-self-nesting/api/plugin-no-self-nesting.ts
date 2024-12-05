@@ -1,15 +1,9 @@
-import { PluginBase } from '../../plugin-base/api/plugin-base';
+import { PluginConfigHelper, PluginHelper } from '@plugin/helpers';
 
-import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
-import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
+import { PluginNoSelfNestingMessageArgs, PluginNoSelfNestingName, PluginNoSelfNestingScopeName } from '../interfaces';
+import { PluginCheckData, PluginConfigRuleType, PluginData, PluginRuleOptions } from '@plugin/interfaces';
 
-import { PluginConfigRuleType } from '../../../interfaces/plugin-config.interface';
-import { PluginCheckData, PluginData, PluginRuleOptions } from '../../../interfaces/plugin.interface';
-import {
-	PluginNoSelfNestingMessageArgs,
-	PluginNoSelfNestingName,
-	PluginNoSelfNestingScopeName,
-} from '../interfaces/plugin-no-self-nesting.interface';
+import { PluginBase } from '../../plugin-base';
 
 export class PluginNoSelfNesting extends PluginBase {
 	protected override readonly isArrayOptions = true;

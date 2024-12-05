@@ -3,7 +3,7 @@ import { AtRule } from 'postcss';
 import Rule from 'postcss/lib/rule';
 import stylelint, { Config, PostcssResult, Problem, RuleContext, RuleOptions } from 'stylelint';
 
-import { PluginBase } from '../plugins/plugin-base/api/plugin-base';
+import { PluginBase } from '../plugins/plugin-base';
 
 export type PluginRuleType = AtRule | Rule;
 export type PluginRules = Config['rules'];

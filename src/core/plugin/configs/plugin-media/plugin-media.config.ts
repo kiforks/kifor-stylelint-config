@@ -1,9 +1,9 @@
-import { MediaConfig } from '../../../modules/media/configs/media/media.config';
+import { MediaConfig } from '@modules/media/configs';
 
-import { MediaRuleHelper } from '../../../modules/media/helpers/media-rule-helper/media-rule.helper';
-import { PluginConfigHelper } from '../../helpers/plugin-config/plugin-config.helper';
+import { PluginConfigHelper } from '../../helpers';
+import { MediaRuleHelper } from '@modules/media/helpers';
 
-import { PluginConfigAtRule } from '../../interfaces/plugin-config.interface';
+import { PluginConfigAtRule } from '@plugin/interfaces';
 
 export abstract class PluginMediaConfig {
 	/**

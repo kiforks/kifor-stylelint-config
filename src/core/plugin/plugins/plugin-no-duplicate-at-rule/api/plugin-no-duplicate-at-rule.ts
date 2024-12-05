@@ -1,16 +1,11 @@
 import { AtRule, Node } from 'postcss';
 
-import { PluginBase } from '../../plugin-base/api/plugin-base';
+import { PluginConfigHelper, PluginHelper } from '@plugin/helpers';
 
-import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
-import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
+import { PluginNoDuplicateAtRuleMessageArgs, PluginNoDuplicateAtRuleMessageName } from '../interfaces';
+import { PluginCheckData, PluginConfigAtRule, PluginData, PluginRuleOptions } from '@plugin/interfaces';
 
-import { PluginConfigAtRule } from '../../../interfaces/plugin-config.interface';
-import { PluginCheckData, PluginData, PluginRuleOptions } from '../../../interfaces/plugin.interface';
-import {
-	PluginNoDuplicateAtRuleMessageArgs,
-	PluginNoDuplicateAtRuleMessageName,
-} from '../interfaces/plugin-no-duplicate-at-rule.interface';
+import { PluginBase } from '../../plugin-base';
 
 export class PluginNoDuplicateAtRule extends PluginBase {
 	protected override readonly isArrayOptions = true;

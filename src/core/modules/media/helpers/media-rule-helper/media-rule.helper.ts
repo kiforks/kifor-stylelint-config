@@ -1,9 +1,8 @@
-import { MediaConfig } from '../../configs/media/media.config';
-
-import { PluginConfigHelper } from '../../../../plugin/helpers/plugin-config/plugin-config.helper';
-import { OrderHelper } from '../../../order/helpers/order/order.helper';
+import { OrderHelper } from '@modules/order/helpers';
+import { PluginConfigHelper } from '@plugin/helpers';
 
 import {
+	MediaBreakpoint,
 	MediaConfigAtRuleBreakpoint,
 	MediaConfigAtRuleBreakpointBetween,
 	MediaConfigAtRuleDevice,
@@ -16,8 +15,9 @@ import {
 	MediaRuleDevice,
 	MediaRuleFullBreakpointPrefix,
 	MediaRuleFullDevicePrefix,
-} from '../../interfaces/media-rule.interface';
-import { MediaBreakpoint } from '../../interfaces/media.interface';
+} from '../../interfaces';
+
+import { MediaConfig } from '../../configs';
 
 export abstract class MediaRuleHelper {
 	/**
@@ -141,7 +141,7 @@ export abstract class MediaRuleHelper {
 	 * [
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-mobile' },
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-desktop' }
-	 * ].
+	 * ]
 	 */
 	public static createDeviceOrderRules<D extends MediaRuleDevice>(
 		devices: readonly D[]
@@ -155,7 +155,7 @@ export abstract class MediaRuleHelper {
 	 * [
 	 *    { name: 'include', params: '^media-mobile' },
 	 *    { name: 'include', params: '^media-desktop' }
-	 * ].
+	 * ]
 	 */
 	public static createDeviceConfigRules<D extends MediaRuleDevice>(
 		devices: readonly D[]
@@ -170,7 +170,7 @@ export abstract class MediaRuleHelper {
 	 * [
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-min(sm)' },
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-min(md)' }
-	 * ].
+	 * ]
 	 */
 	public static createBreakpointOrderRules<P extends MediaRuleBreakpointPrefix, B extends MediaBreakpoint>(
 		prefix: P,
@@ -186,7 +186,7 @@ export abstract class MediaRuleHelper {
 	 * [
 	 *    { name: 'include', params: '^media-min(sm)' },
 	 *    { name: 'include', params: '^media-min(md)' }
-	 * ].
+	 * ]
 	 */
 	public static createBreakpointConfigRules<P extends MediaRuleBreakpointPrefix, B extends MediaBreakpoint>(
 		prefix: P,
@@ -202,7 +202,7 @@ export abstract class MediaRuleHelper {
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-between(xs, sm)' },
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-between(xs, md)' },
 	 *    { type: 'at-rule', name: 'include', parameter: '^media-between(sm, md)' },
-	 * ].
+	 * ]
 	 */
 	public static createBreakpointBetweenOrderRules<B extends MediaBreakpoint>(
 		breakpoints: readonly B[]
@@ -219,7 +219,7 @@ export abstract class MediaRuleHelper {
 	 *    { name: 'include', params: '^media-between(xs, sm)' },
 	 *    { name: 'include', params: '^media-between(xs, md)' },
 	 *    { name: 'include', params: '^media-between(sm, md)' },
-	 * ].
+	 * ]
 	 */
 	public static createBreakpointBetweenConfigRules<B extends MediaBreakpoint>(
 		breakpoints: readonly B[]

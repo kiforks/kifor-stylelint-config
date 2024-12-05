@@ -1,18 +1,12 @@
 import selectorParser from 'postcss-selector-parser';
 import Rule from 'postcss/lib/rule';
 
-import { PluginBase } from '../../plugin-base/api/plugin-base';
+import { PluginConfigHelper, PluginHelper, PluginSelectorHelper } from '@plugin/helpers';
 
-import { PluginConfigHelper } from '../../../helpers/plugin-config/plugin-config.helper';
-import { PluginSelectorHelper } from '../../../helpers/plugin-selector/plugin-selector.helper';
-import { PluginHelper } from '../../../helpers/plugin/plugin.helper';
+import { PluginSelectorCombinatorNestingMessageArgs, PluginSelectorCombinatorNestingName } from '../interfaces';
+import { PluginCheckData, PluginConfigExecutionMode, PluginData, PluginRuleOptions } from '@plugin/interfaces';
 
-import { PluginConfigExecutionMode } from '../../../interfaces/plugin-config.interface';
-import { PluginCheckData, PluginData, PluginRuleOptions } from '../../../interfaces/plugin.interface';
-import {
-	PluginSelectorCombinatorNestingMessageArgs,
-	PluginSelectorCombinatorNestingName,
-} from '../interfaces/plugin-selector-combinator-nesting.interface';
+import { PluginBase } from '../../plugin-base';
 
 export class PluginSelectorCombinatorNesting extends PluginBase {
 	protected readonly ruleName = 'selector-combinator-nesting';

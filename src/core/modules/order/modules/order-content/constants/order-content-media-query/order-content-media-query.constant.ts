@@ -1,5 +1,5 @@
-import { OrderHelper } from '../../../../helpers/order/order.helper';
-import { OrderContentHelper } from '../../helpers/order-content.helper';
+import { OrderContentHelper } from '../../helpers';
+import { OrderHelper } from '@modules/order/helpers';
 
 export const ORDER_CONTENT_MEDIA_QUERY = [
 	OrderHelper.createAtRule('media'),

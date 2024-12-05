@@ -1,15 +1,14 @@
-import { MediaConfig } from '../../../../../media/configs/media/media.config';
+import { MediaConfig } from '@modules/media/configs';
 
-import { MediaRuleHelper } from '../../../../../media/helpers/media-rule-helper/media-rule.helper';
-import { OrderRegExpHelper } from '../../../../helpers/order-reg-exp/order-reg-exp.helper';
-import { OrderHelper } from '../../../../helpers/order/order.helper';
+import { MediaRuleHelper } from '@modules/media/helpers';
+import { OrderHelper, OrderRegExpHelper } from '@modules/order/helpers';
 
-import { ORDER_CONTENT_MEDIA_QUERY } from '../order-content-media-query/order-content-media-query.constant';
-import { ORDER_CONTENT_PSEUDO_CLASS_INCLUDES } from '../order-content-pseudo-class-includes/order-content-pseudo-class-includes.constant';
-import { ORDER_CONTENT_PSEUDO_CLASSES } from '../order-content-pseudo-classes/order-content-pseudo-classes.constant';
-import { ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES } from '../order-content-pseudo-elements-includes/order-content-pseudo-elements-includes.constant';
-import { ORDER_CONTENT_PSEUDO_ELEMENTS } from '../order-content-pseudo-elements/order-content-pseudo-elements.constant';
-import { ORDER_CONTENT_SELECTORS } from '../order-content-selectors/order-content-selectors.constant';
+import { ORDER_CONTENT_MEDIA_QUERY } from '../order-content-media-query';
+import { ORDER_CONTENT_PSEUDO_CLASS_INCLUDES } from '../order-content-pseudo-class-includes';
+import { ORDER_CONTENT_PSEUDO_CLASSES } from '../order-content-pseudo-classes';
+import { ORDER_CONTENT_PSEUDO_ELEMENTS } from '../order-content-pseudo-elements';
+import { ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES } from '../order-content-pseudo-elements-includes';
+import { ORDER_CONTENT_SELECTORS } from '../order-content-selectors';
 
 /**
  * The ORDER_CONTENT array defines the order of various SCSS elements in a structured manner.

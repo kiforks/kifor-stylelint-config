@@ -1,19 +1,32 @@
+import { ORDER_CONTENT } from '@modules/order/modules/order-content';
+import { ORDER_PROPERTIES } from '@modules/order/modules/order-property';
+import { Plugin } from '@plugin/decorators';
+import { pluginMaxNestingDepthProvider } from '@plugin/plugins/plugin-max-nesting-depth';
+import { pluginNoDuplicateAtRuleProvider } from '@plugin/plugins/plugin-no-duplicate-at-rule';
+import { pluginNoFirstLevelNestingProvider } from '@plugin/plugins/plugin-no-first-level-nesting';
+import { pluginNoSelfNestingProvider } from '@plugin/plugins/plugin-no-self-nesting';
+import { pluginSelectorCombinatorNestingProvider } from '@plugin/plugins/plugin-selector-combinator-nesting';
+import {
+	DeclarationPropertyValueAllowedListConfig,
+	RULE_NO_UNKNOWN,
+	RULE_PROPERTY_UNIT_ALLOWED_LIST,
+	RULE_UNIT_ALLOWED_LIST,
+} from '@rule/configs';
 import { Config } from 'stylelint';
-
-import { RULE_NO_UNKNOWN } from './core/rule/configs/rule-no-unknown/rule-no-unknown.config';
-import { RULE_PROPERTY_UNIT_ALLOWED_LIST } from './core/rule/configs/rule-property-unit-allowed-list/rule-property-unit-allowed-list.config';
-import { RULE_UNIT_ALLOWED_LIST } from './core/rule/configs/rule-unit-allowed-list/rule-unit-allowed-list.config';
-
-import { ORDER_CONTENT } from './core/modules/order/modules/order-content/constants/order-content/order-content.constant';
-import { ORDER_PROPERTIES } from './core/modules/order/modules/order-property/constants/order-properties/order-properties.constant';
-import { plugins } from './core/plugin';
-import { Plugin } from './core/plugin/decorators/plugin.decorator';
 
 /**
  * Docs:
  * @see https://stylelint.io/user-guide/rules
  */
-@Plugin({ providers: plugins })
+@Plugin({
+	providers: [
+		pluginMaxNestingDepthProvider(),
+		pluginNoSelfNestingProvider(),
+		pluginNoDuplicateAtRuleProvider(),
+		pluginSelectorCombinatorNestingProvider(),
+		pluginNoFirstLevelNestingProvider(),
+	],
+})
 class Configuration implements Config {
 	public extends = [
 		/** @see https://github.com/stylelint-scss/stylelint-config-standard-scss */
@@ -35,9 +48,6 @@ class Configuration implements Config {
 
 		/** @see https://github.com/kristerkari/stylelint-declaration-block-no-ignored-properties/blob/master/README.md */
 		'stylelint-declaration-block-no-ignored-properties',
-
-		/** @see https://github.com/AndyOGo/stylelint-declaration-strict-value */
-		'stylelint-declaration-strict-value',
 	];
 
 	public rules = {
@@ -58,6 +68,7 @@ class Configuration implements Config {
 		/* Declaration property */
 		'declaration-property-unit-allowed-list': RULE_PROPERTY_UNIT_ALLOWED_LIST,
 		'declaration-property-value-no-unknown': [true, { ignoreProperties: { '/^[a-zA-Z].*$/': /.*\$\w+.*/ } }],
+		'declaration-property-value-allowed-list': DeclarationPropertyValueAllowedListConfig.VALUES,
 		'plugin/declaration-block-no-ignored-properties': true,
 
 		/* Function */
@@ -148,9 +159,6 @@ class Configuration implements Config {
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-if-no-null/README.md */
 		'scss/at-if-no-null': true,
-
-		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-import-partial-extension/README.md */
-		'scss/at-import-partial-extension': 'never',
 
 		/** @see https://github.com/stylelint-scss/stylelint-scss/blob/master/src/rules/at-rule-no-unknown/README.md */
 		'scss/at-rule-no-unknown': true,
@@ -282,16 +290,6 @@ class Configuration implements Config {
 		'scss/percent-placeholder-pattern': [
 			'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
 			{ message: 'Expected placeholder to be kebab-case' },
-		],
-
-		/* Other */
-		'scale-unlimited/declaration-strict-value': [
-			['/color/', 'background-color', 'font-family', 'font-size', 'size', 'line-height', 'stroke', 'fill'],
-			{
-				ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/', 'currentColor'],
-				ignoreFunctions: false,
-				disableFix: true,
-			},
 		],
 	};
 }

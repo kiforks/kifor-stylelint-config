@@ -2,7 +2,7 @@
 	"compileOnSave": false,
 	"compilerOptions": {
 		"baseUrl": "./src",
-		"outDir": "./temp",
+		"outDir": "./",
 		"strict": true,
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,
@@ -20,9 +20,17 @@
 		"importHelpers": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
+		"esModuleInterop": true,
 		"target": "ESNext",
 		"lib": ["ESNext", "dom"],
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"paths": {
+			"@core/*": ["./core/*"],
+			"@plugin/*": ["./core/plugin/*"],
+			"@rule/*": ["./core/rule/*"],
+			"@modules/*": ["./core/modules/*"]
+		}
 	},
-	"include": ["./src/**/*.ts"]
+	"include": ["./src/**/*.ts"],
+	"exclude": ["node_modules", "tmp", "dist", ".angular", ".nx", "out-tsc"]
 }

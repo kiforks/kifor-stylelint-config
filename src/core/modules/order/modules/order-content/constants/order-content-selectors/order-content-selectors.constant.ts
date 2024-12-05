@@ -1,4 +1,4 @@
-import { OrderHelper } from '../../../../helpers/order/order.helper';
+import { OrderHelper } from '@modules/order/helpers';
 
 export const ORDER_CONTENT_SELECTORS = OrderHelper.createSelectors([
 	'^[a-z]', // example: 'div'

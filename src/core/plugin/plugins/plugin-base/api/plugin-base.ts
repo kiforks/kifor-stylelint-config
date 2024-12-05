@@ -1,19 +1,18 @@
+import { PluginConfig } from '@plugin/configs';
 import type * as PostCSS from 'postcss';
 import stylelint, { Plugin, PostcssResult, Rule, RuleBase, RuleContext, RuleMessage } from 'stylelint';
 
-import { PluginConfig } from '../../../configs/plugin/plugin.config';
-
-import { PluginConfigData } from '../../../interfaces/plugin-config.interface';
 import {
 	PluginCheckData,
 	PluginCheckFn,
 	PluginCheckStatementFn,
+	PluginConfigData,
 	PluginData,
 	PluginProblem,
 	PluginRuleBaseFn,
 	PluginRuleOptions,
 	PluginSecondaryOptions,
-} from '../../../interfaces/plugin.interface';
+} from '@plugin/interfaces';
 
 const {
 	utils: { ruleMessages, validateOptions, report },

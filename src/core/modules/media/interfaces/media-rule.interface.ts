@@ -1,6 +1,6 @@
-import { PluginConfigAtRule } from '../../../plugin/interfaces/plugin-config.interface';
-import { OrderAtRule } from '../../order/interfaces/order.interface';
+import { OrderAtRule } from '../../order/interfaces';
 import { MediaBreakpoint } from './media.interface';
+import { PluginConfigAtRule } from '@plugin/interfaces';
 
 export type MediaRuleDevice = 'desktop' | 'mobile';
 export type MediaRulePrefix = '^media-'; // Base prefix for media rules.

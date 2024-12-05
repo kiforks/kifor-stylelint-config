@@ -1,4 +1,4 @@
-import { OrderHelper } from '../../../../helpers/order/order.helper';
+import { OrderHelper } from '@modules/order/helpers';
 
 export const ORDER_CONTENT_PSEUDO_ELEMENT_INCLUDES = OrderHelper.createIncludes([
 	// before

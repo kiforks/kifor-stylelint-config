@@ -1,9 +1,5 @@
 import config from './index';
 
-jest.mock('./core/plugin', () => ({ MAX_NESTING_DEPTH: '' }));
-
-jest.mock('./core/plugin/decorators/plugin.decorator');
-
 describe('stylelint main config', () => {
 	const data = {
 		customSyntax: 'postcss-scss',
@@ -13,7 +9,61 @@ describe('stylelint main config', () => {
 			'stylelint-scss',
 			'stylelint-order',
 			'stylelint-declaration-block-no-ignored-properties',
-			'stylelint-declaration-strict-value',
+			{
+				rule: expect.objectContaining({
+					messages: expect.any(Object),
+					meta: {
+						url: 'https://github.com/kiforks/kifor-stylelint-config',
+					},
+					primaryOptionArray: false,
+					ruleName: 'kifor-stylelint/max-nesting-depth',
+				}),
+				ruleName: 'kifor-stylelint/max-nesting-depth',
+			},
+			{
+				rule: expect.objectContaining({
+					messages: expect.any(Object),
+					meta: {
+						url: 'https://github.com/kiforks/kifor-stylelint-config',
+					},
+					primaryOptionArray: true,
+					ruleName: 'kifor-stylelint/no-self-nesting',
+				}),
+				ruleName: 'kifor-stylelint/no-self-nesting',
+			},
+			{
+				rule: expect.objectContaining({
+					messages: expect.any(Object),
+					meta: {
+						url: 'https://github.com/kiforks/kifor-stylelint-config',
+					},
+					primaryOptionArray: true,
+					ruleName: 'kifor-stylelint/no-duplicate-at-rule',
+				}),
+				ruleName: 'kifor-stylelint/no-duplicate-at-rule',
+			},
+			{
+				rule: expect.objectContaining({
+					messages: expect.any(Object),
+					meta: {
+						url: 'https://github.com/kiforks/kifor-stylelint-config',
+					},
+					primaryOptionArray: false,
+					ruleName: 'kifor-stylelint/selector-combinator-nesting',
+				}),
+				ruleName: 'kifor-stylelint/selector-combinator-nesting',
+			},
+			{
+				rule: expect.objectContaining({
+					messages: expect.any(Object),
+					meta: {
+						url: 'https://github.com/kiforks/kifor-stylelint-config',
+					},
+					primaryOptionArray: true,
+					ruleName: 'kifor-stylelint/no-first-level-nesting',
+				}),
+				ruleName: 'kifor-stylelint/no-first-level-nesting',
+			},
 		],
 		rules: {
 			'annotation-no-unknown': [true, { ignoreAnnotations: [/default\b/] }],
@@ -49,7 +99,12 @@ describe('stylelint main config', () => {
 			'at-rule-property-required-list': {
 				'font-face': ['font-display', 'font-family', 'font-style'],
 			},
-			'color-function-notation': ['legacy', { ignore: ['with-var-inside'] }],
+			'color-function-notation': [
+				'legacy',
+				{
+					ignore: ['with-var-inside'],
+				},
+			],
 			'color-hex-length': 'long',
 			'custom-property-empty-line-before': 'never',
 			'declaration-block-no-duplicate-properties': true,
@@ -96,17 +151,306 @@ describe('stylelint main config', () => {
 				'transition-duration': ['ms'],
 				width: ['px', '%', 'vw'],
 			},
+			'declaration-property-value-allowed-list': {
+				'background-color': [
+					'/^rgba/',
+					'inherit',
+					'initial',
+					'none',
+					'transparent',
+					'currentColor',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+				'border-color': [
+					'/^rgba/',
+					'inherit',
+					'initial',
+					'none',
+					'transparent',
+					'currentColor',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+				color: [
+					'/^rgba/',
+					'inherit',
+					'initial',
+					'none',
+					'transparent',
+					'currentColor',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+				fill: [
+					'/^rgba/',
+					'inherit',
+					'initial',
+					'none',
+					'transparent',
+					'currentColor',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+				'font-family': [
+					'/^url/',
+					'inherit',
+					'initial',
+					'none',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+				'font-size': ['inherit', 'initial', 'none', '0', '1', '/^(\\$|--)/', '/^var\\(--/', '/^[a-zA-Z0-9_-]+\\.\\$/'],
+				'line-height': [
+					'inherit',
+					'initial',
+					'none',
+					'0',
+					'1',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+				'outline-color': [
+					'/^rgba/',
+					'inherit',
+					'initial',
+					'none',
+					'transparent',
+					'currentColor',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+				size: ['inherit', 'initial', 'none', '0', '1', '/^(\\$|--)/', '/^var\\(--/', '/^[a-zA-Z0-9_-]+\\.\\$/'],
+				stroke: [
+					'/^rgba/',
+					'inherit',
+					'initial',
+					'none',
+					'transparent',
+					'/^(\\$|--)/',
+					'/^var\\(--/',
+					'/^[a-zA-Z0-9_-]+\\.\\$/',
+				],
+			},
 			'declaration-property-value-disallowed-list': {
 				border: ['/none/'],
 				display: ['/none/'],
 				'text-align': ['/justify/'],
 			},
-			'declaration-property-value-no-unknown': [true, { ignoreProperties: { '/^[a-zA-Z].*$/': /.*\$\w+.*/ } }],
+			'declaration-property-value-no-unknown': expect.arrayContaining([
+				true,
+				expect.objectContaining({
+					ignoreProperties: expect.objectContaining({
+						'/^[a-zA-Z].*$/': expect.objectContaining({}),
+					}),
+				}),
+			]),
 			'font-weight-notation': 'numeric',
 			'function-disallowed-list': ['rgb'],
 			'function-url-no-scheme-relative': true,
 			'function-url-scheme-disallowed-list': ['ftp', '/^http/'],
 			'import-notation': 'string',
+			'kifor-stylelint/max-nesting-depth': [
+				3,
+				{
+					ignore: ['pseudo-classes'],
+					ignoreAtRules: ['/^\\include/', '/^\\media/'],
+					ignoreHostSelectors: [/:host/],
+					ignoreRules: ['/^&::/', '/^::/'],
+				},
+			],
+			'kifor-stylelint/no-duplicate-at-rule': [
+				{
+					name: 'include',
+					params: '^media-mobile[\\s\\S]*',
+				},
+				{
+					name: 'include',
+					params: '^media-desktop[\\s\\S]*',
+				},
+				{
+					name: 'include',
+					params: '^media-min\\(xs[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-min\\(sm[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-min\\(md[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-min\\(lg[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-min\\(xl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-min\\(xxl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-max\\(xs[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-max\\(sm[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-max\\(md[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-max\\(lg[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-max\\(xl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-max\\(xxl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-only\\(xs[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-only\\(sm[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-only\\(md[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-only\\(lg[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-only\\(xl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-only\\(xxl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(xs, sm[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(xs, md[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(xs, lg[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(xs, xl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(xs, xxl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(sm, md[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(sm, lg[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(sm, xl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(sm, xxl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(md, lg[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(md, xl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(md, xxl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(lg, xl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(lg, xxl[\\s\\S]*\\)',
+				},
+				{
+					name: 'include',
+					params: '^media-between\\(xl, xxl[\\s\\S]*\\)',
+				},
+			],
+			'kifor-stylelint/no-first-level-nesting': expect.arrayContaining([
+				expect.objectContaining({
+					selector: expect.objectContaining({}),
+				}),
+				expect.objectContaining({
+					name: expect.objectContaining({}),
+				}),
+				expect.objectContaining({
+					name: 'include',
+					params: expect.objectContaining({}),
+				}),
+			]),
+			'kifor-stylelint/no-self-nesting': [
+				{
+					selector: 'body',
+				},
+				{
+					selector: 'html',
+				},
+				{
+					selector: 'main',
+				},
+				{
+					selector: 'h1',
+				},
+				{
+					selector: /^:host/,
+				},
+				{
+					selector: /^&:host/,
+				},
+				{
+					selector: /^::ng-deep/,
+				},
+				{
+					selector: /^&::ng-deep/,
+				},
+				{
+					name: 'include',
+					params: /^media-/,
+				},
+			],
+			'kifor-stylelint/selector-combinator-nesting': 'always',
 			'media-feature-name-disallowed-list': ['max-width', 'min-width', 'width'],
 			'media-feature-name-no-vendor-prefix': true,
 			'order/order': [
@@ -1752,7 +2096,6 @@ describe('stylelint main config', () => {
 				},
 			],
 			'plugin/declaration-block-no-ignored-properties': true,
-			'value-keyword-case': ['lower', { camelCaseSvgKeywords: true }],
 			'rule-empty-line-before': [
 				'always',
 				{
@@ -1765,14 +2108,6 @@ describe('stylelint main config', () => {
 				'/ri\\-/': ['font-size'],
 				i: ['font-size'],
 			},
-			'scale-unlimited/declaration-strict-value': [
-				['/color/', 'background-color', 'font-family', 'font-size', 'size', 'line-height', 'stroke', 'fill'],
-				{
-					ignoreFunctions: false,
-					ignoreValues: ['/^rgba/', 'inherit', 'initial', 'none', 'transparent', '0', '1', '/^url/', 'currentColor'],
-					disableFix: true,
-				},
-			],
 			'scss/at-else-closing-brace-newline-after': 'always-last-in-chain',
 			'scss/at-else-closing-brace-space-after': 'always-intermediate',
 			'scss/at-else-if-parentheses-space-before': 'always',
@@ -1780,17 +2115,20 @@ describe('stylelint main config', () => {
 			'scss/at-function-parentheses-space-before': 'never',
 			'scss/at-function-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{ message: 'Expected function name to be kebab-case' },
+				{
+					message: 'Expected function name to be kebab-case',
+				},
 			],
 			'scss/at-if-closing-brace-newline-after': 'always-last-in-chain',
 			'scss/at-if-closing-brace-space-after': 'always-intermediate',
 			'scss/at-if-no-null': true,
-			'scss/at-import-partial-extension': 'never',
 			'scss/at-mixin-argumentless-call-parentheses': 'never',
 			'scss/at-mixin-parentheses-space-before': 'never',
 			'scss/at-mixin-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{ message: 'Expected mixin name to be kebab-case' },
+				{
+					message: 'Expected mixin name to be kebab-case',
+				},
 			],
 			'scss/at-rule-conditional-no-parentheses': true,
 			'scss/at-rule-no-unknown': true,
@@ -1799,7 +2137,12 @@ describe('stylelint main config', () => {
 			'scss/declaration-nested-properties-no-divided-groups': true,
 			'scss/dollar-variable-colon-space-after': 'always-single-line',
 			'scss/dollar-variable-colon-space-before': 'never',
-			'scss/dollar-variable-default': [true, { ignore: 'local' }],
+			'scss/dollar-variable-default': [
+				true,
+				{
+					ignore: 'local',
+				},
+			],
 			'scss/dollar-variable-empty-line-before': [
 				'always',
 				{
@@ -1807,12 +2150,19 @@ describe('stylelint main config', () => {
 					ignore: ['after-comment', 'inside-single-line-block'],
 				},
 			],
-			'scss/dollar-variable-first-in-block': [true, { ignore: ['comments', 'imports'] }],
+			'scss/dollar-variable-first-in-block': [
+				true,
+				{
+					ignore: ['comments', 'imports'],
+				},
+			],
 			'scss/dollar-variable-no-missing-interpolation': true,
 			'scss/dollar-variable-no-namespaced-assignment': true,
 			'scss/dollar-variable-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{ message: 'Expected variable to be kebab-case' },
+				{
+					message: 'Expected variable to be kebab-case',
+				},
 			],
 			'scss/double-slash-comment-empty-line-before': [
 				'always',
@@ -1833,7 +2183,9 @@ describe('stylelint main config', () => {
 			'scss/operator-no-unspaced': true,
 			'scss/percent-placeholder-pattern': [
 				'^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$',
-				{ message: 'Expected placeholder to be kebab-case' },
+				{
+					message: 'Expected placeholder to be kebab-case',
+				},
 			],
 			'scss/selector-no-redundant-nesting-selector': true,
 			'scss/selector-no-union-class-name': true,
@@ -1852,9 +2204,20 @@ describe('stylelint main config', () => {
 			'selector-nested-pattern': '^(?!::?[a-zA-Z0-9-]+)',
 			'selector-no-qualifying-type': true,
 			'selector-not-notation': 'simple',
-			'selector-pseudo-element-no-unknown': [true, { ignorePseudoElements: ['ng-deep'] }],
+			'selector-pseudo-element-no-unknown': [
+				true,
+				{
+					ignorePseudoElements: ['ng-deep'],
+				},
+			],
 			'time-min-milliseconds': 50,
 			'unit-allowed-list': ['px', 'rem', 'deg', 'fr', '%', 'ms', 'vw', 'vh', 'vmin', 'vmax'],
+			'value-keyword-case': [
+				'lower',
+				{
+					camelCaseSvgKeywords: true,
+				},
+			],
 		},
 	};
 

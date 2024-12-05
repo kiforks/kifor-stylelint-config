@@ -1,5 +1,6 @@
-import { PluginRegExpHelper } from '../../../../plugin/helpers/plugin-reg-exp/plugin-reg-exp.helper';
-import { OrderHelper } from '../order/order.helper';
+import { PluginRegExpHelper } from '@plugin/helpers';
+
+import { OrderHelper } from '../order';
 
 export abstract class OrderRegExpHelper {
 	/**
@@ -13,7 +14,7 @@ export abstract class OrderRegExpHelper {
 	 * output is [
 	 *   { type: 'at-rule', name: 'include', parameter: ^media-min\(xs[\s\S]*\) },
 	 *   { type: 'at-rule', name: 'media', parameter: \(width[\s\S]*\) }
-	 * ].
+	 * ])
 	 */
 	public static parametersToWildcardRegex<T>(rules: T[]): T[] {
 		return rules.map(rule => {

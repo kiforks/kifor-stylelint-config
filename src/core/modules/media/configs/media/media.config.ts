@@ -1,5 +1,4 @@
-import { MediaRuleDevice, MediaRulePrefix } from '../../interfaces/media-rule.interface';
-import { MediaBreakpoint } from '../../interfaces/media.interface';
+import { MediaBreakpoint, MediaRuleDevice, MediaRulePrefix } from '../../interfaces';
 
 /**
  * Provides configuration settings for media queries in a responsive design context.

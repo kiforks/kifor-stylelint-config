@@ -2,7 +2,7 @@ import { AtRule, Comment, Container, Declaration, Document, Node, Root, Rule } f
 import { FunctionNode, Node as ValueNode } from 'postcss-value-parser';
 import { ChildNode } from 'postcss/lib/node';
 
-import { PluginRegExpStringMatchedData, PluginRuleType } from '../../interfaces/plugin.interface';
+import { PluginRegExpStringMatchedData, PluginRuleType } from '../../interfaces';
 
 /**
  * All of these methods are the utilities version of stylelint
@@ -187,7 +187,7 @@ export abstract class PluginHelper {
 		return typeof value === 'boolean' || value instanceof Boolean;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 	public static isFunction(value: unknown): value is Function {
 		return typeof value === 'function' || value instanceof Function;
 	}
@@ -221,7 +221,7 @@ export abstract class PluginHelper {
 		console.assert(value, message);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 	public static assertFunction(value: unknown): asserts value is Function {
 		// eslint-disable-next-line no-console
 		console.assert(PluginHelper.isFunction(value), `"${value}" must be a function`);
